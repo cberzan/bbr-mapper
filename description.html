@@ -17,12 +17,33 @@ by Constantin Berzan &amp; Andy Sayler
 <h4>Objective:</h4>
 We aim to program a robot that purposefully navigates a building and uses laser
 and vision data to create a 2D map of the floor.  This involves exploring all
-open space, and working around obstacles.  Additionally, we aim for our robot to
-be able to localize itself within the mapped building, i.e. figure out where it
-is based on its surroundings.
+open space, and working around obstacles.  Additionally, we aim for our robot
+to be able to localize itself within the mapped building, i.e. figure out
+where it is based on its surroundings.
 <h4>Summary:</h4>
-&lt;short project summary including how this project uses
-behavior-based techniques&gt;<br>
+We will be developing our robot using a schema (or possible hybrid)
+architecture. The robot will utilize schema based behaviors to manifest the
+following behaviors:
+<ul>
+    <li>Avoid obstacles</li>
+    <li>Seek new areas</li>
+    <li>Gather all necessary map data for current location</li>
+    <li>Avoid local minima</li>
+    <li>Avoid already mapped areas</li>
+    <li>Recognize current location</li>
+</ul>
+We will utilize the ADE robotics environment to complete our implementation.
+The first objective will be to create code capable of navigating our robot
+through unfamiliar environments and exploring these environments to their full
+potential without getting stuck or colliding with obstacles.
+The next goal will be to build a map of the environment and provide
+localization abilities.
+We may utilize a third party mapping and localization package subject to
+a review of the available options. Should we not utilize a third party mapping
+and localization package, we will be developing these capabilities ourselves.
+We aim to develop a 2D floor plan map using the robots laser data. In addition,
+we will keep track of photographic data at various locations to ease with
+localization.
 <h4>Final demonstration:</h4>
 The demo will happen in Halligan Hall, first floor.
 <ul>
@@ -36,8 +57,16 @@ The demo will happen in Halligan Hall, first floor.
     map.</li>
 </ul>
 <h4>Robot platform:</h4>
-Videre platform equipped with lasers and camera.
-<h4>Team responsibilities (only for teams &gt;1):</h4>
+We require a robot with the following abilities:
+<ul>
+    <li>Camera</li>
+    <li>Floor Level Lasers</li>
+    <li>Tight Turn Radius</li>
+    <li>Forward and Reverse Movements</li>
+</ul>
+The Videre platform equipped with lasers and camera will fulfill
+these requirements.
+<h4>Team responsibilities:</h4>
 Tasks will be divided as the need arises. We will both be involved in all
 aspects of the project. We will alternate the writing of the progress reports.
 <h4>Relevant literature:</h4>
@@ -94,3 +123,6 @@ The tentative timeline of the project is as follows:<br/><br/>
 
 </body>
 </html>
+
+<!--  LocalWords:  Minima
+ -->
