@@ -1,12 +1,14 @@
 % Template for progress reports
 % For examples on how to use latex see, for example,
 % http://www.mat.bham.ac.uk/R.W.Kaye/latex/examples.htm
+%
+% Andy Sayler
+% Constantine Berzan
 
 \documentclass[12pt]{article}
 \usepackage{times}
 \usepackage{latexsym}
 \usepackage{xspace}
-\usepackage{times}
 \usepackage{epsfig}
 \setlength {\topmargin} {0 mm}
 \setlength {\headsep} {0 mm}
@@ -20,44 +22,81 @@
 
 \begin{document}
 
-\title{BBR Progress Report NNN:\\YOUR TITLE}
+\title{BBR Progress Report 001: }
 
-\author{YOUR NAME}
+\author{Andy Sayler & Constantin Berzan}
 
 \maketitle
 
 \begin{abstract}
-Summarize here what the progress report contains in one or two sentences.
+This week we completed a review of the SLAM literature and refined the scope of our
+project.
 \end{abstract}
 
 
 \section{Introduction}
 
-Work on the introduction--since the introduction can be the same for
-all group members except for the outline of the rest of the paper
-(which contains what each member specifically did), this can be done
-early on and can be a group effort.  Hence, try to write it up already
-for an early progress report, if possible in its final form.
 
 
 \section{Project Summary}
 
-Summarize your project here--you can take your summary from the final
-project proposals (this should be self-contained, so that somebody who
-reads it understands immediately what the project is about and how it
-will be accomplished).
+We will be developing our robot using a schema (or possibly hybrid)
+architecture. The robot will utilize schema based functions to manifest the
+following behaviors:
+
+\begin{itemize}
+    \item Avoid obstacles
+    \item Avoid local minima
+    \item Seek new areas
+    \item Utilize SLAM (laser + odometry) to deduce current location
+    \item Utilize SLAM (laser + odometry) to generate persistent environmental map
+\end{itemize}
+
+We will utilize the ADE robotics environment to complete our implementation.
+The first objective will be to create code capable of navigating our robot
+through unfamiliar environments and exploring these environments to their full
+potential without getting stuck or colliding with obstacles. 
+
+The next goal will be to build a map of the environment and provide
+localization abilities. This will be done by implementing a basic SLAM system
+using laser and odomtery data from scratch.  We aim to develop a 2D floor plan
+map using data from our SLAM system.
+
+Should we complete the initial scope of this project ahead of schedule, we may
+opt to pursue one or more of the following extensions:
+
+\begin{itemize}
+    \item Utilize vision data in SLAM system
+    \item Utilize vision data in 2D map generation
+    \item Compare performance of our SLAM system to Carmen
+    \item Augment SLAM system with additional sensor packages (radio ranging,
+          etc)
+\end{itemize}
+
 
 \section{Problems tackled}
 
-Describe the problems that have tackled since the last progress
-report.  In particular, itemize the accomplished tasks, report on what
-each group member did, what problems were encountered, and how they
-were solved
+Literature review:
+\begin{itemize}
+    \item SLAM for Dummies tutorial -- both
+    \item Carmen -- Andy
+    \item Vision-based SLAM -- Constantin
+\end{itemize}
+
+Discussed and refined project scope:
+\begin{itemize}
+    \item Opted to implement SLAM ourselves
+    \item Decided to use SLAM data as primary source for persistent 2D map data
+\end{itemize}
+
 
 \section{Next Steps}
 
-Summarize the state of the project and lay out the next steps (until
-the next progress report).  In particular, itemize the next steps and
-assigned names to duties.
+\begin{itemize}
+    \item Review ADE architecture for optimal design and workflow
+    \item Build simple map of Halligan for the simulator
+    \item Determine metrics of Videre base (laser range, odometry accuracy, etc)
+    \item Review Kalman filtering technique
+\end{itemize}
 
 \end{document}
