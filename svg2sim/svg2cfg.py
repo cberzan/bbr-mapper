@@ -29,13 +29,58 @@ def svg_rectangles(svgdom):
         rects.append((x, y, width, height))
     return rects
 
+def appendRectangleShape(doc, node, rect):
+    """
+    Appends to node a <shape> with a nested <rect> with the given coordintes.
+    The shape and rect elements are created as children of doc.
+    """
+    x, y, width, height = rect
+    shape = doc.createElement("shape")
+    rect  = doc.createElement("rect")
+    rect.setAttribute("x", str(x))
+    rect.setAttribute("y", str(y))
+    rect.setAttribute("width", str(width))
+    rect.setAttribute("height", str(height))
+    shape.appendChild(rect)
+    node.appendChild(shape)
+
+def create_sim_map(width, height, rectangles):
+    """
+    Takes width, height, list of (x, y, width, height) tuples representing
+    rectangles, and produces a DOM tree of the simulator map containing the
+    given rectangles as walls.
+    """
+    doc = minidom.Document()
+    config = doc.createElement("config")
+    world = doc.createElement("world")
+    appendRectangleShape(doc, world, (0, 0, width, height))
+    config.appendChild(world)
+    for rect in rectangles:
+        wall = doc.createElement("wall")
+        appendRectangleShape(doc, wall, rect)
+        config.appendChild(wall)
+    doc.appendChild(config)
+    return doc
+
 if __name__=="__main__":
     if len(sys.argv) < 2:
         print "Usage: %s file.xml\nWill produce file.cfg" % sys.argv(0)
         exit(1)
-    svgdom        = minidom.parse(sys.argv[1])
+
+    # Parse SVG, create simulator map.
+    svg_filename = sys.argv[1]
+    svgdom        = minidom.parse(svg_filename)
     width, height = svg_size(svgdom)
     rectangles    = svg_rectangles(svgdom)
     print "Width %lf, height %lf, %d rectangles." %\
             (width, height, len(rectangles))
-    pass
+    simdom = create_sim_map(width, height, rectangles)
+
+    # Write simulator map.
+    if svg_filename[-4:] == ".svg":
+        sim_filename = svg_filename[:-4] + ".cfg"
+    else:
+        sim_filename = svg_filename + ".cfg"
+    sim_file = open(sim_filename, "w")
+    sim_file.write(simdom.toprettyxml(indent="    "))
+    print "Wrote %s." % sim_filename
