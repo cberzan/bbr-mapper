@@ -1,5 +1,5 @@
-The config file for the simulator is basically XML. Everything is in meters. A
-simple map looks like this:
+The config file for the simulator is in XML. Everything is in meters. A simple
+map looks like this:
 
 <config>
     <world>
