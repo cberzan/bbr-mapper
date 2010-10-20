@@ -77,7 +77,7 @@ def create_sim_map(width, height, rectangles):
 
 if __name__=="__main__":
     if len(sys.argv) < 2:
-        print "Usage: %s file.xml\nWill produce file.xml" % sys.argv(0)
+        print "Usage: %s file.xml\nWill produce file.xml" % sys.argv[0]
         exit(1)
 
     # Parse SVG, create simulator map.
