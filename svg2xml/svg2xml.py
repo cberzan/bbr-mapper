@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #
 # Takes a .svg file, extracts its size and all the rectangles it describes, and
-# produces a .cfg file for ADESim, with all the rectangles as walls.
+# produces a .xml file for ADESim2010, with all the rectangles as walls.
 
 from xml.dom import minidom
 import sys
@@ -77,7 +77,7 @@ def create_sim_map(width, height, rectangles):
 
 if __name__=="__main__":
     if len(sys.argv) < 2:
-        print "Usage: %s file.xml\nWill produce file.cfg" % sys.argv(0)
+        print "Usage: %s file.xml\nWill produce file.xml" % sys.argv(0)
         exit(1)
 
     # Parse SVG, create simulator map.
@@ -91,9 +91,9 @@ if __name__=="__main__":
 
     # Write simulator map.
     if svg_filename[-4:] == ".svg":
-        sim_filename = svg_filename[:-4] + ".cfg"
+        sim_filename = svg_filename[:-4] + ".xml"
     else:
-        sim_filename = svg_filename + ".cfg"
+        sim_filename = svg_filename + ".xml"
     sim_file = open(sim_filename, "w")
     sim_file.write(simdom.toprettyxml(indent="    "))
     print "Wrote %s." % sim_filename
