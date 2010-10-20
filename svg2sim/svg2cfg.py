@@ -52,9 +52,22 @@ def create_sim_map(width, height, rectangles):
     """
     doc = minidom.Document()
     config = doc.createElement("config")
-    world = doc.createElement("world")
+
+    # World tag.
+    world  = doc.createElement("world")
     appendRectangleShape(doc, world, (0, 0, width, height))
     config.appendChild(world)
+
+    # Init-robot-positions tag.
+    pose = doc.createElement("init-robot-positions")
+    pos1 = doc.createElement("position")
+    pos1.setAttribute("x", "1")
+    pos1.setAttribute("y", "1")
+    pos1.setAttribute("theta", "0")
+    pose.appendChild(pos1)
+    config.appendChild(pose)
+
+    # All the rectangle walls:
     for rect in rectangles:
         wall = doc.createElement("wall")
         appendRectangleShape(doc, wall, rect)

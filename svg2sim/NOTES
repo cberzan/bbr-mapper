@@ -8,6 +8,10 @@ simple map looks like this:
         </shape>
     </world>
 
+    <init-robot-positions>
+        <position x="1" y="1" theta="0"/>
+    </init-robot-positions>
+
     <wall>
         <shape>
             <rect x="-15" y="-5" width="0" height="10"/>
@@ -17,7 +21,8 @@ simple map looks like this:
 
 The <world> section is mandatory, and there can be many walls. There can be
 other objects, like doorways, landmarks, blocks. Shapes can also be polygons.
-For a fancier example, see eigenmann8.txt.
+For a fancier example, see eigenmann8.txt. (The most recent ADESim2010 uses a
+slightly different format? See eigenmann8.xml.)
 
 =============================================================================
 
