@@ -1,0 +1,50 @@
+The config file for the simulator is basically XML. Everything is in meters. A
+simple map looks like this:
+
+<config>
+    <world>
+        <shape>
+            <rect x="-15" y="-5" width="31" height="10"/>
+        </shape>
+    </world>
+
+    <wall>
+        <shape>
+            <rect x="-15" y="-5" width="0" height="10"/>
+        </shape>
+    </wall>
+</config>
+
+The <world> section is mandatory, and there can be many walls. There can be
+other objects, like doorways, landmarks, blocks. Shapes can also be polygons.
+For a fancier example, see eigenmann8.txt.
+
+=============================================================================
+
+A simple SVG with two rectangles looks like this:
+
+(((bunch of stuff)))
+
+<svg
+   (((bunch of stuff)))
+   width="744.09448819"
+   height="1052.3622047"
+   (((bunch of stuff)))>
+    (((bunch of stuff)))
+  <g (((bunch of stuff)))>
+    <rect
+       (((bunch of stuff)))
+       width="385.71429"
+       height="71.428574"
+       x="128.57143"
+       y="95.219322" />
+    <rect
+       (((bunch of stuff)))
+       width="111.42857"
+       height="274.28571"
+       x="285.71429"
+       y="32.362183" />
+  </g>
+</svg>
+
+=============================================================================
