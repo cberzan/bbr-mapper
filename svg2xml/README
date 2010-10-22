@@ -1,0 +1,11 @@
+svg2cfg.py
+-------------
+A script to extract all rectangles from a SVG and generate an XML map for
+ADESim2010. Uses the size of the SVG drawing as the limits of the world. Makes
+it easy to draw maps in Inkscape, then use them in the simulator.
+
+TODO
+-------
+* Fix coordinates: Inkscape and simulator use different origins (upside-down)
+* Warn user if coordinates of map are too large
+

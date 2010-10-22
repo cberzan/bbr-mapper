@@ -1,0 +1,1195 @@
+<!--comments are enclosed within standard xml comment brackets (like this line) -->
+
+<!-- the coordinate system is Euclidean.  NOTE THAT THIS IS DIFFERENT FROM THE SCREEN COORDINATE SYSTEM, WHERE Y grows DOWN, not up!  all numbers can be doubles. -->
+
+<!-- everything MUST BE ENCLOSED within the <config> tag -->
+
+<!-- !!!!!!!!!!EVERYTHING IS IN METERS!!!!!!!!!! -->
+
+<!--possible tokens: -->
+
+<!-- <world> {shape_and_optional_actions} </world>.  EACH FILE MUST SPECIFY WORLD DIMENSIONS.  -->
+
+<!-- shape_and_optional_actions are just comprised of a SINGLE shape node, and an OPTIONAL actions-list node: -->
+<!--    let's start with shape:  <shape> {particular_shape} </shape> -->
+<!--        the particular shape can be: -->
+<!--            <rect x="" y="" width="" height="" />   where (x,y) is bottom left coordinate -->
+<!--            <poly>    <pt x="" y=""/>  <pt x="" y=""/>  ...  </poly>   for a polygon -->
+<!--    the actions list is in the form <actions> {action_item}[s] </actions> -->
+<!--        an action_item can be one of the following: -->
+<!--            <action> <message text="" /> </action> -->
+<!--            <action> <exit/> </action> -->
+<!--            <action> <remove/> <action>    (removes object from simulator.  ONLY APPLICABLE to DYNAMIC OBJECTS) -->
+<!--        the actions will be executed (IN ORDER) whenever one of the robot lines intersects one of the lines of the shape -->
+
+<!-- objects can be: -->
+<!--    <wall>    {shape_and_optional_actions}   </wall> -->
+<!--    <doorway [*optional* name=""]>    {shape_and_optional_actions}   </doorway> -->
+<!--    <landmark [*optional* name=""] [*optional* laserable="true" (by default, false)]>     {shape_and_optional_actions}     </landmark>  -->
+<!--    <block [*optional* name=""] [*optional* red="" green="" blue=""]>    {shape_and_optional_actions}    </block>.     Whereby red, green, and blue are ints 0-255.  If unspecified, default orange color -->   
+
+<!-- it is also possible to specify an initial starting position for the robot(s):  -->
+<!--    <init-robot-position id="" x="" y ="" theta=""/> -->
+<!--         where id is the robot's number (first robot = 0, next = 1, etc) 
+             (x,y) are the coordinates, and theta is the robot's angle, 
+             in radians, with 0 facing right, and the angle growing counter-clockwise.
+             NOTE that if a particular initial position is explicitly specified
+             on the command line, it WILL override the init-robot spec. -->
+
+
+<config>
+
+	<!-- WORLD BOUNDARIES AND SURROUNDING WALLS -->
+	<!--      (TO PREVENT ROBOT FROM FALLING OFF THE EDGE OF THE UNIVERSE) -->
+	<world>
+		<shape>
+			<rect x="-15.842699999999999" y="-5.6427000000000005" width="31.6954" height="10.9854"/>
+		</shape>
+	</world>
+	<!-- LEFT WORLD-EDGE WALL -->
+	<wall>
+		<shape>
+			<rect x="-15.842699999999999" y="-5.6427000000000005" width="0.1077" height="10.9854"/>
+		</shape>
+	</wall>
+	<!-- RIGHT WORLD-EDGE WALL -->
+	<wall>
+		<shape>
+			<rect x="15.745000000000001" y="-5.6427000000000005" width="0.1077" height="10.9854"/>
+		</shape>
+	</wall>
+	<!-- BOTTOM WORLD-EDGE WALL -->
+	<wall>
+		<shape>
+			<rect x="-15.842699999999999" y="-5.6427000000000005" width="31.6954" height="0.1077"/>
+		</shape>
+	</wall>
+	<!-- TOP WORLD-EDGE WALL -->
+	<wall>
+		<shape>
+			<rect x="-15.842699999999999" y="5.234999999999999" width="31.6954" height="0.1077"/>
+		</shape>
+	</wall>
+
+
+	<!-- Front Wall -->
+	<wall>
+		<shape>
+			<rect x="-15.725" y="-0.71" width="0.13" height="0.2"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-15.735" y="-0.51" width="0.15" height="0.08"/>
+		</shape>
+	</wall>
+	<!-- Front Exit: Openable -->
+	<wall>
+		<shape>
+			<rect x="-15.685" y="-0.43" width="0.05" height="0.86"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-15.735" y="0.43" width="0.15" height="0.08"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-15.725" y="0.51" width="0.13" height="0.2"/>
+		</shape>
+	</wall>
+	<!-- Left Wall -->
+	<wall>
+		<shape>
+			<rect x="-15.595" y="-0.835" width="0.53" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-15.059999999999999" y="-0.845" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Room 823: Unclear -->
+	<wall>
+		<shape>
+			<rect x="-14.985" y="-0.795" width="0.79" height="0.05"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-14.2" y="-0.845" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-14.125" y="-0.835" width="4.27" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-9.86" y="-0.845" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Workshop: Openable -->
+	<wall>
+		<shape>
+			<rect x="-9.785" y="-0.795" width="0.79" height="0.05"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-8.989999999999998" y="-0.845" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-8.91" y="-0.835" width="0.3" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-8.61" y="-0.845" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Room 833: Openable -->
+	<!-- doorway -->
+	<wall>
+		<shape>
+			<rect x="-8.535" y="-0.795" width="0.79" height="0.05"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-7.75" y="-0.845" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-7.675" y="-0.835" width="3.25" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-4.42" y="-0.845" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Room 833: Not openable -->
+	<wall>
+		<shape>
+			<rect x="-4.345000000000001" y="-0.795" width="0.79" height="0.05"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-3.56" y="-0.845" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-3.48" y="-0.835" width="0.3" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-3.18" y="-0.845" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Room 833: Not openable -->
+	<wall>
+		<shape>
+			<rect x="-3.105" y="-0.795" width="0.79" height="0.05"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-2.31" y="-0.845" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-2.235" y="-0.835" width="3.25" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="1.01" y="-0.845" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Room 833: Not openable -->
+	<wall>
+		<shape>
+			<rect x="1.095" y="-0.795" width="0.79" height="0.05"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="1.88" y="-0.845" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="1.96" y="-0.835" width="0.3" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="2.26" y="-0.845" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Room 833: Not openable -->
+	<wall>
+		<shape>
+			<rect x="2.335" y="-0.795" width="0.79" height="0.05"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="3.12" y="-0.845" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="3.205" y="-0.835" width="3.25" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="6.45" y="-0.845" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Room 833: Not openable -->
+	<wall>
+		<shape>
+			<rect x="6.525" y="-0.795" width="0.79" height="0.05"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="7.31" y="-0.845" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="7.39" y="-0.835" width="0.3" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="7.69" y="-0.845" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Room 833: Not openable -->
+	<wall>
+		<shape>
+			<rect x="7.775" y="-0.795" width="0.79" height="0.05"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="8.56" y="-0.845" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="8.635" y="-0.835" width="3.25" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="11.89" y="-0.845" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Room 833: Openable -->
+	<wall>
+		<shape>
+			<rect x="11.965" y="-0.795" width="0.79" height="0.05"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="12.75" y="-0.845" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="12.83" y="-0.835" width="0.3" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="13.13" y="-0.845" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Room 841 -->
+	<wall>
+		<shape>
+			<rect x="13.205" y="-0.795" width="0.79" height="0.05"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="13.99" y="-0.845" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="14.07" y="-0.835" width="1.52" height="0.13"/>
+		</shape>
+	</wall>
+	<!-- Right Wall -->
+	<wall>
+		<shape>
+			<rect x="-15.600000000000001" y="0.7050000000000001" width="0.28" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-15.315" y="0.6950000000000001" width="0.05" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- 896: Unopenable -->
+	<wall>
+		<shape>
+			<rect x="-15.265" y="0.745" width="0.61" height="0.05"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-14.655000000000001" y="0.6950000000000001" width="0.05" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-14.605" y="0.7050000000000001" width="1.17" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-13.44" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Cleaning Closet: Unopenable -->
+	<wall>
+		<shape>
+			<rect x="-13.355" y="0.745" width="0.71" height="0.05"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-12.649999999999999" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-12.57" y="0.7050000000000001" width="0.1" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-12.469999999999999" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Men's Room: Unopenable -->
+	<wall>
+		<shape>
+			<rect x="-12.39" y="0.745" width="0.76" height="0.05"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-11.639999999999999" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-11.56" y="0.7050000000000001" width="1.7" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-9.86" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Room 824: Openable -->
+	<wall>
+		<shape>
+			<rect x="-9.785" y="0.745" width="0.79" height="0.05"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-8.989999999999998" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-8.91" y="0.7050000000000001" width="0.3" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-8.61" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Room 824: Openable -->
+	<!-- wall -->
+	<!-- -8.14	0.77	0	0.79	0.05	1.0 -->
+	<wall>
+		<shape>
+			<rect x="-7.675" y="0.7050000000000001" width="3.25" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-4.42" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Room 826: Openable -->
+	<wall>
+		<shape>
+			<rect x="-4.345000000000001" y="0.745" width="0.79" height="0.05"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-3.56" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-3.48" y="0.7050000000000001" width="0.3" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-3.18" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Room 828: Openable -->
+	<!-- wall -->
+	<!-- -2.71	0.77	0	0.79	0.05	1.0 -->
+	<wall>
+		<shape>
+			<rect x="-2.31" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-2.235" y="0.7050000000000001" width="3.25" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="1.01" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Room 830: Openable -->
+	<wall>
+		<shape>
+			<rect x="1.88" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="1.96" y="0.7050000000000001" width="0.3" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="2.26" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Room 832 (Conference): Openable -->
+	<wall>
+		<shape>
+			<rect x="3.12" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="3.205" y="0.7050000000000001" width="3.25" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="6.45" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Room 834: Openable -->
+	<wall>
+		<shape>
+			<rect x="7.31" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="7.39" y="0.7050000000000001" width="0.3" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="7.69" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Room 836: Openable -->
+	<wall>
+		<shape>
+			<rect x="8.56" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="8.635" y="0.7050000000000001" width="3.25" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="11.89" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Room 838: Openable -->
+	<wall>
+		<shape>
+			<rect x="12.75" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="12.83" y="0.7050000000000001" width="0.3" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="13.13" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<!-- Room 840: Openable -->
+	<wall>
+		<shape>
+			<rect x="13.99" y="0.6950000000000001" width="0.08" height="0.15"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="14.07" y="0.7050000000000001" width="1.52" height="0.13"/>
+		</shape>
+	</wall>
+	<!-- Back Wall -->
+	<wall>
+		<shape>
+			<rect x="15.595" y="0.51" width="0.13" height="0.2"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="15.585" y="0.43" width="0.15" height="0.08"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="15.635" y="-0.43" width="0.05" height="0.86"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="15.585" y="-0.51" width="0.15" height="0.08"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="15.595" y="-0.71" width="0.13" height="0.2"/>
+		</shape>
+	</wall>
+	
+	<!-- Workshop -->
+	<wall>
+		<shape>
+			<rect x="-12.705" y="-5.535" width="0.13" height="4.83"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-12.704999999999998" y="-5.535" width="4.01" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-8.825" y="-5.535" width="0.13" height="4.83"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-12.58" y="-5.41" width="0.94" height="0.94"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-11.645" y="-5.41" width="0.89" height="0.84"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-9.66" y="-3.96" width="0.84" height="0.48"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-9.66" y="-2.5100000000000002" width="0.84" height="0.08"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-9.280000000000001" y="-2.43" width="0.46" height="0.66"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-12.58" y="-1.545" width="1.32" height="0.71"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-11.26" y="-1.3900000000000001" width="1.3" height="0.56"/>
+		</shape>
+	</wall>
+	
+	<!-- Teaching Lab -->
+	<wall>
+		<shape>
+			<rect x="-8.865" y="-5.535" width="0.13" height="4.83"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-8.860000000000001" y="-5.535" width="21.92" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="12.935" y="-5.535" width="0.13" height="4.83"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-6.875" y="-5.41" width="19.81" height="0.18"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-6.880000000000001" y="-5.2299999999999995" width="0.46" height="0.28"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-6.42" y="-5.2299999999999995" width="0.1" height="0.36"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-6.32" y="-5.2299999999999995" width="0.46" height="0.28"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-5.859999999999999" y="-5.23" width="4.34" height="0.56"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-1.52" y="-5.2299999999999995" width="0.46" height="0.28"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-1.06" y="-5.2299999999999995" width="0.1" height="0.36"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-0.96" y="-5.2299999999999995" width="0.46" height="0.28"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-0.5" y="-5.23" width="2.08" height="0.58"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="1.5750000000000002" y="-5.235" width="2.21" height="0.41"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="3.7899999999999996" y="-5.2299999999999995" width="0.46" height="0.28"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="4.25" y="-5.2299999999999995" width="0.1" height="0.36"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="4.35" y="-5.2299999999999995" width="0.46" height="0.28"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="4.81" y="-5.225" width="2.08" height="0.43"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="6.885" y="-5.2299999999999995" width="0.15" height="0.28"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="9.145000000000001" y="-5.2299999999999995" width="0.33" height="0.28"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="9.48" y="-5.225" width="0.46" height="0.79"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="9.94" y="-5.2299999999999995" width="0.1" height="0.86"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="10.04" y="-5.225" width="0.46" height="0.79"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="10.495000000000001" y="-5.2299999999999995" width="0.33" height="0.28"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-6.244999999999999" y="-1.29" width="0.71" height="0.46"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-5.53" y="-1.545" width="2.08" height="0.71"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-3.4499999999999997" y="-1.49" width="2.34" height="0.66"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-1.115" y="-1.065" width="0.79" height="0.23"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-0.32000000000000006" y="-1.47" width="2.08" height="0.64"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="1.755" y="-1.725" width="2.41" height="0.89"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="4.5" y="-1.5699999999999998" width="0.64" height="0.74"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="5.14" y="-0.93" width="0.48" height="0.1"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="5.62" y="-1.8050000000000002" width="2.08" height="0.97"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="10.04" y="-1.32" width="0.46" height="0.48"/>
+		</shape>
+	</wall>
+	
+	<!-- 841 -->
+	<wall>
+		<shape>
+			<rect x="12.895000000000001" y="-5.23" width="0.13" height="4.52"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="12.9" y="-5.235" width="2.84" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="15.615" y="-5.23" width="0.13" height="4.52"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="15.16" y="-5.11" width="0.46" height="0.74"/>
+		</shape>
+	</wall>
+	
+	<!-- Research Lab -->
+	<wall>
+		<shape>
+			<rect x="-11.615" y="0.6800000000000002" width="0.13" height="4.52"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-5.995" y="0.6800000000000002" width="0.13" height="4.52"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-11.61" y="5.045" width="5.74" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-11.485" y="0.8050000000000002" width="1.17" height="4.27"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-10.315" y="4.085" width="1.57" height="0.97"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-8.74" y="4.615" width="0.1" height="0.43"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-6.460000000000001" y="4.31" width="0.46" height="0.74"/>
+		</shape>
+	</wall>
+	
+	<!-- 826 -->
+	<wall>
+		<shape>
+			<rect x="-6.095000000000001" y="0.7100000000000004" width="0.13" height="4.52"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-3.375" y="0.7100000000000004" width="0.13" height="4.52"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-6.09" y="5.1049999999999995" width="2.84" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-5.970000000000001" y="4.37" width="0.46" height="0.74"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-3.6799999999999997" y="2.355" width="0.3" height="1.83"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-5.97" y="0.835" width="1.32" height="1.27"/>
+		</shape>
+	</wall>
+	
+	<!-- 828 -->
+	<wall>
+		<shape>
+			<rect x="-3.415" y="0.7100000000000004" width="0.13" height="4.52"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-0.6950000000000001" y="0.7100000000000004" width="0.13" height="4.52"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-3.41" y="5.1049999999999995" width="2.84" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-1.1500000000000001" y="4.37" width="0.46" height="0.74"/>
+		</shape>
+	</wall>
+	
+	<!-- 830 -->
+	<wall>
+		<shape>
+			<rect x="-0.655" y="0.7100000000000004" width="0.13" height="4.52"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="2.065" y="0.7100000000000004" width="0.13" height="4.52"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-0.6499999999999999" y="5.1049999999999995" width="2.84" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-0.53" y="4.37" width="0.46" height="0.74"/>
+		</shape>
+	</wall>
+	
+	
+	
+	
+	
+	<!-- 832 -->
+	<wall>
+		<shape>
+			<rect x="2.025" y="0.7100000000000004" width="0.13" height="4.52"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="4.744999999999999" y="0.7100000000000004" width="0.13" height="4.52"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="2.0300000000000002" y="5.1049999999999995" width="2.84" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="4.289999999999999" y="4.37" width="0.46" height="0.74"/>
+		</shape>
+	</wall>
+	<!-- wall -->
+	<!-- 3.45	2.97	0	0	0	0 -->
+	
+	<!-- 834 -->
+	<wall>
+		<shape>
+			<rect x="4.7749999999999995" y="0.7100000000000004" width="0.13" height="4.52"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="7.494999999999999" y="0.7100000000000004" width="0.13" height="4.52"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="4.78" y="5.1049999999999995" width="2.84" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="4.8999999999999995" y="4.37" width="0.46" height="0.74"/>
+		</shape>
+	</wall>
+	
+	<!-- 836 -->
+	<wall>
+		<shape>
+			<rect x="7.465" y="0.7100000000000004" width="0.13" height="4.52"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="10.185" y="0.7100000000000004" width="0.13" height="4.52"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="7.470000000000001" y="5.1049999999999995" width="2.84" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="9.73" y="4.37" width="0.46" height="0.74"/>
+		</shape>
+	</wall>
+	
+	<!-- 838 -->
+	<wall>
+		<shape>
+			<rect x="10.215" y="0.7100000000000004" width="0.13" height="4.52"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="12.935" y="0.7100000000000004" width="0.13" height="4.52"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="10.22" y="5.1049999999999995" width="2.84" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="10.34" y="4.37" width="0.46" height="0.74"/>
+		</shape>
+	</wall>
+	
+	<!-- 840 -->
+	<wall>
+		<shape>
+			<rect x="12.895000000000001" y="0.7100000000000004" width="0.13" height="4.52"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="15.615" y="0.7100000000000004" width="0.13" height="4.52"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="12.9" y="5.1049999999999995" width="2.84" height="0.13"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="15.16" y="4.37" width="0.46" height="0.74"/>
+		</shape>
+	</wall>
+	
+	
+	<!-- Room 824: Openable -->
+	<!-- doorway -->
+	<!-- -9.39	0.77	0	0.79	0.05	1.0 -->
+	<!-- wall -->
+	<!-- -8.95	0.77	0	0.08	0.15	1.0 -->
+	<!-- wall -->
+	<!-- -8.76	0.77	0	0.3	    0.13	1.0 -->
+	<!-- wall -->
+	<!-- -8.57	0.77	0	0.08	0.15	1.0 -->
+	<!-- Room 824: Openable -->
+	<!-- wall -->
+	<!-- -8.14	0.77	0	0.79	0.05	1.0 -->
+	<!-- doorway -->
+	<!-- -7.71	0.77	0	0.08	0.15	1.0 -->
+	<!-- wall -->
+	<!-- -6.05	0.77	0	3.25	0.13	1.0 -->
+	<!-- wall -->
+	<!-- -4.38	0.77	0	0.08	0.15	1.0 -->
+	
+	<!-- Room 824 west door:Door   should be 80cm long, 4cm wide, deltaX = 12cm, deltaY = 80 -->
+	<!-- models a physical door at an angle -->
+	<wall>
+		<shape>
+			<rect x="-8.613" y="0.81375" width="0.04" height="0.1125"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-8.628" y="0.91375" width="0.04" height="0.1125"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-8.642999999999999" y="1.0137500000000002" width="0.04" height="0.1125"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-8.658" y="1.11375" width="0.04" height="0.1125"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-8.673" y="1.21375" width="0.04" height="0.1125"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-8.687999999999999" y="1.3137500000000002" width="0.04" height="0.1125"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-8.703" y="1.41375" width="0.04" height="0.1125"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-8.718" y="1.5137500000000002" width="0.04" height="0.1125"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="-8.732999999999999" y="1.61375" width="0.04" height="0.1125"/>
+		</shape>
+	</wall>
+	
+	
+	
+	<!-- Room 830:Door   should be 80cm long, 4cm wide, deltaX = 12cm, deltaY = 80 -->
+	<!-- models a physical door at an angle  deltaXinc = .015  deltaYinc = 0.1 -->
+	<wall>
+		<shape>
+			<rect x="1.83" y="0.81375" width="0.04" height="0.1125"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="1.845" y="0.91375" width="0.04" height="0.1125"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="1.8599999999999999" y="1.0137500000000002" width="0.04" height="0.1125"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="1.875" y="1.11375" width="0.04" height="0.1125"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="1.89" y="1.21375" width="0.04" height="0.1125"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="1.905" y="1.3137500000000002" width="0.04" height="0.1125"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="1.92" y="1.41375" width="0.04" height="0.1125"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="1.935" y="1.5137500000000002" width="0.04" height="0.1125"/>
+		</shape>
+	</wall>
+	<wall>
+		<shape>
+			<rect x="1.95" y="1.61375" width="0.04" height="0.1125"/>
+		</shape>
+	</wall>
+	
+	
+
+</config>
