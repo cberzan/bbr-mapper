@@ -41,6 +41,10 @@ def svg_rectangles(svgdom):
         y      = float(svgrect.attributes["y"].value)
         width  = float(svgrect.attributes["width"].value)
         height = float(svgrect.attributes["height"].value)
+        if svgrect.attributes.has_key("transform"):
+            # We ignore individual transforms.
+            print "WARNING: Found rectangle with transform: x=%.4lf y=%.4lf." %\
+                    (x, y)
         rects.append((x, y, width, height))
     return rects
 
