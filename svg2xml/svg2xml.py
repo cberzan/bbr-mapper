@@ -101,10 +101,14 @@ if __name__=="__main__":
     print "Width %lf, height %lf, %d rectangles, translation (%lf, %lf)." %\
             (width, height, len(rectangles), translation[0], translation[1])
 
-    # Translate rectangles.
+    # Translate rectangles and flip y coordinate.
     for i in range(len(rectangles)):
         (x, y, w, h) = rectangles[i]
-        rectangles[i] = (x + translation[0], y + translation[1], w, h)
+        nx = x + translation[0]
+        ny = height - (y + translation[1]) - h
+        print "y=%lf tr1=%lf ty=%lf height=%lf ny=%lf" %\
+                (y, translation[1], y + translation[1], height, ny)
+        rectangles[i] = (nx, ny, w, h)
 
     # Create simulator map.
     simdom = create_sim_map(width, height, rectangles)
