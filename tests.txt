@@ -1,0 +1,24 @@
+Odometry Tests
+
++ Linear Distance Single (+ Acceleration?)
+    + Input: Series of straight line  distances
+        + Vel: 5 cm/s, 10 cm/s, 25 cm/s 50 cm/s 1 m/s
+        + Dist: 10 cm, 20 cm, 30 cm, 50 cm, 1 m, 2 m, 3 m, 5m, 10m
+    + Measure: Actual Linear Travel + Straight Line Deviation
+    + Report: Traveled Distance
+    + Reset
+
++ Linear Distance Multiple
+    + Input: Series of short straight line distances, run in sequence
+    + Measure: Actual Linear Travel + Straight Line Deviation
+    + Report: Traveled Distance
+    + Reset
+
++ Rotational Distance
+    + Same as above
+
++ Circle Test
+    + Constant CV
+
++ Test Acceleration
+    + Internal Logging - Odometry + Timing
