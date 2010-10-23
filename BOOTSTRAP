@@ -1,0 +1,34 @@
+This document describes how to start up the ADE architecture. It assumes your
+PWD is ADE_DIR. The methods below start each server in a separate terminal.
+
+TODO:
+* Look into registry config files, which should allow us to automate much of
+  this.
+* Another option is the BootstrapADE program used in the homework assignments.
+
+==============================================================================
+
+Bootstrapping an ArchImpl myself, the HARD way (emulating the way it's done for
+the assignments):
+
+# Start registry:
+java -Dcomponent=ade.ADERegistryImpl -Djava.net.preferIPv4Stack -Djava.rmi.server.hostname=127.0.0.1 -cp $CP ade.ADEServerImpl -l 127.0.0.1 -o 127.0.0.1
+# Start simulation environment:
+java -Dcomponent=com.adesim2010.ADESimEnvironmentServerImpl -Djava.rmi.server.hostname=127.0.0.1 -cp $CP ade.ADEServerImpl -l 127.0.0.1 -r 127.0.0.1 -cfg com/adesim2010/config/eigenmann8.xml
+# Start robot in simulation:
+java -Dcomponent=com.adesim2010.SimPioneerServerImpl -Djava.rmi.server.hostname=127.0.0.1 -cp $CP ade.ADEServerImpl -l 127.0.0.1 -r 127.0.0.1 -g Environment -view 332111 -initpose -11 0 0
+# Start architecture:
+java -Dcomponent=ArchImpl -Djava.rmi.server.hostname=127.0.0.1 -cp .:core/ADEcore.jar:core/Action.jar ade.ADEServerImpl -l 127.0.0.1 -r 127.0.0.1 -server com.adesim2010.SimPioneerServer
+
+==============================================================================
+
+Bootstrapping an ArchImpl, the EASY way:
+
+./runaderegistry
+./runadeserver com/adesim2010/ADESimEnvironmentServerImpl -cfg com/adesim2010/config/assignment1.xml
+./runadeserver com/adesim2010/SimPioneerServerImpl -g Environment
+./runadeserver ArchImpl -lrf -motion
+
+==============================================================================
+
+

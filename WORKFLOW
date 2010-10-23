@@ -1,0 +1,19 @@
+This document describes the recommended setup for integrating this code with
+ADE.
+
+ADE and the code for this project live in separate directories.
+ADE lives in ADE_DIR (~/src/ade/dist in my case). It is checked out with
+svn --username bbr10 co svn://hri.cogs.indiana.edu/projects/diarc/ade/trunk/ ade
+
+This project lives at BBRMAPPER_DIR (~/.../bbr-mapper in my case). It is checked
+out from github. The project contains a bunch of scripts and data, which are
+independent of ADE. It will also contain ADE components, such as the ArchImpl
+for the odometry tests, and the actual SLAM implementation. Suppose that one
+such component is called odometry, and lives in BBRMAPPER_DIR/odometry.
+Everything in the odometry component must be in the com.odometry Java package.
+To use this component with ADE, create a symlink of it in ADE_DIR/com:
+cd ADE_DIR/com
+ln -s BBRMAPPER_DIR/odometry .
+
+This way the SVN checkout of ADE and the Git checkout of this code are kept
+separate.
