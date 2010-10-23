@@ -4,7 +4,7 @@
 # produces a .xml file for ADESim2010, with all the rectangles as walls.
 
 from xml.dom import minidom
-import sys
+import re, sys
 
 def svg_size(svgdom):
     """Returns (width, height) tuple from given SVG DOM tree."""
@@ -14,6 +14,18 @@ def svg_size(svgdom):
     width  = float(attrs["width"].value)
     height = float(attrs["height"].value)
     return (width, height)
+
+def svg_translation(svgdom):
+    """
+    Returns (dx, dy) tuple representing the translate transform in the <g> tag
+    of the SVG DOM tree.
+    """
+    # Attribute looks like: transform="translate(0,-981.36218)"
+    g = svgdom.getElementsByTagName("g")
+    assert len(g) == 1
+    transform = g[0].attributes["transform"].value
+    x, y = transform[10:-1].split(",")
+    return (float(x), float(y))
 
 def svg_rectangles(svgdom):
     """
@@ -80,13 +92,21 @@ if __name__=="__main__":
         print "Usage: %s file.xml\nWill produce file.xml" % sys.argv[0]
         exit(1)
 
-    # Parse SVG, create simulator map.
-    svg_filename = sys.argv[1]
+    # Parse SVG.
+    svg_filename  = sys.argv[1]
     svgdom        = minidom.parse(svg_filename)
     width, height = svg_size(svgdom)
     rectangles    = svg_rectangles(svgdom)
-    print "Width %lf, height %lf, %d rectangles." %\
-            (width, height, len(rectangles))
+    translation   = svg_translation(svgdom)
+    print "Width %lf, height %lf, %d rectangles, translation (%lf, %lf)." %\
+            (width, height, len(rectangles), translation[0], translation[1])
+
+    # Translate rectangles.
+    for i in range(len(rectangles)):
+        (x, y, w, h) = rectangles[i]
+        rectangles[i] = (x + translation[0], y + translation[1], w, h)
+
+    # Create simulator map.
     simdom = create_sim_map(width, height, rectangles)
 
     # Write simulator map.
