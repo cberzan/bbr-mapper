@@ -4,8 +4,19 @@ A script to extract all rectangles from a SVG and generate an XML map for
 ADESim2010. Uses the size of the SVG drawing as the limits of the world. Makes
 it easy to draw maps in Inkscape, then use them in the simulator.
 
+How to use:
+--------------
+1. Draw your map in Inkscape, using only rectangles.
+2. Resize the Inkscape canvas to fit the map exactly (the canvas size is used as
+   the world boundaries).
+3. Scale the map so that one pixel represents one meter (coordinates from the
+   SVG file are used directly, with no unit conversion).
+4. Open SVG file in text editor, and find all the rectangles that have a
+   "transform" attribute. Delete those rectangles, and create them again from
+   Inkscape (this is because svg2cfg doesn't handle transforms).
+5. Call ./svg2cfg.py mymap.svg, which will produce mymap.xml.
+6. Load the map in the simulator, and fix any walls that are too thin, etc.
+
 TODO
 -------
-* Fix coordinates: Inkscape and simulator use different origins (upside-down)
-* Warn user if coordinates of map are too large
-
+* Warn user if wall coords are outside world boundaries.
