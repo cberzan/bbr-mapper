@@ -23,9 +23,12 @@ def svg_translation(svgdom):
     # Attribute looks like: transform="translate(0,-981.36218)"
     g = svgdom.getElementsByTagName("g")
     assert len(g) == 1
-    transform = g[0].attributes["transform"].value
-    x, y = transform[10:-1].split(",")
-    return (float(x), float(y))
+    if g[0].attributes.has_key("transform"):
+        transform = g[0].attributes["transform"].value
+        x, y = transform[10:-1].split(",")
+        return (float(x), float(y))
+    else:
+        return (0.0, 0.0)
 
 def svg_rectangles(svgdom):
     """
@@ -106,8 +109,8 @@ if __name__=="__main__":
         (x, y, w, h) = rectangles[i]
         nx = x + translation[0]
         ny = height - (y + translation[1]) - h
-        print "y=%lf tr1=%lf ty=%lf height=%lf ny=%lf" %\
-                (y, translation[1], y + translation[1], height, ny)
+        # print "y=%lf tr1=%lf ty=%lf height=%lf ny=%lf" %\
+        #         (y, translation[1], y + translation[1], height, ny)
         rectangles[i] = (nx, ny, w, h)
 
     # Create simulator map.
