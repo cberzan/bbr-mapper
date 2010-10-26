@@ -1,0 +1,137 @@
+% Template for progress reports
+% For examples on how to use latex see, for example,
+% http://www.mat.bham.ac.uk/R.W.Kaye/latex/examples.htm
+%
+% Andy Sayler
+% Constantin Berzan
+
+\documentclass[12pt]{article}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage{xspace}
+\usepackage{times}
+\usepackage{epsfig}
+\setlength {\topmargin} {0 mm}
+\setlength {\headsep} {0 mm}
+\setlength {\headheight} {0 in}
+\setlength {\voffset} {0 mm}
+\setlength {\oddsidemargin} {0 mm}
+\setlength {\evensidemargin} {0 mm}
+\setlength {\hoffset} {0 mm}
+\setlength {\textwidth} {6.5 in}
+\setlength {\textheight} {9 in}
+
+\begin{document}
+
+\title{BBR Progress Report 002:\\ Autonomous 2-D Mapping of a Building Floor}
+\author{Andy Sayler \& Constantin Berzan}
+\maketitle
+
+\begin{abstract}
+This week we continued our review of SLAM literature and developed a plan
+for measuring the accuracy of the odometry data on the Videre platform. We
+also began a review of Kalman filtering techniques and developed a system
+to create simulated environments from svg graphics.
+\end{abstract}
+
+
+\section{Introduction}
+SLAM is the problem of Simultaneous Localization and Mapping using a mobile
+robot.  We aim to develop a proof-of-concept SLAM system adhering to the
+behavior-based philosophy.  The robot will use odometry and laser range data to
+navigate the first floor of Halligan, and produce an image representation of
+the floor map.
+
+
+\section{Project Summary}
+
+We will be developing our robot using a schema (or possibly hybrid)
+architecture. The robot will utilize schema based functions to manifest the
+following behaviors:
+
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \item Avoid obstacles
+    \item Avoid local minima
+    \item Seek new areas
+    \item Utilize SLAM (laser + odometry) to deduce current location
+    \item Utilize SLAM (laser + odometry) to generate persistent environmental
+          map
+\end{itemize}
+
+We will utilize the ADE robotics environment to complete our implementation.
+The first objective will be to create code capable of navigating our robot
+through unfamiliar environments and exploring these environments to their full
+potential without getting stuck or colliding with obstacles. 
+
+The next goal will be to build a map of the environment and provide
+localization abilities. This will be done by implementing a basic SLAM
+system using laser and odomtery data.  We aim to develop a 2D floor plan map
+using data from our SLAM system.\\
+
+Should we complete the initial scope of this project ahead of schedule, we may
+opt to pursue one or more of the following extensions:
+
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \item Utilize vision data in SLAM system
+    \item Utilize vision data in 2D map generation
+    \item Compare performance of our SLAM system to Carmen
+    \item Augment SLAM system with additional sensor packages (radio ranging,
+          etc)
+\end{itemize}
+
+
+\section{Problems tackled}
+
+Literature review:
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \item SLAM for Dummies tutorial -- both
+    \item Carmen -- Andy
+    \item Vision-based SLAM -- Constantin
+\end{itemize}
+
+\noindent{Discussed and refined project scope:}
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \item Opted to implement SLAM ourselves
+    \item Decided to use SLAM data as primary source for persistent 2D map data
+\end{itemize}
+
+\noindent{Discussed Odometry Testing Setup:}
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \item Linear Distance Testing (i.e. Drive 10m, then measure actual
+      distance and angle)
+    \item Start/Stop Testing (i.e. drive 1m in 10cm steps issuing
+      start and stop commands between each step to measure start/stop drift)
+    \item Rotational Distance Testing (i.e. Turn 180 degrees, then measure
+      actual angle.)
+    \item Acceleration Test (i.e. drive 10m and use internal timer to log
+      distance at each tenth second interval to compute robot dynamics)
+\end{itemize}
+
+\section{Next Steps}
+
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \item Review ADE architecture for optimal design and workflow -- both
+    \item Build simple map of Halligan for the simulator -- Constantin
+    \item Run test to determine odometry metrics of Videre base  -- Andy
+    \item Review Kalman filtering technique -- both
+\end{itemize}
+
+\end{document}
