@@ -27,7 +27,7 @@ fi
 echo -n "Tell me the IP of the robot (ifconfig wlan0): "
 read BOTIP
 
-alias botssh='ssh bbr10@$BOTIP'
+alias botssh='ssh -X bbr10@$BOTIP'
 
 function botscp()
 {
