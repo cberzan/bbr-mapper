@@ -8,7 +8,7 @@
 // 
 // 
 
-//package com.odomTest;
+package com.odomTest;
 
 import com.action.ActionServerImpl;
 import java.rmi.*;
@@ -17,126 +17,110 @@ import java.util.Random;
 import java.lang.Math;
 import java.io.*;
 
-public class ArchImpl extends ActionServerImpl implements Arch {
-    //Constants
+public class ArchImpl extends ActionServerImpl implements Arch
+{
     private static final long serialVersionUID = 1L;
-        
-    /* 
-     * <code>runArchitecture</code> is called periodically to perform
-     * whatever sensing and acting is required by the architecture.
-     */
-    
-    private boolean verbose = false;
-    
+
+    // Run parameters:
+    private final String trial    = "4a";
+    private final double stopDist = 1;
+    private final double tSpeed   = 0.1,
+                         rSpeed   = 0;
+
+    // Run data:
+    Object videre    = null;
     private int step = 0;
-    
-    private String logName = "odoLog.txt";
-    private boolean append = true;
-    
-    private double stopDist = 2;
-    private double tv = 0.1;
-    private double rv = 0;
-    private double[] basePose = null;
-    FileWriter fstream = null;
-    BufferedWriter out = null;
 
-    Object videre = null;
-    
-    public void runArchitecture() {
-        System.out.println();    
-        System.out.println("step: " + step);    
+    // Logging:
+    FileWriter logFile    = null;
+    BufferedWriter logBuf = null;
 
-        if(videre == null){
-            try{
-                videre = getClient("com.videre.VidereServer");
-                System.out.println("Videre Object: " + videre);    
-                basePose = (double[])call(videre,"getPoseEgo");
+    /**
+     * Called once on first run. Gets Videre ref, resets odometry, and opens log
+     * file.
+     */
+    private void init()
+    {
+        assert(videre == null);
+        try {
+            // Get Videre ref.
+            videre = getClient("com.videre.VidereServer");
+            System.out.println("Got Videre object: " + videre);    
 
-                // Create file.
-                fstream = new FileWriter(logName, append);
-                out = new BufferedWriter(fstream);
+            // Reset odometry.
+            call(videre, "COMorigin"); // FIXME: probably need to publish it in
+                                       //        the VidereServer interface.
+            double[] pose = (double[])call(videre, "getPoseEgo");
+            assert(pose[0] == 0 && pose[1] == 0 && pose[2] == 0);
+            System.out.println("Reset odometry counters.");
 
-                // Log initial data.
-                out.write("stopDist = " + stopDist + "\n");
-                out.write("tv = " + tv + "\n");
-                out.write("rv = " + rv + "\n");
-                out.write("basePose[0] = " + basePose[0] + "\n");
-                out.write("basePose[1] = " + basePose[1] + "\n");
-                out.write("basePose[2] = " + basePose[2] + "\n");
-                out.write("\n\n");
-
-                System.out.print("stopDist = " + stopDist + "\n");
-                System.out.print("tv = " + tv + "\n");
-                System.out.print("rv = " + rv + "\n");
-                System.out.print("basePose[0] = " + basePose[0] + "\n");
-                System.out.print("basePose[1] = " + basePose[1] + "\n");
-                System.out.print("basePose[2] = " + basePose[2] + "\n");
-            }
-            catch(Exception e){
-                System.err.println("Error during first run: " + e.getMessage());
-                return;
-            }
-        }
-        
-        //Get Pos
-        double[] pose = null;
-        try{
-            pose = (double[])call(videre,"getPoseEgo");
-            System.out.println("pose[0]: " + pose[0]);    
-            System.out.println("pose[1]: " + pose[1]);    
-            System.out.println("pose[2]: " + pose[2]);    
-            pose[0] -= basePose[0];
-            pose[1] -= basePose[1];
-            pose[2] -= basePose[2];
-            System.out.println("adjusted pose[0]: " + pose[0]);    
-            System.out.println("adjusted pose[1]: " + pose[1]);    
-            System.out.println("adjusted pose[2]: " + pose[2]);    
-        }
-        catch(Exception e){
-            System.err.println("Error calling getPoseEgo: " + e.getMessage());
+            // Open log.
+            String logName = "odom-" + trial + ".csv";
+            logFile        = new FileWriter(logName, /*append = */ false);
+            logBuf         = new BufferedWriter(logBuf);
+            logBuf.write("step,x,y,theta\n");
+            logBuf.write("0,0,0,0\n");
+            System.out.println("Opened log.");
+        } catch(Exception e) {
+            System.err.println("Error in init(): " + e);
             System.err.println("Original cause: " + e.getCause());
-            return;
+            System.exit(1);
         }
+    }
 
-        double dist = Math.sqrt(pose[0]*pose[0] + pose[1]*pose[1]);
-        System.out.println("dist: " + dist);
-
-        //Log
-        try{
-            //Write Data
-            out.write("step " + step + "\n");
-            out.write("dist = " + dist + "\n");
-            out.write("pose[0] = " + pose[0] + "\n");
-            out.write("pose[1] = " + pose[1] + "\n");
-            out.write("pose[2] = " + pose[2] + "\n");
-            out.write("\n");
-        }catch (Exception e){//Catch exception if any
-            System.err.println("Error: " + e.getMessage());
-        }
-
-        //Move
-        if(dist >= stopDist){
-            stop();
-            try {
-                out.flush();
-                out.close();
-            } catch(Exception e) {
-                System.err.println("Error closing log file: " + e.getMessage());
-            }
+    /// Called when the trial is over. Closes the log and exits.
+    private void cleanExit()
+    {
+        try {
+            logBuf.flush();
+            logBuf.close();
+            System.out.println("Clean exit.");
             System.exit(0);
+        } catch(Exception e) {
+            System.err.println("Error in cleanExit(): " + e);
+            System.err.println("Original cause: " + e.getCause());
+            System.exit(1);
         }
-        else {
-            setVels(tv, rv);
+    }
+
+    /// Runs an odometry trial run.
+    public void runArchitecture()
+    {
+        if(videre == null) {
+            init();
         }
-        
-        step = step + 1;
-        return;
+
+        try {
+            assert(videre != null);
+            step++;
+
+            // Get odometry data and log it.
+            double[] pose = (double[])call(videre, "getPoseEgo");
+            double dist = Math.sqrt(pose[0]*pose[0] + pose[1]*pose[1]);
+            System.out.format("step %d: x %lf y %lf theta %lf (dist %lf)\n",
+                    step, pose[0], pose[1], pose[2], dist);
+            logBuf.write(step + "," + pose[0] + "," + pose[1] + ","
+                         + pose[2] + "\n");
+
+            // Move forward, or stop if goal distance reached.
+            if(dist >= stopDist) {
+                stop();
+                cleanExit();
+            } else {
+                setVels(tSpeed, rSpeed);
+            }
+        } catch(Exception e) {
+            System.err.println("Error in runArchitecture(): " + e);
+            System.err.println("Original cause: " + e.getCause());
+            System.exit(1);
+        }
     }
     
     /** 
      * Constructs the architecture
      */
-    public ArchImpl() throws RemoteException {
+    public ArchImpl() throws RemoteException
+    {
         super();
     }
 }
