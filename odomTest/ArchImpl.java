@@ -28,7 +28,7 @@ public class ArchImpl extends ActionServerImpl implements Arch
                          rSpeed   = 0;
 
     // Run data:
-    Object videre    = null;
+    private Object videre    = null;
     private int step = 0;
 
     // Logging:
@@ -48,16 +48,23 @@ public class ArchImpl extends ActionServerImpl implements Arch
             System.out.println("Got Videre object: " + videre);    
 
             // Reset odometry.
-            call(videre, "COMorigin"); // FIXME: probably need to publish it in
-                                       //        the VidereServer interface.
+            // Doesn't work because function is not remotely callable.
+            // call(videre, "COMorigin"); // FIXME: probably need to publish it in
+            //                            //        the VidereServer interface.
             double[] pose = (double[])call(videre, "getPoseEgo");
             assert(pose[0] == 0 && pose[1] == 0 && pose[2] == 0);
-            System.out.println("Reset odometry counters.");
+            if(pose[0] != 0 || pose[1] != 0 || pose[2] != 0) {
+                System.err.print("WARNING: Odometry not zero: ");
+                System.out.format("x %f y %f theta %f\n",
+                        pose[0], pose[1], pose[2]);
+                
+            }
+            System.out.println("Verified zero initial odometry.");
 
             // Open log.
             String logName = "odom-" + trial + ".csv";
             logFile        = new FileWriter(logName, /*append = */ false);
-            logBuf         = new BufferedWriter(logBuf);
+            logBuf         = new BufferedWriter(logFile);
             logBuf.write("step,x,y,theta\n");
             logBuf.write("0,0,0,0\n");
             System.out.println("Opened log.");
