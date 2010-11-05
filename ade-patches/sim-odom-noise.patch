@@ -1,0 +1,52 @@
+Index: com/adesim2010/robot/SimLocationSpecifier.java
+===================================================================
+--- com/adesim2010/robot/SimLocationSpecifier.java	(revision 2695)
++++ com/adesim2010/robot/SimLocationSpecifier.java	(working copy)
+@@ -3,6 +3,7 @@
+ import java.awt.geom.AffineTransform;
+ import java.awt.geom.Point2D;
+ import java.io.Serializable;
++import java.util.Random;
+ 
+ import com.adesim2010.datastructures.SimUtil;
+ 
+@@ -13,6 +14,9 @@
+ 	
+ 	private double odoX, odoY, odoTheta; // this is relative to x,y, and theta at time 0.
+ 	
++    /// Odometry noise on each update. Taken from ADESim.
++    double[] ododev = {0.05, 0.05, 0.0125}; // Vishesh's stddev
++	Random rand;
+ 
+ 	public SimLocationSpecifier() {
+ 		this(0,0,0,0,0,0);
+@@ -26,6 +30,8 @@
+ 		this.odoX = odo_x;
+ 		this.odoY = odo_y;
+ 		this.odoTheta = odo_theta;
++
++		this.rand = new Random();
+ 	}
+ 	
+ 	/** constructor for creating sim location specifier from command line strings
+@@ -85,13 +91,17 @@
+ 	}
+ 	
+ 	public void addLocationOffset(Point2D offset) {
+-		odoX = odoX + offset.getX();
+-		odoY = odoY + offset.getY();
++		double noiseX = offset.getX() * rand.nextGaussian() * ododev[0];
++		double noiseY = offset.getY() * rand.nextGaussian() * ododev[1];
++		odoX += offset.getX() + noiseX;
++		odoY += offset.getY() + noiseY;
+ 		this.x = this.x+offset.getX();
+ 		this.y = this.y+offset.getY();
+ 	}
+ 	public void addThetaOffset(double offset) {
+-		odoTheta = SimUtil.normalizeAngle(odoTheta + offset);
++		// TODO: Noise on theta was disabled in adesim. Why?
++		double noiseTheta = offset * rand.nextGaussian() * ododev[2];
++		odoTheta = SimUtil.normalizeAngle(odoTheta + offset + noiseTheta);
+ 		this.theta = SimUtil.normalizeAngle(this.theta + offset);
+ 	}
+ 	

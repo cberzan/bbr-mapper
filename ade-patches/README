@@ -1,0 +1,6 @@
+This directory contains modifications to ADE that we performed as part of this
+project.
+
+sim-odom-noise.patch - Add Gaussian noise to the odometry on each tick of the
+                       simulator. Code taken from old ADESim. Probably doesn't
+                       model the real world very well.
