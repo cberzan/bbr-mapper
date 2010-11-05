@@ -104,7 +104,7 @@ public class ArchImpl extends ActionServerImpl implements Arch
             // Get odometry data and log it.
             double[] pose = (double[])call(videre, "getPoseEgo");
             double dist = Math.sqrt(pose[0]*pose[0] + pose[1]*pose[1]);
-            System.out.format("step %d: x %lf y %lf theta %lf (dist %lf)\n",
+            System.out.format("step %d: x %f y %f theta %f (dist %f)\n",
                     step, pose[0], pose[1], pose[2], dist);
             logBuf.write(step + "," + pose[0] + "," + pose[1] + ","
                          + pose[2] + "\n");
