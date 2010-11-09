@@ -31,15 +31,15 @@
 
 \begin{document}
 
-\title{BBR Progress Report 003:\\ Autonomous 2-D Mapping of a Building Floor}
+\title{BBR Progress Report 004:\\ Autonomous 2-D Mapping of a Building Floor}
 \author{Andy Sayler \& Constantin Berzan}
 \maketitle
 
 \begin{abstract}
-This week we succeeded in obtaining odometry data from the Videre base. We
-performed initial odometry testing, analyzed the data, and decided on what
-further tests to run. We came up with a high-level architecture for our SLAM
-system, as well as a testing plan in the ADE simulator.
+This week we finalized the collection of odometry data, and determined how the
+errors vary with respect to speed of motion. We also modified the ADE codebase
+to add noise to the reported odometry data, so that our simulation would more
+accurately reflect the noisy real world.
 \end{abstract}
 
 \emph{The code for this project is located at
@@ -160,11 +160,40 @@ Literature review:
     \setlength{\itemsep}{0pt}
     \setlength{\parskip}{0pt}
     \setlength{\parsep}{0pt}
-    \item Performed drive-forward test for 1 and 2 meters
-    \item Ascertained need for internal odometry resets between trials, and
-          scheduled more testing.
+    \item Performed drive-forward test:
+        \begin{itemize}
+            \setlength{\itemsep}{0pt}
+            \setlength{\parskip}{0pt}
+            \setlength{\parsep}{0pt}
+            \item Varied distance: 1 m, 2 m
+            \item Varied velocity: 0.1 m/s, 0.25 m/s, 0.5 m/s
+            \item Surface: lenolium in Halligan
+        \end{itemize}
+    \item Performed start-stop test:
+        \begin{itemize}
+            \setlength{\itemsep}{0pt}
+            \setlength{\parskip}{0pt}
+            \setlength{\parsep}{0pt}
+            \item Move interval: 2 sec; Stop interval: 1 sec
+            \item Distance: 2 m
+            \item Velocity: 0.1 m/s
+            \item Surface: lenolium in Halligan
+        \end{itemize}
     \item Studied odometry data to understand the coordinate system of the
-          robot.
+          robot
+    \item Characterized the error in odometry data versus actual motion:
+        \begin{itemize}
+            \setlength{\itemsep}{0pt}
+            \setlength{\parskip}{0pt}
+            \setlength{\parsep}{0pt}
+            \item Surprisingly, the errors were greater at smaller speeds
+            \item At small speeds, there was a consistent drift to the left
+                  (this effect disappeared at higher speeds)
+            \item The stop-start test did not increase the error significantly
+            \item Mean error at 0.1 m/s was about 10\%
+            \item Mean error at 0.25 m/s was about 8\%
+            \item Mean error at 0.5 m/s was about 1\%
+        \end{itemize}
 \end{itemize}
 
 \noindent{High-level Design:}
@@ -192,6 +221,15 @@ Literature review:
     \item Test everything in the real world. Tweak Kalman filter.
 \end{itemize}
 
+\noindent{Odometry data in the simulator:}
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \item We managed to obtain odometry data from ADESim
+    \item We modified ADESim to add Gaussian noise to the odometry data on each
+          update. We may decide to change the noise model later
+\end{itemize}
 
 
 \section{Next Steps}
@@ -200,10 +238,7 @@ Literature review:
     \setlength{\itemsep}{0pt}
     \setlength{\parskip}{0pt}
     \setlength{\parsep}{0pt}
-    \item More odometry testing, with proper resetting -- both
-    \item Figure out how to use odometry data in ADESim -- Constantin
-    \item Find published information about errors of the provided LRF -- Andy
-    \item Begin coding of the Extended Kalman Filter -- both
+    \item Implementation -- both
 \end{itemize}
 
 \end{document}
