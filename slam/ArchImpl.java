@@ -38,7 +38,7 @@ public class ArchImpl extends ActionServerImpl implements Arch {
         System.out.println("ArchImpl: ekfServer is " + ekfServer);
 
         try {
-            OurPose pose = (OurPose)call(ekfServer, "getPose");
+            Pose pose = (Pose)call(ekfServer, "getPose");
             System.out.println("Pose: " + pose);
         } catch(Exception e) {
             System.err.println("Error getting pose from EKFServer: " + e);
