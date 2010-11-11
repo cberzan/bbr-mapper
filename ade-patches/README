@@ -4,3 +4,7 @@ project.
 sim-odom-noise.patch - Add Gaussian noise to the odometry on each tick of the
                        simulator. Code taken from old ADESim. Probably doesn't
                        model the real world very well.
+
+reset-videre-odometry.patch - Make a public (remotely-callable) resetOdometry()
+                              function in VidereServer that resets the odometry
+                              by calling the internal COMorigin() function.
