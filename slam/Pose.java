@@ -2,7 +2,7 @@ package com.slam;
 
 import java.io.Serializable;
 
-class Pose implements Serializable
+public class Pose implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
