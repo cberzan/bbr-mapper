@@ -2,7 +2,7 @@
 // Assignment 1
 // (c) Matthias Scheutz
 
-package com.odomTestSim;
+package com.slam;
 
 import java.rmi.RemoteException;
 import ade.ADEServer;
