@@ -17,4 +17,10 @@ class Pose implements Serializable
         y = y0;
         theta = theta0;
     }
+
+    @Override
+    public String toString() {
+        return String.format("x=%.4fm; y=%.4fm; theta=%.4frad",
+                x, y, theta);
+    }
 };
