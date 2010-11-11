@@ -6,6 +6,6 @@ import com.interfaces.*;
 import java.rmi.*;
 
 public interface EKFServer extends ADEServer {
-    void reset(Pose initPose) throws RemoteException;
+    /// Get current pose as predicted by EKF.
     Pose getPose() throws RemoteException;
 }
