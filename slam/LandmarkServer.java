@@ -6,6 +6,6 @@ import com.interfaces.*;
 import java.rmi.*;
 
 public interface LandmarkServer extends ADEServer {
-    Vector2D[] getLandmarks() throws RemoteException;
+    public Vector2D[] getLandmarks() throws RemoteException;
 }
 
