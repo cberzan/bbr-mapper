@@ -166,6 +166,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
 
     /// Get current pose as predicted by EKF.
     public Pose getPose() throws RemoteException {
+        System.out.println("EKFServerImpl: currentPose " + currentPose);
         return currentPose;
     }
 
@@ -222,9 +223,9 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                     System.err.println("Error getting odometry: " + e);
                     System.err.println("Original cause: " + e.getCause());
                     e.printStackTrace();
-                    System.exit(1);
+                    // Don't exit, hoping this is a temporary problem.
                 }
-                Sleep(200); // sometimes want to sleep each cycle
+                Sleep(200);
             }
             System.out.println(prg + ": Exiting Updater thread...");
         }
