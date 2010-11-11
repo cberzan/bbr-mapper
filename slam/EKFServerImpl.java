@@ -20,6 +20,8 @@ import java.util.*;
 import static utilities.Util.*;
 
 public class EKFServerImpl extends ADEServerImpl implements EKFServer {
+    private static final long serialVersionUID = 1L;
+
     /* ADE-related fields (pseudo-refs, etc.) */
     private static String prg = "EKFServerImpl";
     private static String type = "EKFServer";

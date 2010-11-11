@@ -7,6 +7,8 @@ import java.io.Serializable;
  * Dir is in radians.
  */
 public class Vector2D implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     public double mag;
     public double dir; // rad
 
