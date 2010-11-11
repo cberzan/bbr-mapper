@@ -5,11 +5,9 @@
  * All rights reserved.  Do not copy and use without permission.
  * For questions contact Matthias Scheutz at mscheutz@indiana.edu
  *
- * TemplateServerImpl.java
- *
  * @author Paul Schermerhorn
  */
-package com.template;
+package com.slam;
 
 import ade.*;
 import ade.exceptions.ADECallException;
@@ -128,14 +126,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
     // ***********************************************************************
     // Methods available to remote objects via RMI
     // ***********************************************************************
-    // Implement here whatever interface is defined in TemplateServer.java
-    // ********************************************************************
-    // *** Local methods
-    // ********************************************************************
-    /** 
-     * TemplateServerImpl constructor.
-     */
-    public TemplateServerImpl() throws RemoteException {
+    public EKFServerImpl() throws RemoteException {
         super();
 
         // Get ref to odometry server, which can be either ADESim or Videre.
@@ -149,10 +140,11 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
             odomServer = getClient("com.videre.VidereServer");
             if(odomServer != null) {
                 try {
-                    odomServer.call("resetOdometry");
+                    call(odomServer, "resetOdometry");
                 } catch(Exception e) {
                     System.err.println("Error resetting Videre odometry: " + e);
                     System.err.println("Original cause: " + e.getCause());
+                    e.printStackTrace();
                     System.exit(1);
                 }
                 break;
@@ -220,13 +212,14 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
             int i = 0;
             while (shouldRead) {
                 try {
-                    double[] odom = odomServer.call("getPoseEgo");
+                    double[] odom = (double[])call(odomServer, "getPoseEgo");
                     currentPose.x = odom[0];
                     currentPose.y = odom[1];
                     currentPose.theta = odom[2];
                 } catch(Exception e) {
                     System.err.println("Error getting odometry: " + e);
                     System.err.println("Original cause: " + e.getCause());
+                    e.printStackTrace();
                     System.exit(1);
                 }
                 Sleep(200); // sometimes want to sleep each cycle
