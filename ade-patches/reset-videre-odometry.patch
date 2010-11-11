@@ -7,7 +7,7 @@ Index: com/videre/VidereServer.java
   */
  public interface VidereServer extends ADEServer, VelocityServer {
 +    /// Resets odometry to (0, 0, 0).
-+    public void COMorigin() throws RemoteException;
++    public void resetOdometry() throws RemoteException;
  
      /** Return a three-element array of the robot's egocentric pose estimate
       * (x, y, theta, in meters and radians).
@@ -15,12 +15,16 @@ Index: com/videre/VidereServerImpl.java
 ===================================================================
 --- com/videre/VidereServerImpl.java	(revision 2718)
 +++ com/videre/VidereServerImpl.java	(working copy)
-@@ -997,7 +997,7 @@
+@@ -994,6 +994,12 @@
+         }*/
+          sendCommand(cbuffer, false);
+     }
++
++    /// Public wrapper with a better name.
++    public void resetOdometry() throws RemoteException {
++        COMorigin();
++    }
++
  /**
   * resets the odometery origin to 0,0,0.
   */
--    public void COMorigin() {
-+    public void COMorigin() throws RemoteException {
-         byte[] cbuffer = new byte[6];
-         byte[] check = new byte[2];
-         cbuffer[0] = SYNCH0;
