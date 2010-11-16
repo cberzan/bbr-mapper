@@ -31,15 +31,18 @@
 
 \begin{document}
 
-\title{BBR Progress Report 004:\\ Autonomous 2-D Mapping of a Building Floor}
+\title{BBR Progress Report 005:\\ Autonomous 2-D Mapping of a Building Floor}
 \author{Andy Sayler \& Constantin Berzan}
 \maketitle
 
 \begin{abstract}
-This week we finalized the collection of odometry data, and determined how the
-errors vary with respect to speed of motion. We also modified the ADE codebase
-to add noise to the reported odometry data, so that our simulation would more
-accurately reflect the noisy real world.
+This week we met and composed the interfaces for each of our servers. We also
+coded all necessary custom data types (objects) and learned to pass these
+via the java RMI. We implemented a dummy EKF server for test purposes
+that returns the robot's odometry position and wrote a start-up script
+to start all necessary servers. Next week we will continue implementing all
+of the necessary servers, beginning with a replacement of the dummy EKF
+with an actual EKF and with a simulated landmark server.
 \end{abstract}
 
 \emph{The code for this project is located at
@@ -51,7 +54,6 @@ robot.  We aim to develop a proof-of-concept SLAM system adhering to the
 behavior-based philosophy.  The robot will use odometry and laser range data to
 navigate the first floor of Halligan, and produce an image representation of
 the floor map.
-
 
 \section{Project Summary}
 
@@ -231,6 +233,24 @@ Literature review:
           update. We may decide to change the noise model later
 \end{itemize}
 
+\noindent{SLAM Implementation:}
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+  \item Coded high level SLAM interfaces
+      \begin{itemize}
+          \item EKFServer - Provides best estimate of current location by
+            performing EKF.
+          \item LandmarkServer - Provides a list of currently seen landmarks
+            and their location relative to the robot.
+          \item MappingServer - Maintains persistent representation of map and
+            outputs a map representation to the user.
+          \item Arch - Implements exploratory schema based behavioral code.
+      \end{itemize}
+    \item Wrote config file to start all necessary servers.
+    \item Learned to pass custom objects via java RMI.
+\end{itemize}
 
 \section{Next Steps}
 
@@ -238,7 +258,9 @@ Literature review:
     \setlength{\itemsep}{0pt}
     \setlength{\parskip}{0pt}
     \setlength{\parsep}{0pt}
-    \item Implementation -- both
+    \item EKF Implementation -- Andy
+    \item Simulated Landmark Implementation -- Constantin
+    \item Basic Navigation -- Constantin
 \end{itemize}
 
 \end{document}
