@@ -34,12 +34,13 @@ public class Vector2D implements Serializable {
 
     public void setX(double x) {
         mag = Math.sqrt(x * x + getY() * getY());
-        dir = Math.atan2(getY(), x);
+        dir = myatan2(getY(), x);
+        
     }
 
     public void setY(double y) {
         mag = Math.sqrt(getX() * getX() + y * y);
-        dir = Math.atan2(y, getX());
+        dir = myatan2(y, getX());
     }
 
     public void setCart(double x, double y) {
@@ -52,7 +53,7 @@ public class Vector2D implements Serializable {
     }
 
     public void setDir(double dir0) {
-        assert(dir0 >= -Math.PI && dir0 <= Math.PI);
+        assert(dir0 >= 0 && dir0 <= 2 * Math.PI);
         dir = dir0;
     }
 
@@ -71,6 +72,14 @@ public class Vector2D implements Serializable {
     public Vector2D mul(double value) {
         Vector2D result = new Vector2D();
         mag *= value;
+        return result;
+    }
+
+    /// atan2(y, x) returning [0, 2pi]
+    private myatan2(double y, double x) {
+        double result = Math.atan2(y, x);
+        if(result < 0)
+            result += 2 * Math.PI;
         return result;
     }
 };
