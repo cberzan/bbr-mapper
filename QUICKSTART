@@ -1,0 +1,23 @@
+This document assumes that your ADE directory (the one containing
+runaderegistry, com/, etc.) is ADEDIR, and that your git checkout directory is
+PROJDIR.
+
+Symlink appropriate packages into ADEDIR/com:
+    cd ADEDIR/com
+    ln -s PROJDIR/slam .
+
+For convenience, simlink compile script and makefile:
+    cd ADEDIR
+    ln -s PROJDIR/slam/Makefile .
+    ln -s PROJDIR/util/compileit.sh .
+
+Simlink the config file for easy startup of the architecture:
+    cd ADEDIR
+    ln -s PROJDIR/slam/sim.conf .
+
+You only need to do all the above once. After that, 'make' in ADEDIR will
+recompile the slam project. (make -B will make sure to recompile everything).
+
+To start the architecture:
+    cd ADEDIR
+    ./runaderegistry -f sim.conf
