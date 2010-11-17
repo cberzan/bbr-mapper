@@ -1,8 +1,8 @@
-Index: ADESimActorServerImpl.java
+Index: com/adesim2010/ADESimActorServerImpl.java
 ===================================================================
---- ADESimActorServerImpl.java	(revision 2695)
-+++ ADESimActorServerImpl.java	(working copy)
-@@ -643,6 +643,10 @@
+--- com/adesim2010/ADESimActorServerImpl.java	(revision 2745)
++++ com/adesim2010/ADESimActorServerImpl.java	(working copy)
+@@ -639,6 +639,10 @@
      	return this.model.robot.getPoseEgo();
      }
  
@@ -11,13 +11,13 @@ Index: ADESimActorServerImpl.java
 +    }
 +
      @Override
- 	public Double[][] getDynamicObjectsAngleAndDistance(String[] lookingForObjects) throws RemoteException {
- 		return model.getDynamicObjectsAngleAndDistance(lookingForObjects);
-Index: robot/SimAbstractRobot.java
+ 	public Double[][] getObjectsAngleAndDistance(String[] lookingForObjects) throws RemoteException {
+ 		return model.getObjectsAngleAndDistance(lookingForObjects);
+Index: com/adesim2010/robot/SimAbstractRobot.java
 ===================================================================
---- robot/SimAbstractRobot.java	(revision 2695)
-+++ robot/SimAbstractRobot.java	(working copy)
-@@ -344,6 +344,10 @@
+--- com/adesim2010/robot/SimAbstractRobot.java	(revision 2745)
++++ com/adesim2010/robot/SimAbstractRobot.java	(working copy)
+@@ -244,6 +244,10 @@
  		return this.locationSpecifier.getPoseEgo();
  	}
  
@@ -28,10 +28,10 @@ Index: robot/SimAbstractRobot.java
  	public void setAcceleration(double acceleration) {
  		this.acceleration = acceleration;
  	}
-Index: robot/SimLocationSpecifier.java
+Index: com/adesim2010/robot/SimLocationSpecifier.java
 ===================================================================
---- robot/SimLocationSpecifier.java	(revision 2695)
-+++ robot/SimLocationSpecifier.java	(working copy)
+--- com/adesim2010/robot/SimLocationSpecifier.java	(revision 2745)
++++ com/adesim2010/robot/SimLocationSpecifier.java	(working copy)
 @@ -3,6 +3,7 @@
  import java.awt.geom.AffineTransform;
  import java.awt.geom.Point2D;
@@ -56,7 +56,7 @@ Index: robot/SimLocationSpecifier.java
  
  	public SimLocationSpecifier() {
  		this(0,0,0,0,0,0);
-@@ -26,6 +34,8 @@
+@@ -29,6 +37,8 @@
  		this.odoX = odo_x;
  		this.odoY = odo_y;
  		this.odoTheta = odo_theta;
@@ -64,8 +64,8 @@ Index: robot/SimLocationSpecifier.java
 +		this.rand = new Random();
  	}
  	
- 	/** constructor for creating sim location specifier from command line strings
-@@ -85,12 +95,19 @@
+ 	public SimLocationSpecifier(double x, double y, double theta) {
+@@ -65,12 +75,19 @@
  	}
  	
  	public void addLocationOffset(Point2D offset) {
@@ -87,7 +87,7 @@ Index: robot/SimLocationSpecifier.java
  		odoTheta = SimUtil.normalizeAngle(odoTheta + offset);
  		this.theta = SimUtil.normalizeAngle(this.theta + offset);
  	}
-@@ -129,4 +146,8 @@
+@@ -109,4 +126,8 @@
  	public double[] getPoseEgo() {
  		return new double[] {odoX, odoY, odoTheta};
  	}
@@ -96,13 +96,13 @@ Index: robot/SimLocationSpecifier.java
 +		return new double[] { noisy_odoX, noisy_odoY, noisy_odoTheta };
 +	}
  }
-Index: ADESimActorServer.java
+Index: com/adesim2010/ADESimActorServer.java
 ===================================================================
---- ADESimActorServer.java	(revision 2695)
-+++ ADESimActorServer.java	(working copy)
-@@ -37,6 +37,8 @@
-     public boolean getStall() throws RemoteException;
+--- com/adesim2010/ADESimActorServer.java	(revision 2745)
++++ com/adesim2010/ADESimActorServer.java	(working copy)
+@@ -54,6 +54,8 @@
  
+     /** Returns internal odometry readings */
      public double[] getPoseEgo() throws RemoteException;
 +
 +    public double[] getNoisyPoseEgo() throws RemoteException;
