@@ -1,7 +1,37 @@
-Index: com/adesim2010/robot/SimLocationSpecifier.java
+Index: ADESimActorServerImpl.java
 ===================================================================
---- com/adesim2010/robot/SimLocationSpecifier.java	(revision 2695)
-+++ com/adesim2010/robot/SimLocationSpecifier.java	(working copy)
+--- ADESimActorServerImpl.java	(revision 2695)
++++ ADESimActorServerImpl.java	(working copy)
+@@ -643,6 +643,10 @@
+     	return this.model.robot.getPoseEgo();
+     }
+ 
++    public double[] getNoisyPoseEgo() throws RemoteException {
++        return this.model.robot.getNoisyPoseEgo();
++    }
++
+     @Override
+ 	public Double[][] getDynamicObjectsAngleAndDistance(String[] lookingForObjects) throws RemoteException {
+ 		return model.getDynamicObjectsAngleAndDistance(lookingForObjects);
+Index: robot/SimAbstractRobot.java
+===================================================================
+--- robot/SimAbstractRobot.java	(revision 2695)
++++ robot/SimAbstractRobot.java	(working copy)
+@@ -344,6 +344,10 @@
+ 		return this.locationSpecifier.getPoseEgo();
+ 	}
+ 
++	public double[] getNoisyPoseEgo() {
++		return this.locationSpecifier.getNoisyPoseEgo();
++	}
++
+ 	public void setAcceleration(double acceleration) {
+ 		this.acceleration = acceleration;
+ 	}
+Index: robot/SimLocationSpecifier.java
+===================================================================
+--- robot/SimLocationSpecifier.java	(revision 2695)
++++ robot/SimLocationSpecifier.java	(working copy)
 @@ -3,6 +3,7 @@
  import java.awt.geom.AffineTransform;
  import java.awt.geom.Point2D;
@@ -10,17 +40,23 @@ Index: com/adesim2010/robot/SimLocationSpecifier.java
  
  import com.adesim2010.datastructures.SimUtil;
  
-@@ -13,6 +14,9 @@
+@@ -11,8 +12,15 @@
  	
+ 	private double x, y, theta; // theta is in radians.  this is global in terms of the sim.
+ 	
++	/// Accurate odometry (required for simulation to work properly)
  	private double odoX, odoY, odoTheta; // this is relative to x,y, and theta at time 0.
++
++	/// Noisy odometry
++	private double noisy_odoX, noisy_odoY, noisy_odoTheta;
  	
-+    /// Odometry noise on each update. Taken from ADESim.
-+    double[] ododev = {0.05, 0.05, 0.0125}; // Vishesh's stddev
++	/// Odometry noise on each update. Taken from ADESim.
++	double[] ododev = {0.05, 0.05, 0.0125}; // Vishesh's stddev
 +	Random rand;
  
  	public SimLocationSpecifier() {
  		this(0,0,0,0,0,0);
-@@ -26,6 +30,8 @@
+@@ -26,6 +34,8 @@
  		this.odoX = odo_x;
  		this.odoY = odo_y;
  		this.odoTheta = odo_theta;
@@ -29,7 +65,7 @@ Index: com/adesim2010/robot/SimLocationSpecifier.java
  	}
  	
  	/** constructor for creating sim location specifier from command line strings
-@@ -85,13 +91,17 @@
+@@ -85,12 +95,19 @@
  	}
  	
  	public void addLocationOffset(Point2D offset) {
@@ -37,16 +73,39 @@ Index: com/adesim2010/robot/SimLocationSpecifier.java
 -		odoY = odoY + offset.getY();
 +		double noiseX = offset.getX() * rand.nextGaussian() * ododev[0];
 +		double noiseY = offset.getY() * rand.nextGaussian() * ododev[1];
-+		odoX += offset.getX() + noiseX;
-+		odoY += offset.getY() + noiseY;
++		noisy_odoX += offset.getX() + noiseX;
++		noisy_odoY += offset.getY() + noiseY;
++		odoX += offset.getX();
++		odoY += offset.getY();
  		this.x = this.x+offset.getX();
  		this.y = this.y+offset.getY();
  	}
  	public void addThetaOffset(double offset) {
--		odoTheta = SimUtil.normalizeAngle(odoTheta + offset);
 +		// TODO: Noise on theta was disabled in adesim. Why?
 +		double noiseTheta = offset * rand.nextGaussian() * ododev[2];
-+		odoTheta = SimUtil.normalizeAngle(odoTheta + offset + noiseTheta);
++		noisy_odoTheta = SimUtil.normalizeAngle(noisy_odoTheta + offset + noiseTheta);
+ 		odoTheta = SimUtil.normalizeAngle(odoTheta + offset);
  		this.theta = SimUtil.normalizeAngle(this.theta + offset);
  	}
- 	
+@@ -129,4 +146,8 @@
+ 	public double[] getPoseEgo() {
+ 		return new double[] {odoX, odoY, odoTheta};
+ 	}
++
++	public double[] getNoisyPoseEgo() {
++		return new double[] { noisy_odoX, noisy_odoY, noisy_odoTheta };
++	}
+ }
+Index: ADESimActorServer.java
+===================================================================
+--- ADESimActorServer.java	(revision 2695)
++++ ADESimActorServer.java	(working copy)
+@@ -37,6 +37,8 @@
+     public boolean getStall() throws RemoteException;
+ 
+     public double[] getPoseEgo() throws RemoteException;
++
++    public double[] getNoisyPoseEgo() throws RemoteException;
+     
+     /**
+      * Return the Orientation, in degrees.  0 degrees is due east,
