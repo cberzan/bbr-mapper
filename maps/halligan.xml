@@ -1,0 +1,1281 @@
+<?xml version="1.0" ?>
+<config>
+    <world>
+        <shape>
+            <rect height="71.0" width="88.0" x="0" y="0"/>
+        </shape>
+    </world>
+    <init-robot-positions>
+        <position theta="0" x="1" y="1"/>
+    </init-robot-positions>
+    <wall>
+        <shape>
+            <rect height="0.4799107" width="0.14508928" x="15.619018" y="41.1031793"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.41294643" width="0.17299107" x="13.732856" y="41.10312657"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.15066965" width="1.8638393" x="13.861205" y="41.09202735"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.13950893" width="1.1049107" x="15.652499" y="41.44919607"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.45758927" width="0.12834822" x="16.679287" y="41.45478473"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.12834822" width="0.7421875" x="16.684868" y="41.77847178"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.16458875" width="7.2213316" x="6.9484968" y="51.20237525"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.8516234" width="0.12344156" x="6.9690666" y="49.4536956"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.14401516" width="1.2549893" x="7.0102186" y="49.43315384"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.658355" width="0.16458875" x="8.1006269" y="48.857047"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.16458875" width="1.9544914" x="8.1417637" y="48.75419425"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="3.291775" width="0.12344144" x="9.9728184" y="45.565302"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.16458875" width="1.7487556" x="9.9933872" y="45.56529025"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="3.6003788" width="0.12344156" x="11.721568" y="42.1089322"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.12344156" width="0.49376625" x="11.742154" y="42.00615744"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.27095237" width="0.11019616" x="12.12572" y="41.77624863"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.12344156" width="0.69950217" x="12.174191" y="41.75926944"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.38847676" width="0.12693723" x="12.746766" y="41.43252824"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.14751083" width="1.0698268" x="12.832545" y="41.42636317"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.1521213" width="0.16458875" x="14.025813" y="50.1738887"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.10286797" width="2.0162122" x="14.087537" y="50.15319503"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="2.9468133" width="0.18178625" x="15.959741" y="47.2885597"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.63778138" width="0.55548704" x="14.231549" y="49.37139462"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.67892861" width="0.63778138" x="14.540156" y="49.20683439"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.658355" width="0.59663421" x="14.848765" y="49.062857"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.76122302" width="0.61720783" x="15.157359" y="48.79537798"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.6253139" width="0.43204546" x="15.404246" y="47.5197881"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.72007585" width="0.61720783" x="14.334422" y="47.93119015"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.18178716" width="3.352083" x="16.000879" y="47.28869284"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.5999511" width="0.145429" x="19.229525" y="47.3552699"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.12344156" width="1.1726949" x="19.272076" y="48.81597144"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="7.2733641" width="0.19319379" x="20.313309" y="48.8818679"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.61720783" width="0.28803033" x="19.457241" y="48.13696317"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.59663421" width="0.28803033" x="19.498394" y="47.39636779"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.15158686" width="3.3558381" x="17.302902" y="42.12950114"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.63778138" width="0.57606065" x="18.140545" y="41.90319462"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.0076927" width="0.12344156" x="20.514721" y="42.2287173"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.12344156" width="1.3372836" x="20.555874" y="43.11296844"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.658355" width="0.10286797" x="21.790295" y="42.47515"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.6198258" width="1.4482515" x="20.415844" y="47.2775952"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.11196163" width="3.2948706" x="21.78413" y="48.76501237"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.81572038" width="0.86370397" x="22.088024" y="47.61349962"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.14076462" width="4.3190994" x="21.864101" y="42.45044338"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.78373134" width="0.76773685" x="25.786526" y="42.02177066"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.16293062" width="4.1968894" x="26.07066" y="48.69805238"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.47983554" width="0.079972595" x="24.99902" y="48.60508546"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.43185198" width="0.095967107" x="26.038662" y="48.62114702"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.38386843" width="0.079972595" x="30.197245" y="48.62109657"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.39986289" width="0.11196163" x="30.996958" y="48.58911111"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.14060919" width="1.0396442" x="31.044947" y="48.70426081"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="5.3901529" width="0.11196163" x="31.98863" y="43.4389701"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="5.9872642" width="0.09596733" x="32.006222" y="36.6838388"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.095967107" width="0.39986289" x="31.876661" y="43.359009893"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.095967107" width="0.38386843" x="31.892668" y="42.607239893"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.8145909" width="0.14401516" x="26.172466" y="40.5330861"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.14401516" width="0.57606065" x="25.942043" y="40.47539084"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.17281818" width="0.57606065" x="25.913235" y="39.61138282"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="5.0405307" width="0.14401516" x="26.143658" y="34.6283743"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.095967107" width="0.39986289" x="31.819548" y="36.684511893"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.095967107" width="0.38386843" x="31.835554" y="35.932741893"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="4.3992319" width="0.10183335" x="32.010342" y="31.6006691"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.81467277" width="0.81467277" x="25.716991" y="34.16661223"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="6.5784831" width="0.14256832" x="25.818829" y="27.6897889"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.85540634" width="0.2444018" x="26.103954" y="33.08730466"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.87577319" width="0.2444018" x="26.165051" y="31.98753081"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.85540634" width="0.22403501" x="26.083584" y="30.96920166"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.1222009" width="0.54990411" x="31.806669" y="31.5188741"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.1222009" width="0.59063768" x="31.786299" y="30.5819841"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.79430592" width="0.14256774" x="32.030697" y="29.82858108"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.12220109" width="6.0285783" x="32.091808" y="29.88960191"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.14256774" width="0.79430592" x="25.452221" y="27.58841226"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.16293454" width="0.71283871" x="25.492962" y="26.63127746"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.83503962" width="0.1222009" x="25.839199" y="25.79608638"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.91650689" width="0.89614004" x="25.574429" y="25.00172911"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="6.9043527" width="0.1425674" x="32.010342" y="17.8327303"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.26476866" width="0.14256774" x="25.778088" y="24.75747134"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.16293454" width="0.54990411" x="25.554058" y="24.65569146"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.16293472" width="0.54990327" x="25.554058" y="23.75945128"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="6.6395841" width="0.14256832" x="25.818829" y="17.1809959"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="2.3218174" width="1.6700792" x="26.063229" y="19.8285966"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.16293454" width="0.57027096" x="31.908506" y="17.71050146"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.18330288" width="0.57027072" x="31.908506" y="16.69220812"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.690446" width="0.14256774" x="32.051067" y="15.062751"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.16293454" width="0.67210507" x="31.867765" y="14.94072646"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.14256774" width="0.61100459" x="31.888136" y="14.00381726"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.63137144" width="0.14256774" x="32.091808" y="13.41320756"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.1222009" width="1.242376" x="32.132534" y="13.4132221"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.54990411" width="0.1018341" x="33.313808" y="12.92436189"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.14256774" width="0.67210507" x="33.211971" y="12.90396426"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.14256774" width="0.65173817" x="33.232342" y="12.17080926"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.7515464" width="0.16293454" x="33.395275" y="10.4600246"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.81467313" width="0.9368732" x="32.804638" y="10.86735687"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.16293454" width="1.4460441" x="32.112164" y="10.39885546"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.34623593" width="1.1201751" x="26.144695" y="17.36423607"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.79430592" width="0.81467277" x="25.594784" y="16.46816808"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="2.8106196" width="0.12220151" x="26.185421" y="13.6981924"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.16293454" width="0.65173817" x="25.818829" y="13.61687346"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.18330137" width="0.63137144" x="25.859554" y="12.78180963"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="2.0977824" width="0.1222009" x="26.144695" y="10.7655216"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.99797416" width="0.16293454" x="32.173275" y="9.50278084"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.18330137" width="0.93687373" x="32.132534" y="9.31940663"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.18330154" width="0.9368732" x="32.152905" y="8.19928946"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="4.7862024" width="0.14256774" x="32.254742" y="3.4538106"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="2.9531889" width="0.81467277" x="25.778088" y="8.8918051"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.50917047" width="0.1222009" x="26.287258" y="8.46399653"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.7332055" width="0.77393913" x="25.798458" y="7.8937705"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.9959472" width="0.12220016" x="26.185421" y="5.9385238"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.20366819" width="0.71283871" x="25.798458" y="5.75520981"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.18330137" width="0.67210507" x="25.879925" y="4.81842263"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.3645769" width="0.16293454" x="26.144695" y="3.4945691"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.1222009" width="6.2322469" x="26.144695" y="3.4741281"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.75357229" width="0.14256774" x="37.97781" y="29.74699971"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.75357229" width="0.14256774" x="39.192532" y="29.79790371"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.14256874" width="12.199723" x="39.322033" y="29.88974126"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.75357229" width="0.14256774" x="37.947567" y="117.03510071"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.75357229" width="0.14256774" x="39.162289" y="117.08600471"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.1201751" width="1.0183409" x="36.633602" y="24.4722549"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.75357229" width="0.14256774" x="42.143581" y="116.98285471"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.75357229" width="0.14256774" x="43.358303" y="117.03375871"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.87577319" width="0.91650689" x="47.041042" y="24.37046581"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.81467146" width="0.18330121" x="48.039028" y="24.20756854"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.79430592" width="0.18330137" x="49.220303" y="24.18716208"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.7332055" width="0.22403501" x="51.30743" y="29.7265955"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.75357229" width="0.22403501" x="52.590542" y="29.70622871"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.0590746" width="1.0387079" x="52.305401" y="24.1260064"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.14256774" width="0.69247186" x="53.22192" y="24.63516526"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.67210507" width="0.20366819" x="53.812557" y="24.28909993"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.7332055" width="0.18330137" x="54.851257" y="24.2482625"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.65173817" width="0.20366819" x="60.616776" y="24.32972983"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.69247186" width="0.18330137" x="61.635117" y="24.30926014"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.18330137" width="1.3238432" x="52.733105" y="29.88971963"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.85540634" width="0.1222009" x="53.93475" y="29.62490266"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.87577319" width="0.14256774" x="54.891998" y="29.60453581"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.14256774" width="11.507253" x="55.014191" y="29.88974226"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.16293389" width="4.9695005" x="61.714874" y="24.59453511"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.89614004" width="0.18330137" x="66.541809" y="24.20764296"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.93687373" width="0.16293454" x="67.641632" y="24.14640127"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.77393913" width="0.16293454" x="66.460342" y="29.48212587"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.77393913" width="0.18330137" x="67.478683" y="29.46204587"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.89614004" width="0.93687373" x="62.44809" y="24.24816996"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.20366819" width="5.0102377" x="67.621262" y="29.84890581"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.18330137" width="3.0957565" x="67.763824" y="24.59443163"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.87577319" width="0.22403501" x="70.798477" y="24.16672981"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.91650689" width="0.2444018" x="71.837189" y="24.12599611"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.18330114" width="3.7067642" x="72.040863" y="24.55378186"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.99797416" width="1.1201751" x="73.34433" y="24.10580884"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.75357229" width="0.22403501" x="72.590759" y="29.95061271"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.22403501" width="0.83503962" x="72.672226" y="30.64323599"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.85540634" width="0.22403501" x="73.446167" y="30.70436966"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.20366819" width="0.83503962" x="73.548004" y="31.37643281"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="36.331818" width="0.20716675" x="74.216599" y="31.4579977"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.79430592" width="0.18330137" x="75.686516" y="24.20742608"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.75357229" width="0.20366819" x="76.888161" y="24.20763271"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.18330137" width="2.9735556" x="77.051094" y="24.55378163"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="10.325977" width="0.16293454" x="79.800613" y="24.635105"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.25922728" width="1.1809243" x="79.67617" y="34.93525372"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.28803033" width="1.2385304" x="79.618561" y="36.46187067"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="3.2547424" width="0.25922728" x="79.820175" y="36.6634306"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.28803033" width="1.4977577" x="79.58976" y="39.88923667"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.25223851" width="1.4977577" x="79.560944" y="41.74827049"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.6129698" width="1.6129698" x="73.512314" y="37.5274932"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="10.057055" width="0.20162122" x="79.820175" y="41.96323"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.40733638" width="0.81467277" x="79.332184" y="49.11593862"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.44807011" width="6.5581093" x="77.091827" y="52.00806689"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.44807002" width="0.69247186" x="74.281204" y="52.00806698"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.40733638" width="0.81467277" x="74.135147" y="49.11593862"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="2.3218174" width="5.3768406" x="78.273094" y="52.4153256"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="12.994028" width="0.12424554" x="83.525696" y="54.6964835"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.5071446" width="3.0957565" x="79.943184" y="55.2259074"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.4888036" width="0.57027096" x="74.281204" y="57.1951764"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.4888036" width="6.6803169" x="76.969635" y="57.2190414"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.9959483" width="2.1181493" x="80.961525" y="58.0366037"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.9959483" width="1.8737475" x="78.517494" y="58.0366037"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="2.7698874" width="0.69247186" x="77.417694" y="58.0773616"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="2.1181493" width="2.1181493" x="74.770004" y="62.8839464"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.11930606" width="9.4600878" x="74.199738" y="67.66458924"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="2.2403502" width="5.865644" x="74.199738" y="65.4381984"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.914481" width="1.6293455" x="81.328125" y="64.9205615"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="7.2506104" width="0.19195211" x="26.398815" y="48.8307696"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.22353521" width="6.3014822" x="20.300476" y="56.05645279"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.0998082" width="4.3381324" x="20.472073" y="48.8714648"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.3034763" width="0.20366819" x="25.889645" y="48.8511467"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.3034763" width="1.4867778" x="23.303051" y="50.1954457"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.7515463" width="0.59063846" x="25.848904" y="50.6231087"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.42770317" width="0.2444018" x="26.215511" y="52.49687883"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.57027096" width="0.3055023" x="20.472073" y="52.27276804"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.4888036" width="0.40733638" x="20.675732" y="53.4540884"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.57027096" width="0.46843687" x="21.266369" y="54.06506504"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.59063768" width="0.54990411" x="22.06068" y="54.67610632"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.44807002" width="0.57027096" x="22.997555" y="55.28711798"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.46843687" width="0.54990411" x="23.914059" y="55.16494513"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.42770317" width="0.46843687" x="24.912029" y="55.38884483"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.4888036" width="0.54990411" x="24.789837" y="54.5131694"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.34623593" width="0.46843687" x="25.584148" y="55.02231307"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.38696957" width="0.34623593" x="25.828548" y="55.59260343"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.50917047" width="0.42770317" x="25.726711" y="53.94287653"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.54990411" width="0.40733638" x="20.736828" y="54.45206889"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.44807002" width="0.36660275" x="21.408947" y="55.02240898"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.3055023" width="0.63137144" x="22.06068" y="55.5721427"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.61100459" width="0.38696957" x="20.696102" y="55.22599041"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.20366819" width="0.34623593" x="21.388577" y="55.63332681"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="6.1350455" width="0.11521213" x="37.306896" y="18.5176875"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="6.2502575" width="0.11521213" x="41.713757" y="18.5466405"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.11521213" width="4.435667" x="37.335705" y="18.54655387"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.5265607" width="0.25922728" x="37.767742" y="22.8382083"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.83528793" width="0.72007585" x="40.648052" y="23.44293307"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.69127274" width="0.66246974" x="40.792065" y="21.13882826"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.74887884" width="0.63366669" x="40.734463" y="20.04435716"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="2.4482577" width="1.1233183" x="37.364498" y="18.6330643"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.57606065" width="0.57606065" x="38.170986" y="19.84266335"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.89289397" width="0.63366669" x="38.199795" y="18.63300803"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.40324244" width="2.5634699" x="39.207897" y="18.63303556"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.48965153" width="1.0081061" x="39.639935" y="18.89208547"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.66246974" width="0.63366669" x="37.854153" y="21.62856926"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.12241288" width="0.61206442" x="30.336557" y="48.72465412"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.57606065" width="0.15121591" x="31.985533" y="42.74085535"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.59063768" width="0.18330137" x="26.154415" y="39.84908032"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.54990411" width="0.20366819" x="31.938581" y="36.08116089"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.7332055" width="0.16293454" x="31.999693" y="30.7247035"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.69247186" width="0.14256774" x="25.808178" y="26.85515814"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.61100459" width="0.16293454" x="25.767437" y="23.98350041"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.75357229" width="0.18330137" x="32.040417" y="16.91612871"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.69247186" width="0.14256774" x="32.081158" y="14.18706714"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.52953732" width="0.14256774" x="26.154415" y="13.02627168"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.54990464" width="0.16293514" x="33.384624" y="12.35404936"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.77393913" width="0.20366819" x="32.407024" y="8.46399887"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.65173817" width="0.16293454" x="26.032207" y="5.04236883"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.18330137" width="0.93687373" x="38.170834" y="29.93030763"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.20366819" width="0.93687373" x="42.325665" y="24.61495781"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.16293454" width="0.87577319" x="48.272778" y="24.69646346"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.20366795" width="0.7535708" x="54.036587" y="24.59445105"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.22403501" width="0.89614004" x="51.612942" y="29.93034599"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.16293454" width="0.67210507" x="54.118053" y="29.91008646"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.22403501" width="0.7332055" x="60.859482" y="24.55369799"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.22403501" width="0.77393913" x="66.786224" y="24.45189099"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.20366795" width="0.75357574" x="66.664017" y="29.95071305"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.16293454" width="0.69247186" x="71.083618" y="24.79827046"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.20366819" width="0.91650689" x="75.910561" y="24.30929381"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.1609087" width="0.20366819" x="80.126488" y="35.2666043"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.3238432" width="0.3055023" x="79.943184" y="40.2970278"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="69.735985" width="1.6293455" x="86.148537" y="0.35778556"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="69.735985" width="1.6293455" x="0.26818532" y="0.35778556"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.4311157" width="87.39949" x="0.3526122" y="69.16228868"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.4311157" width="87.18074" x="0.56312245" y="0.3518583"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.3472411" width="6.0924821" x="31.99814" y="24.5277819"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.34723994" width="3.0304577" x="39.25861" y="24.49616706"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.22097087" width="3.9301248" x="43.436558" y="24.60668513"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.23675451" width="3.2198613" x="49.355423" y="24.62246749"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.29988903" width="5.6978917" x="55.005962" y="24.51198197"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.1048543" width="0.25253814" x="42.0476" y="24.1173937"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.0732871" width="0.28410539" x="43.341858" y="24.0858239"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.2053566" width="0.37946591" x="37.745537" y="24.0178564"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="1.1830324" width="0.3794632" x="39.21875" y="23.9955376"/>
+        </shape>
+    </wall>
+    <wall>
+        <shape>
+            <rect height="0.4017857" width="0.22321428" x="17.276785" y="41.8526773"/>
+        </shape>
+    </wall>
+</config>

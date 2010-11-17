@@ -11,9 +11,13 @@ For convenience, simlink compile script and makefile:
     ln -s PROJDIR/slam/Makefile .
     ln -s PROJDIR/util/compileit.sh .
 
-Simlink the config file for easy startup of the architecture:
+Symlink the config file for easy startup of the architecture:
     cd ADEDIR
     ln -s PROJDIR/slam/sim.conf .
+
+Symlink the directory containing maps:
+    cd ADEDIR
+    ln -s PROJDIR/maps .
 
 You only need to do all the above once. After that, 'make' in ADEDIR will
 recompile the slam project. (make -B will make sure to recompile everything).
