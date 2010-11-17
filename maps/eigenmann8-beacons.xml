@@ -1126,6 +1126,30 @@
     <!-- models a physical door at an angle  deltaXinc = .015  deltaYinc = 0.1 -->
     <door name="Door 830" openFraction="0.8" x="1.9" y="0.75" width="0.80" thickness="0.04" closed_angle="3.1415" pivot_angle="-1.7" />
 
+    <block name="YELLOW BEACON" red="255" green="200" blue="60">
+        <shape>
+            <rect x="-5.8" y="2.3" width=".6" height=".6" />
+        </shape>
+    </block>
+
+    <block name="GREEN BEACON" red="0" green="200" blue="60">
+        <shape>
+            <rect x="13.2" y="-4.9" width=".6" height=".6" />
+        </shape>
+    </block>
+
+    <block name="RED BEACON" red="255" green="70" blue="15">
+        <shape>
+            <rect x="-9.8" y="-5.1" width=".6" height=".6" />
+        </shape>
+    </block>
+
+    <block name="PURPLE BEACON" red="90" green="20" blue="180">
+        <shape>
+            <rect x="4.1" y="1" width=".6" height=".6" />
+        </shape>
+    </block>
+
 
 
 </config>
