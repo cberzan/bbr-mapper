@@ -76,7 +76,7 @@ public class Vector2D implements Serializable {
     }
 
     /// atan2(y, x) returning [0, 2pi]
-    private myatan2(double y, double x) {
+    private double myatan2(double y, double x) {
         double result = Math.atan2(y, x);
         if(result < 0)
             result += 2 * Math.PI;
