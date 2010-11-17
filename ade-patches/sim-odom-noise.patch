@@ -1,12 +1,14 @@
 Index: com/adesim2010/ADESimActorServerImpl.java
 ===================================================================
---- com/adesim2010/ADESimActorServerImpl.java	(revision 2745)
+--- com/adesim2010/ADESimActorServerImpl.java	(revision 2746)
 +++ com/adesim2010/ADESimActorServerImpl.java	(working copy)
-@@ -639,6 +639,10 @@
+@@ -639,6 +639,12 @@
      	return this.model.robot.getPoseEgo();
      }
  
 +    public double[] getNoisyPoseEgo() throws RemoteException {
++        if(this.model == null || this.model.robot == null)
++            return null;
 +        return this.model.robot.getNoisyPoseEgo();
 +    }
 +
@@ -15,7 +17,7 @@ Index: com/adesim2010/ADESimActorServerImpl.java
  		return model.getObjectsAngleAndDistance(lookingForObjects);
 Index: com/adesim2010/robot/SimAbstractRobot.java
 ===================================================================
---- com/adesim2010/robot/SimAbstractRobot.java	(revision 2745)
+--- com/adesim2010/robot/SimAbstractRobot.java	(revision 2746)
 +++ com/adesim2010/robot/SimAbstractRobot.java	(working copy)
 @@ -244,6 +244,10 @@
  		return this.locationSpecifier.getPoseEgo();
@@ -30,7 +32,7 @@ Index: com/adesim2010/robot/SimAbstractRobot.java
  	}
 Index: com/adesim2010/robot/SimLocationSpecifier.java
 ===================================================================
---- com/adesim2010/robot/SimLocationSpecifier.java	(revision 2745)
+--- com/adesim2010/robot/SimLocationSpecifier.java	(revision 2746)
 +++ com/adesim2010/robot/SimLocationSpecifier.java	(working copy)
 @@ -3,6 +3,7 @@
  import java.awt.geom.AffineTransform;
@@ -98,7 +100,7 @@ Index: com/adesim2010/robot/SimLocationSpecifier.java
  }
 Index: com/adesim2010/ADESimActorServer.java
 ===================================================================
---- com/adesim2010/ADESimActorServer.java	(revision 2745)
+--- com/adesim2010/ADESimActorServer.java	(revision 2746)
 +++ com/adesim2010/ADESimActorServer.java	(working copy)
 @@ -54,6 +54,8 @@
  

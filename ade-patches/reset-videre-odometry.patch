@@ -1,6 +1,6 @@
 Index: com/videre/VidereServer.java
 ===================================================================
---- com/videre/VidereServer.java	(revision 2745)
+--- com/videre/VidereServer.java	(revision 2746)
 +++ com/videre/VidereServer.java	(working copy)
 @@ -19,6 +19,8 @@
  /** <code>VidereServer</code>.
@@ -13,7 +13,7 @@ Index: com/videre/VidereServer.java
       * (x, y, theta, in meters and radians).
 Index: com/videre/VidereServerImpl.java
 ===================================================================
---- com/videre/VidereServerImpl.java	(revision 2745)
+--- com/videre/VidereServerImpl.java	(revision 2746)
 +++ com/videre/VidereServerImpl.java	(working copy)
 @@ -994,6 +994,12 @@
          }*/
