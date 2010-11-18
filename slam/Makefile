@@ -7,7 +7,8 @@ all: utils interfaces impls
 
 utils: \
 	$(PACKAGE_PREFIX)/Pose.class \
-	$(PACKAGE_PREFIX)/Vector2D.class
+	$(PACKAGE_PREFIX)/Vector2D.class \
+	$(PACKAGE_PREFIX)/Util.class
 
 interfaces: \
 	$(PACKAGE_PREFIX)/Arch.class \
@@ -24,6 +25,9 @@ $(PACKAGE_PREFIX)/Pose.class: $(PACKAGE_PREFIX)/Pose.java
 
 $(PACKAGE_PREFIX)/Vector2D.class: $(PACKAGE_PREFIX)/Vector2D.java
 	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/Vector2D.java
+
+$(PACKAGE_PREFIX)/Util.class: $(PACKAGE_PREFIX)/Util.java
+	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/Util.java
 
 
 ### Interfaces ##############################################################
