@@ -22,7 +22,8 @@ public class ArchImpl extends ActionServerImpl implements Arch {
     double[] laser = null;
 
     /// Server references.
-    private Object ekfServer = null;
+    private Object ekfServer      = null;
+    private Object landmarkServer = null;
 
     /// Data for wanderSchema (TODO: consider making nested class?)
     private Random rand          = null;
@@ -205,6 +206,15 @@ public class ArchImpl extends ActionServerImpl implements Arch {
                 return false;
             }
         }
+
+        if(landmarkServer == null) {
+            landmarkServer = getClient("com.slam.LandmarkServer");
+            if(landmarkServer == null) {
+                System.out.println("allServersReady: waiting for LandmarkServer.");
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -217,6 +227,18 @@ public class ArchImpl extends ActionServerImpl implements Arch {
         //for(int i = 0; i <= 180; i++)
         //    System.out.format("%f, ", laser[i]);
         //System.out.println();
+        
+        // Test sim landmarks.
+        try {
+            Landmark[] landmarks = (Landmark[])call(landmarkServer, "getLandmarks");
+            System.out.format("Got %d landmarks:\n", landmarks.length);
+            for(Landmark l : landmarks)
+                System.out.format("id=%d mag=%f dir=%f\n",
+                        l.id, l.position.getMag(), l.position.getDir());
+        } catch(Exception e) {
+            System.out.println("FAILED to get landmarks: " + e);
+            e.printStackTrace();
+        }
 
         // Perform desired motion.
         doMotion(getSchemaSum());
