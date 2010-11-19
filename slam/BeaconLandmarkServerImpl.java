@@ -153,8 +153,8 @@ public class BeaconLandmarkServerImpl extends ADEServerImpl implements BeaconLan
             return null;
         Landmark[] landmarks = new Landmark[beacons.length];
         for(int i = 0; i < beacons.length; i++) {
-            System.out.format("id = %d, dist=%f heading=%f",
-                    i, beacons[i][DISTANCE], beacons[i][HEADING]);
+            //System.out.format("id = %d, dist=%f heading=%f\n",
+            //        i, beacons[i][DISTANCE], beacons[i][HEADING]);
 			landmarks[i] = new Landmark();
             landmarks[i].id  = i;
             landmarks[i].position = new Vector2D();
