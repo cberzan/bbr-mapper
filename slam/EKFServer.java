@@ -1,3 +1,9 @@
+/*
+ * Andy Sayler
+ * Constantine Berzan
+ *
+ */
+
 package com.slam;
 
 import ade.*;

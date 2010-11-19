@@ -19,6 +19,10 @@ Symlink the directory containing maps:
     cd ADEDIR
     ln -s PROJDIR/maps .
 
+Symlink the Jama package:
+    cd ADEDIR
+    ln -s PROJDIR/Jama-1.0.2.jar .
+
 You only need to do all the above once. After that, 'make' in ADEDIR will
 recompile the slam project. (make -B will make sure to recompile everything).
 

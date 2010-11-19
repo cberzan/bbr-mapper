@@ -46,7 +46,7 @@ $(PACKAGE_PREFIX)/EKFServer.class: $(PACKAGE_PREFIX)/EKFServer.java
 	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/EKFServer.java
 
 $(PACKAGE_PREFIX)/LandmarkServer.class: $(PACKAGE_PREFIX)/LandmarkServer.java
-	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/LandmarkServer.java
+	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/LandmarkServefr.java
 
 $(PACKAGE_PREFIX)/BeaconLandmarkServer.class: $(PACKAGE_PREFIX)/BeaconLandmarkServer.java
 	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/BeaconLandmarkServer.java

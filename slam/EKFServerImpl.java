@@ -6,7 +6,11 @@
  * For questions contact Matthias Scheutz at mscheutz@indiana.edu
  *
  * @author Paul Schermerhorn
+ *
+ * Server by Andy Sayler & Constantine Berzan
+ *
  */
+
 package com.slam;
 
 import ade.*;
@@ -18,6 +22,9 @@ import java.net.*;
 import java.rmi.*;
 import java.util.*;
 import static utilities.Util.*;
+import java.util.Hashtable.*;
+import Jama.*;
+
 
 public class EKFServerImpl extends ADEServerImpl implements EKFServer {
     private static final long serialVersionUID = 1L;
@@ -30,7 +37,9 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
     /* Server-specific fields */
     private Updater u;
     private Object odomServer = null;
+    private Object landmarkServer = null;
     private Pose currentPose;
+    private Hashtable landmarkTable = null;
 
     // ***********************************************************************
     // *** Abstract methods in ADEServerImpl that need to be implemented
@@ -155,9 +164,23 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
             System.out.println("EKFServerImpl waiting for odomServer ref.");
             Sleep(200);
         }
-
+        
+        // Get ref to landmark server.
+        while(landmarkServer == null) {
+            // Try to connect to the simulator.
+            landmarkServer = getClient("com.slam.LandmarkServer");
+            if(landmarkServer != null) {
+                break;
+            }
+            System.out.println("EKFServerImpl waiting for landmarkServer ref.");
+            Sleep(200);
+        }
+        
         // Initialize odometry to zero.
         currentPose = new Pose();
+        
+        //Initilize Hashtable to empty
+        landmarkTable = new Hashtable();
 
         // Thread to do whatever periodic updating needs to be done
         u = new Updater();
@@ -168,6 +191,14 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
     public Pose getPose() throws RemoteException {
         System.out.println("EKFServerImpl: currentPose " + currentPose);
         return currentPose;
+    }
+
+    //Kalman Vars
+    
+
+    // Do Kalman Filter
+    public void updateKalman() {
+        
     }
 
     /**
@@ -204,16 +235,17 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
      * server does.
      */
     private class Updater extends Thread {
-
+        
         private boolean shouldRead;
-
+        
         public Updater() {
             shouldRead = true;
         }
-
+        
         public void run() {
             int i = 0;
             while (shouldRead) {
+                //Get Odometry
                 try {
                     double[] odom = (double[])call(odomServer, "getNoisyPoseEgo");
                     if(odom != null) { // HACK: figure out how to handle this better
@@ -227,11 +259,30 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                     e.printStackTrace();
                     // Don't exit, hoping this is a temporary problem.
                 }
+                
+                //Get Landmarks
+                try {
+                    Landmark[] landmarks = (Landmark[])call(landmarkServer,
+                                                            "getLandmarks");
+                    if(landmarks != null) { // HACK: figure out how to handle this better
+                        
+                    }
+                } catch(Exception e) {
+                    System.err.println("Error getting landmarks: " + e);
+                    System.err.println("Original cause: " + e.getCause());
+                    e.printStackTrace();
+                    // Don't exit, hoping this is a temporary problem.
+                }
+                
+
+                //Update Kalman Filter
+                updateKalman();
+
                 Sleep(200);
             }
             System.out.println(prg + ": Exiting Updater thread...");
         }
-
+        
         public void halt() {
             System.out.print("halting update thread...");
             shouldRead = false;
