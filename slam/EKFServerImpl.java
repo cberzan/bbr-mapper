@@ -194,7 +194,53 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
     }
 
     //Kalman Vars
-    
+    private Matrix matX; //State
+    private Matrix matP; //Covariance
+    private Matrix matK; //Kalman gain
+    private Matrix[] matH; //Measurement Jacobian
+    private Matrix matA; //Prediction Jacobian
+    private Matrix[] matJxr; //Landmark Prediction Jacobian - cartesian 
+    private Matrix[] matJz;  //Landmark Prediction Jacobian - polar
+    private Matrix matQ; //Process Noise
+    private double cq; //Process Noise Gaussian 
+
+    //Step 1: Update from Odometry
+    private void odoStateUpdate(double delX, double delY, double delTheta) {
+        
+        //Update X - State
+        double newX = matX.get(0, 0) + delX;
+        matX.set(0, 0, newX);
+        double newY = matX.get(1, 0) + delY;
+        matX.set(1, 0, newY);
+        double newTheta = matX.get(2, 0) + delTheta;
+        matX.set(2, 0, newTheta);
+        
+        //Update A - Prediction Jacobian
+        matA = Jama.Matrix.identity(3, 3);
+        matA.set(0, 2, (-1 * delY)); //(1,3) = -delY
+        matA.set(1, 2, (delX));      //(2,3) = delX
+
+        //Update Q
+        double delT = Math.sqrt(delX*delX + delY*delY); //Correct delT?
+        matQ.set(0, 0, (cq*delX*delX)); //(1,1) = cq * delX^2
+        matQ.set(0, 1, (cq*delX*delY)); //(1,2) = cq * delX * delY
+        matQ.set(0, 2, (cq*delX*delT)); //(1,3) = cq * delX * delT
+        matQ.set(1, 0, (cq*delY*delX)); //(2,1) = cq * delY * delX
+        matQ.set(1, 1, (cq*delY*delY)); //(2,2) = cq * delY^2
+        matQ.set(1, 2, (cq*delY*delT)); //(2,3) = cq * delY * delT
+        matQ.set(2, 0, (cq*delT*delX)); //(3,1) = cq * delT * delX
+        matQ.set(2, 1, (cq*delT*delY)); //(3,2) = cq * delT * delY
+        matQ.set(2, 2, (cq*delT*delT)); //(3,3) = cq * delT^2
+
+        //Update P upper left
+        Matrix matPrr = matP.getMatrix(0, 2, 0, 2);
+        Matrix temp = matA.copy(); // temp = A
+        temp.times(matPrr);        // temp = A * Prr
+        temp.times(matA);          // temp = A * Prr * A
+        temp.plus(matQ);           // temp = A * Prr * A + Q
+        matP.setMatrix(0, 2, 0, 2, temp);
+
+    }
 
     // Do Kalman Filter
     public void updateKalman() {
