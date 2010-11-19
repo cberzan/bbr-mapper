@@ -12,3 +12,6 @@ sim-odom-noise.patch - Add a function getNoisyPoseEgo() to ADESimActorServer and
 reset-videre-odometry.patch - Make a public (remotely-callable) resetOdometry()
                               function in VidereServer that resets the odometry
                               by calling the internal COMorigin() function.
+
+public-beacons.patch - Makes the getBeaconData() function public in
+                       ActionServer.
