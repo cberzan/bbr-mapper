@@ -185,12 +185,12 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
             Sleep(200);
         }
         
+        //Initilize Hashtable to empty
+        landmarkTable = new Hashtable();
+        
         // Initialize odometry to zero.
         currentPose = new Pose();
         
-        //Initilize Hashtable to empty
-        landmarkTable = new Hashtable();
-
         // Thread to do whatever periodic updating needs to be done
         u = new Updater();
         u.start();
@@ -202,17 +202,18 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
         return currentPose;
     }
 
+    
     //Kalman Vars
-    private Matrix matX; //State
-    private Matrix matP; //Covariance
-    private Matrix matK; //Kalman gain
+    private Matrix matX = null; //State
+    private Matrix matP = null; //Covariance
+    private Matrix matK = null; //Kalman gain
     private Matrix[] matH; //Measurement Jacobian
-    private Matrix matA; //Prediction Jacobian
+    private Matrix matA = null; //Prediction Jacobian
     private Matrix[] matJxr; //Landmark Prediction Jacobian - cartesian 
     private Matrix[] matJz;  //Landmark Prediction Jacobian - polar
-    private Matrix matQ; //Process Noise
+    private Matrix matQ = null; //Process Noise
     private double cq; //Process Noise Gaussian 
-
+    
     //Step 1: Update from Odometry
     private void odoStateUpdate(double delX, double delY, double delTheta) {
         
@@ -314,7 +315,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                     e.printStackTrace();
                     // Don't exit, hoping this is a temporary problem.
                 }
-                
+                /*
                 //Get Landmarks
                 try {
                     Landmark[] landmarks = (Landmark[])call(landmarkServer,
@@ -332,7 +333,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
 
                 //Update Kalman Filter
                 updateKalman();
-
+                */
                 Sleep(200);
             }
             System.out.println(prg + ": Exiting Updater thread...");
