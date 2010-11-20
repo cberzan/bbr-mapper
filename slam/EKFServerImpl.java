@@ -313,11 +313,12 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                     e.printStackTrace();
                     // Don't exit, hoping this is a temporary problem.
                 }
-                /*
+                
                 //Get Landmarks
                 try {
                     Landmark[] landmarks = (Landmark[])call(landmarkServer,
-                                                            "getLandmarks");
+                                                            "getLandmarks",
+                                                            currentPose);
                     if(landmarks != null) { // HACK: figure out how to handle this better
                         
                     }
@@ -331,7 +332,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
 
                 //Update Kalman Filter
                 updateKalman();
-                */
+                
                 Sleep(200);
             }
             System.out.println(prg + ": Exiting Updater thread...");
