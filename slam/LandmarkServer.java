@@ -6,6 +6,7 @@ import com.interfaces.*;
 import java.rmi.*;
 
 public interface LandmarkServer extends ADEServer {
-    public Landmark[] getLandmarks() throws RemoteException;
+    public Landmark[] getLandmarks(Pose robotPose) throws RemoteException;
+    public int[] flushDiscardedLandmarks() throws RemoteException;
 }
 

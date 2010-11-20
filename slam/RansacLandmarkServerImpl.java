@@ -146,7 +146,12 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
         u.start();
     }
 
-    public Landmark[] getLandmarks() throws RemoteException {
+    public Landmark[] getLandmarks(Pose robotPose) throws RemoteException {
+        // TODO
+        return null;
+    }
+
+    public int[] flushDiscardedLandmarks() throws RemoteException {
         // TODO
         return null;
     }
