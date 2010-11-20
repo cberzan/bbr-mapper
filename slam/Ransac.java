@@ -25,7 +25,7 @@ public class Ransac {
     final public int numLaser = 181;
 
     /// Finds lines in the given laser readings, using RANSAC.
-    public Line[] findLines(double[] laser) {
+    public Line[] findLines(final double[] laser) {
         // Benchmark.
         long timer = System.currentTimeMillis();
         // Points considered for next matching.
@@ -71,11 +71,11 @@ public class Ransac {
         System.out.format("RANSAC ran %d iterations in %.3f seconds, " +
                           "found %d lines, %d points left unmatched.\n",
                           iter + 1, timer / 1000.0, lines.size(), points.length);
-        return (Line[])lines.toArray();
+        return lines.toArray(new Line[0]); // I can't believe Java requires the type like this.
     }
 
     /// Converts the laser readings to cartesian points.
-    private Point2D.Double[] laser2cartesian(double laser[]) {
+    private Point2D.Double[] laser2cartesian(final double laser[]) {
         assert(laser.length == numLaser);
         Point2D.Double[] points = new Point2D.Double[numLaser];
         Vector2D tmp = new Vector2D();
@@ -93,7 +93,7 @@ public class Ransac {
         int beamBegin = rand.nextInt(points.length - sampleBeamWidth + 1);
         ArrayList<Integer> indices = new ArrayList<Integer>(sampleBeamWidth);
         for(int i = 0; i < sampleBeamWidth; i++)
-            indices.set(i, beamBegin + i);
+            indices.add(i, beamBegin + i);
         Collections.shuffle(indices);
         Point2D.Double[] sample = new Point2D.Double[sampleSize];
         for(int i = 0; i < sampleSize; i++)
