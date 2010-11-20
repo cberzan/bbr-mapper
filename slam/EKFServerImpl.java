@@ -140,16 +140,23 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
     public EKFServerImpl() throws RemoteException {
         super();
 
+        System.err.println("Starting Constructor...");
+
         // Get ref to odometry server, which can be either ADESim or Videre.
         while(odomServer == null) {
+            System.err.println("Starting odomServer...");
             // Try to connect to the simulator.
+            System.err.println("Starting Sim Odom Server...");
             odomServer = getClient("com.adesim2010.ADESimActorServer");
-            if(odomServer != null)
+            if(odomServer != null) {
+                System.err.println("Sim Server Started....");
                 break;
-            
+            }
             // Try to connect to the robot.
+            System.err.println("Starting Robot Odom Server.");
             odomServer = getClient("com.videre.VidereServer");
             if(odomServer != null) {
+                System.err.println("Robot Server Started.");
                 try {
                     call(odomServer, "resetOdometry");
                 } catch(Exception e) {
@@ -168,8 +175,10 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
         // Get ref to landmark server.
         while(landmarkServer == null) {
             // Try to connect to the simulator.
+            System.out.println("Starting Landmark Server.");
             landmarkServer = getClient("com.slam.LandmarkServer");
             if(landmarkServer != null) {
+                System.out.println("Landmark Server Started.");
                 break;
             }
             System.out.println("EKFServerImpl waiting for landmarkServer ref.");
