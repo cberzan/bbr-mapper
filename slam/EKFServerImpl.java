@@ -5,10 +5,8 @@
  * All rights reserved.  Do not copy and use without permission.
  * For questions contact Matthias Scheutz at mscheutz@indiana.edu
  *
- * @author Paul Schermerhorn
- *
- * Server by Andy Sayler & Constantine Berzan
- *
+ * @author Andy Sayler & Constantin Berzan
+ * (original template by Paul Schermerhorn)
  */
 
 package com.slam;

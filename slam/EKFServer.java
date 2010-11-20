@@ -1,6 +1,6 @@
 /*
  * Andy Sayler
- * Constantine Berzan
+ * Constantin Berzan
  *
  */
 
