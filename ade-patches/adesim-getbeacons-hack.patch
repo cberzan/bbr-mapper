@@ -1,0 +1,20 @@
+Index: com/adesim2010/sample/SampleActionServerImpl.java
+===================================================================
+--- com/adesim2010/sample/SampleActionServerImpl.java	(revision 2746)
++++ com/adesim2010/sample/SampleActionServerImpl.java	(working copy)
+@@ -27,7 +27,14 @@
+ 							", left = " + obsts[2]);
+ 		
+ 		if (getBeacons) {
+-			Double[][] beaconData = getBeaconData();
++            Double[][] beaconData = new Double[0][0];
++            try {
++                beaconData = getBeaconData();
++            } catch(Exception e) {
++                System.err.println("Could not get beacons: " + e);
++                e.printStackTrace();
++            }
++            
+ 			if (verbose) {
+ 				System.out.println("ORIENTATIONS for the " + beaconData.length + " beacons:");
+ 				for (int row = 0; row < beaconData.length; row++) {

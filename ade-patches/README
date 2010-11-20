@@ -15,3 +15,6 @@ reset-videre-odometry.patch - Make a public (remotely-callable) resetOdometry()
 
 public-beacons.patch - Makes the getBeaconData() function public in
                        ActionServer.
+
+adesim-getbeacons-hack.patch - HACK: wrap getBeaconData() call in try/catch
+                               block, caused by public-beacons.patch.
