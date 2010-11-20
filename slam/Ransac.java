@@ -26,6 +26,8 @@ public class Ransac {
 
     /// Finds lines in the given laser readings, using RANSAC.
     public Line[] findLines(double[] laser) {
+        // Benchmark.
+        long timer = System.currentTimeMillis();
         // Points considered for next matching.
         Point2D.Double[] points = laser2cartesian(laser);
         // Good lines saved.
@@ -65,8 +67,10 @@ public class Ransac {
             // Otherwise discard the line and try again.
         }
 
-        System.out.format("RANSAC ran %d iterations, found %d lines, %d points unmatched.\n",
-                iter + 1, lines.size(), points.length);
+        timer = System.currentTimeMillis() - timer;
+        System.out.format("RANSAC ran %d iterations in %.3f seconds, " +
+                          "found %d lines, %d points left unmatched.\n",
+                          iter + 1, timer / 1000.0, lines.size(), points.length);
         return (Line[])lines.toArray();
     }
 
