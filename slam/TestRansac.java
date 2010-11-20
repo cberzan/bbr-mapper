@@ -1,11 +1,25 @@
 package com.slam;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import javax.swing.*;
 
 public class TestRansac extends JPanel {
     final int numLaser = 181;
-    double[] laser = null;
+    double[] laser     = null;
+    Ransac ransac      = null;
+    Line[] result      = null;
+    int displayedIter  = 0;
+
+    // Stuff filled-in by Ransac.
+    protected ArrayList<Point2D.Double[]> points;
+    protected ArrayList<Integer> beamBegin;
+    protected ArrayList<Point2D.Double[]> sample;
+    protected ArrayList<Line> sampleFitLine;
+    protected ArrayList<ArrayList<Integer>> consenting;
+    protected ArrayList<Line> consentingFitLine;
+    protected int totalIter;
 
     public TestRansac() {
         super();
@@ -45,15 +59,33 @@ public class TestRansac extends JPanel {
             0.705001
         };
         laser = hereLaser;
+
+        points            = new ArrayList<Point2D.Double[]>();
+        beamBegin         = new ArrayList<Integer>();
+        sample            = new ArrayList<Point2D.Double[]>();
+        sampleFitLine     = new ArrayList<Line>();
+        consenting        = new ArrayList<ArrayList<Integer>>();
+        consentingFitLine = new ArrayList<Line>();
+
+        // Run RANSAC, saving intermediary steps for visualization.
+        ransac = new Ransac(this);
+        result = ransac.findLines(laser);
+
+        assert(points.size()            == totalIter);
+        assert(beamBegin.size()         == totalIter);
+        assert(sample.size()            == totalIter);
+        assert(sampleFitLine.size()     == totalIter);
+        assert(consenting.size()        == totalIter);
+        assert(consentingFitLine.size() == totalIter);
     }
 
     @Override
     protected void paintComponent(Graphics g) {
-        final double scale = 100;
+        final double scale = 50;
         int height = getHeight(), width = getWidth();
         int xcenter = width / 2, ycenter = 10;
 
-        g.setColor(Color.gray);
+        g.setColor(Color.white);
         g.fillRect(0, 0, width, height);
 
         // Draw laser beams.
@@ -66,6 +98,15 @@ public class TestRansac extends JPanel {
             x += xcenter;
             y += ycenter;
             g.drawLine(xcenter, ycenter, (int)x, (int)y);
+        }
+
+        // Draw points being considered in current iteration.
+        assert(displayedIter >= 0 && displayedIter < totalIter);
+        g.setColor(Color.blue);
+        for(Point2D.Double p : points.get(displayedIter)) {
+            double x = p.x * scale + xcenter,
+                   y = p.y * scale + ycenter;
+            g.drawOval((int)x - 2, (int)y - 2, 4, 4);
         }
     }
 

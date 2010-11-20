@@ -23,6 +23,15 @@ public class Ransac {
     public int minConsensus = 30;
     /// Number of laser readings.
     final public int numLaser = 181;
+    /// Tester object to store intermediary data in. Null unless testing.
+    TestRansac tester = null;
+
+    public Ransac() {
+    }
+
+    public Ransac(TestRansac tester0) {
+        tester = tester0;
+    }
 
     /// Finds lines in the given laser readings, using RANSAC.
     public Line[] findLines(final double[] laser) {
@@ -53,6 +62,14 @@ public class Ransac {
                     consenting.add(i);
             }
 
+            // Save intermediary data for testing.
+            if(tester != null) {
+                tester.points.add(points);
+                tester.sample.add(sample);
+                tester.sampleFitLine.add(bestFit);
+                tester.consenting.add(consenting);
+            }
+
             // If there is consensus, compute new best-fit line of consenting
             // points, store it, and remove consenting points from further
             // consideration.
@@ -63,19 +80,31 @@ public class Ransac {
                 bestFit = bestFitLine(selected);
                 lines.add(bestFit);
                 points = removeIndices(points, consenting);
+            } else {
+                // Otherwise discard the line and try again.
+                bestFit = null;
             }
-            // Otherwise discard the line and try again.
+
+            if(tester != null)
+                tester.consentingFitLine.add(bestFit);
         }
 
         timer = System.currentTimeMillis() - timer;
         System.out.format("RANSAC ran %d iterations in %.3f seconds, " +
                           "found %d lines, %d points left unmatched.\n",
-                          iter + 1, timer / 1000.0, lines.size(), points.length);
+                          iter, timer / 1000.0, lines.size(), points.length);
+        if(tester != null)
+            tester.totalIter = iter;
         return lines.toArray(new Line[0]); // I can't believe Java requires the type like this.
     }
 
     /// Converts the laser readings to cartesian points.
     private Point2D.Double[] laser2cartesian(final double laser[]) {
+        System.out.format("{ %f", laser[0]);
+        for(int i = 1; i < numLaser; i++)
+            System.out.format(", %f", laser[i]);
+        System.out.format(" }\n");
+
         assert(laser.length == numLaser);
         Point2D.Double[] points = new Point2D.Double[numLaser];
         Vector2D tmp = new Vector2D();
@@ -91,6 +120,8 @@ public class Ransac {
         Random rand = new Random();
         assert(sampleBeamWidth <= points.length);
         int beamBegin = rand.nextInt(points.length - sampleBeamWidth + 1);
+        if(tester != null)
+            tester.beamBegin.add(beamBegin);
         ArrayList<Integer> indices = new ArrayList<Integer>(sampleBeamWidth);
         for(int i = 0; i < sampleBeamWidth; i++)
             indices.add(i, beamBegin + i);
@@ -103,15 +134,17 @@ public class Ransac {
 
     /**
      * Returns copy of array, with specified indices removed.
-     * Alters original array in-place.
      */
     private Point2D.Double[] removeIndices(Point2D.Double[] points, ArrayList<Integer> indices) {
         // Create new point list, removing matched points.
+        Point2D.Double[] copy = new Point2D.Double[points.length];
+        for(int i = 0; i < points.length; i++)
+            copy[i] = points[i];
         for(int index : indices)
-            points[index] = null;
+            copy[index] = null;
         Point2D.Double[] newPoints = new Point2D.Double[points.length - indices.size()];
         int pos = 0;
-        for(Point2D.Double p : points) {
+        for(Point2D.Double p : copy) {
             if(p != null) {
                 assert(pos < newPoints.length);
                 newPoints[pos] = p;
