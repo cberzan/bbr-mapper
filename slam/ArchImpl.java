@@ -227,10 +227,12 @@ public class ArchImpl extends ActionServerImpl implements Arch {
         //for(int i = 0; i <= 180; i++)
         //    System.out.format("%f, ", laser[i]);
         //System.out.println();
-        
+
         // Test sim landmarks.
+        /*
         try {
-            Landmark[] landmarks = (Landmark[])call(landmarkServer, "getLandmarks");
+            Landmark[] landmarks = (Landmark[])call(landmarkServer, "getLandmarks",
+                FIXME need to pass pose);
             System.out.format("Got %d landmarks:\n", landmarks.length);
             for(Landmark l : landmarks)
                 System.out.format("id=%d mag=%f dir=%f\n",
@@ -239,6 +241,7 @@ public class ArchImpl extends ActionServerImpl implements Arch {
             System.out.println("FAILED to get landmarks: " + e);
             e.printStackTrace();
         }
+        */
 
         // Perform desired motion.
         doMotion(getSchemaSum());
