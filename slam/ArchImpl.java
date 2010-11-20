@@ -187,14 +187,6 @@ public class ArchImpl extends ActionServerImpl implements Arch {
      * At startup, tries to get references to all servers.
      */
     public boolean allServersReady() {
-        try {
-            Vector2D.test();
-        } catch(Exception e) {
-            System.err.println("Vector2D tests failed.");
-            e.printStackTrace();
-            return false;
-        }
-
         if(rand == null) {
             rand = new Random();
         }

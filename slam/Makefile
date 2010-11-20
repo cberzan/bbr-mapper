@@ -3,7 +3,7 @@ PACKAGE_PREFIX = com/slam
 
 ### Targets ################################################################
 
-all: utils interfaces impls
+all: utils interfaces impls tests
 
 utils: \
 	$(PACKAGE_PREFIX)/Landmark.class \
@@ -20,12 +20,15 @@ interfaces: \
 	$(PACKAGE_PREFIX)/BeaconLandmarkServer.class \
 	$(PACKAGE_PREFIX)/RansacLandmarkServer.class
 
-
 impls: \
 	$(PACKAGE_PREFIX)/ArchImpl.class \
 	$(PACKAGE_PREFIX)/EKFServerImpl.class \
 	$(PACKAGE_PREFIX)/BeaconLandmarkServerImpl.class \
 	$(PACKAGE_PREFIX)/RansacLandmarkServerImpl.class
+
+tests: \
+	$(PACKAGE_PREFIX)/TestVector2D.class \
+	$(PACKAGE_PREFIX)/TestRansac.class
 
 ### Utils ###################################################################
 
@@ -79,4 +82,12 @@ $(PACKAGE_PREFIX)/BeaconLandmarkServerImpl.class: $(PACKAGE_PREFIX)/BeaconLandma
 
 $(PACKAGE_PREFIX)/RansacLandmarkServerImpl.class: $(PACKAGE_PREFIX)/RansacLandmarkServerImpl.java
 	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/RansacLandmarkServerImpl.java
+
+### Impls ###################################################################
+
+$(PACKAGE_PREFIX)/TestVector2D.class: $(PACKAGE_PREFIX)/TestVector2D.java
+	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/TestVector2D.java
+
+$(PACKAGE_PREFIX)/TestRansac.class: $(PACKAGE_PREFIX)/TestRansac.java
+	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/TestRansac.java
 
