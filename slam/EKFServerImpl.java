@@ -36,8 +36,8 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
     private Updater u;
     private Object odomServer = null;
     private Object landmarkServer = null;
-    private Pose currentPose;
     private Hashtable landmarkTable = null;
+    private Pose currentPose;
 
     // ***********************************************************************
     // *** Abstract methods in ADEServerImpl that need to be implemented
@@ -170,6 +170,9 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
             Sleep(200);
         }
         
+        // Initialize odometry to zero.
+        currentPose = new Pose();
+
         // Get ref to landmark server.
         while(landmarkServer == null) {
             // Try to connect to the simulator.
@@ -183,12 +186,17 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
             Sleep(200);
         }
         
-        //Initilize Hashtable to empty
+        //Initialize Kalman Matricies and vars
+        try {
+        initKalman();
+        } catch(Exception e){
+            System.err.println("Error on EKF step 1: " + e);
+            System.err.println("Original cause: " + e.getCause());
+            e.printStackTrace();
+        }
+        //Initialize Hashtable to empty
         landmarkTable = new Hashtable();
-        
-        // Initialize odometry to zero.
-        currentPose = new Pose();
-        
+                
         // Thread to do whatever periodic updating needs to be done
         u = new Updater();
         u.start();
@@ -196,11 +204,10 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
 
     /// Get current pose as predicted by EKF.
     public Pose getPose() throws RemoteException {
+        
         System.out.println("EKFServerImpl: currentPose " + currentPose);
         return currentPose;
     }
-
-    
     //Kalman Vars
     private Matrix matX = null; //State
     private Matrix matP = null; //Covariance
@@ -211,6 +218,43 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
     private Matrix[] matJz;  //Landmark Prediction Jacobian - polar
     private Matrix matQ = null; //Process Noise
     private double cq; //Process Noise Gaussian 
+
+    private void updatePose() {
+        currentPose.x = matX.get(0,0);
+        currentPose.y = matX.get(1,0);
+        //Theta limited to between 0 and 2pi
+        double theta = matX.get(0,0);
+        while(theta < 0){
+            theta = theta + 2 * Math.PI;
+        }
+        while(theta > 2*Math.PI) {
+            theta = theta - 2 * Math.PI;
+        }
+        currentPose.theta = theta;
+    }
+    
+    //Step 0: Initialize
+    private void initKalman() {
+        //Global Constatns
+        cq = .01;
+
+        //Local Contants
+        double initXvar = .01;
+        double initYvar = .01;
+        double initThetaVar = .01;
+
+        //Initialize X
+        matX = new Matrix(3, 1);
+        matX.set(0, 0, 0);
+        matX.set(1, 0, 0);
+        matX.set(2, 0, 0);
+        
+        //Initialize P
+        matP = new Matrix(3, 3);
+        matP.set(0, 0, initXvar);
+        matP.set(1, 1, initYvar);
+        matP.set(2, 2, initThetaVar);
+    }
     
     //Step 1: Update from Odometry
     private void odoStateUpdate(double delX, double delY, double delTheta) {
@@ -230,6 +274,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
 
         //Update Q
         double delT = Math.sqrt(delX*delX + delY*delY); //Correct delT?
+        matQ = new Matrix(3, 3);
         matQ.set(0, 0, (cq*delX*delX)); //(1,1) = cq * delX^2
         matQ.set(0, 1, (cq*delX*delY)); //(1,2) = cq * delX * delY
         matQ.set(0, 2, (cq*delX*delT)); //(1,3) = cq * delX * delT
@@ -248,13 +293,22 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
         temp.plus(matQ);           // temp = A * Prr * A + Q
         matP.setMatrix(0, 2, 0, 2, temp);
 
+        //Update P upper rows
+        //TODO: Check if we need to include cols 0-2? Already updated?
+        Matrix matPri = matP.getMatrix(0, 2, 0, matP.getColumnDimension()-1); 
+        temp = matA.copy(); // temp = A
+        temp.times(matPri);
+        //TODO: Check if we need to include cols 0-2? Already updated?
+        matP.setMatrix(0, 2, 0, matP.getColumnDimension()-1, temp); 
+
     }
 
-    // Do Kalman Filter
-    public void updateKalman() {
+    //Step 2
+    private void updateKalman(){
         
     }
 
+    
     /**
      * Provide additional information for usage...
      */
@@ -298,29 +352,67 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
         
         public void run() {
             int i = 0;
+            Pose odomPose = new Pose();
+            Pose truePose = new Pose();
+
             while (shouldRead) {
-                //Get Odometry
+                //Get Noisy Odometry
                 try {
-                    double[] odom = (double[])call(odomServer, "getNoisyPoseEgo");
-                    if(odom != null) { // HACK: figure out how to handle this better
-                        currentPose.x = odom[0];
-                        currentPose.y = odom[1];
-                        currentPose.theta = odom[2];
+                    double[] odom = (double[])call(odomServer,
+                                                   "getNoisyPoseEgo");
+                    if(odom != null) {
+                        // HACK: figure out how to handle this better
+                        odomPose.x = odom[0];
+                        odomPose.y = odom[1];
+                        odomPose.theta = odom[2];
                     }
+                    
                 } catch(Exception e) {
                     System.err.println("Error getting odometry: " + e);
                     System.err.println("Original cause: " + e.getCause());
                     e.printStackTrace();
                     // Don't exit, hoping this is a temporary problem.
                 }
+
+                System.out.println("odomPose: " + odomPose);
+
+                //Find Odom Deltas 
+                Pose odomDelPose = new Pose();
+                odomDelPose.x = odomPose.x - currentPose.x;
+                odomDelPose.y = odomPose.y - currentPose.y;
+                odomDelPose.theta = odomPose.theta - currentPose.theta;
+                //Unwrap Theta
+                if(Math.abs(odomDelPose.theta) > Math.PI) {
+                    odomDelPose.theta = odomDelPose.theta - Math.PI;
+                    System.out.println("Warning: Unwrapping Theta!");
+                }
+
+                System.out.println("odomDelPose: " + odomDelPose);
+
+                //EKF: Step 1
+                try {
+                    odoStateUpdate(odomDelPose.x,
+                                   odomDelPose.y, odomDelPose.theta);
+                } catch(Exception e){
+                    System.err.println("Error on EKF step 1: " + e);
+                    System.err.println("Original cause: " + e.getCause());
+                    e.printStackTrace();
+                    // Don't exit, hoping this is a temporary problem.
+                }
+
+                //Update Pose with Estimated Position
+                updatePose();
                 
+                System.out.println("currentPose: " + currentPose);
+
                 //Get Landmarks
                 try {
                     Landmark[] landmarks = (Landmark[])call(landmarkServer,
                                                             "getLandmarks",
                                                             currentPose);
-                    if(landmarks != null) { // HACK: figure out how to handle this better
-                        
+                    if(landmarks == null) {
+                        // HACK: figure out how to handle this better
+                        System.out.println("Warning: Null Landmarks!");
                     }
                 } catch(Exception e) {
                     System.err.println("Error getting landmarks: " + e);
@@ -329,10 +421,29 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                     // Don't exit, hoping this is a temporary problem.
                 }
                 
-
                 //Update Kalman Filter
                 updateKalman();
+
+                //Get True Position
+                try {
+                    double[] odom = (double[])call(odomServer,
+                                                   "getPoseEgo");
+                    if(odom != null) {
+                        // HACK: figure out how to handle this better
+                        truePose.x = odom[0];
+                        truePose.y = odom[1];
+                        truePose.theta = odom[2];
+                    }
+                    
+                } catch(Exception e) {
+                    System.err.println("Error getting true odometry: " + e);
+                    System.err.println("Original cause: " + e.getCause());
+                    e.printStackTrace();
+                    // Don't exit, hoping this is a temporary problem.
+                }
                 
+                System.out.println("truePose: " + truePose);
+
                 Sleep(200);
             }
             System.out.println(prg + ": Exiting Updater thread...");
