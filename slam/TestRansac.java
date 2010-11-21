@@ -100,8 +100,13 @@ public class TestRansac extends JPanel {
             g.drawLine(xcenter, ycenter, (int)x, (int)y);
         }
 
-        // Draw points being considered in current iteration.
+        // Draw iteration number.
+        g.setColor(Color.black);
         assert(displayedIter >= 0 && displayedIter < totalIter);
+        g.drawString("Iteration: " + displayedIter + " (n and p to change)",
+                     0, height / 2 - 20);
+
+        // Draw points being considered in current iteration.
         g.setColor(Color.blue);
         for(Point2D.Double p : points.get(displayedIter)) {
             double x = p.x * scale + xcenter,
@@ -161,6 +166,7 @@ public class TestRansac extends JPanel {
         double errSample = calcSquareDist(sampleFitLine.get(displayedIter),
                                           points.get(displayedIter),
                                           consenting.get(displayedIter));
+        errSample /= sample.get(displayedIter).length;
         g.drawString("Sample error:       " + errSample, 0, height / 2);
 
         // Draw best-fit line through consenting points.
@@ -186,6 +192,7 @@ public class TestRansac extends JPanel {
             double errCons = calcSquareDist(consentingFitLine.get(displayedIter),
                                             points.get(displayedIter),
                                             consenting.get(displayedIter));
+            errCons /= consenting.get(displayedIter).size();
             g.drawString("Consensus error: " + errCons, 0, height / 2 + 20);
         } else {
             g.drawString("No consensus", 0, height / 2 + 20);
