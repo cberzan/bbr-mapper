@@ -44,6 +44,7 @@ public class Ransac {
 
         int iter;
         for(iter = 0; iter < iterations; iter++) {
+            //System.out.format("Iteration %d\n", iter);
             // Quit early if out of points.
             if(points.length < minConsensus)
                 break;
@@ -176,6 +177,17 @@ public class Ransac {
         ss_xx -= n * mean_x * mean_x;
         ss_yy -= n * mean_y * mean_y;
         ss_xy -= n * mean_x * mean_y;
+
+        /*
+        {
+            double r2 = ss_xy * ss_xy / (ss_xx * ss_yy);
+            System.out.format("n=%d R2=%f\n", n, r2);
+            System.out.format("{ (%.4f, %.4f)", points[0].x, points[0].y);
+            for(int i = 1; i < points.length; i++)
+                System.out.format(", (%.4f, %.4f)", points[i].x, points[i].y);
+            System.out.format(" }\n");
+        }
+        */
 
         Line line = new Line();
         line.m = ss_xy / ss_xx;
