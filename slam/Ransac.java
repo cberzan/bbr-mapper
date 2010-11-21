@@ -27,6 +27,8 @@ public class Ransac {
     public int minConsensus = 30;
     /// R2 threshold under which a best-fit-line is bad.
     public double badR2threshold = 0.95;
+    /// How many points can be confounded (fit multiple lines) for the result to still be valid.
+    public int confoundThreshold = 15;
     /// Number of laser readings.
     final public int numLaser = 181;
     /// Tester object to store intermediary data in. Null unless testing.
@@ -39,34 +41,43 @@ public class Ransac {
         tester = tester0;
     }
 
-    /// Finds lines in the given laser readings, using RANSAC.
+    /// docu TODO
     public Line[] findLines(final double[] laser) {
         long timer = System.currentTimeMillis();
         ArrayList<Line> lines = new ArrayList<Line>();
         int totalIter = 0;
 
-        for(int metaIter = 0; metaIter < metaIterations; metaIter++) {
+        int metaIter;
+        for(metaIter = 0; metaIter < metaIterations; metaIter++) {
             lines.clear();
             int iter = findLinesGreedy(laser, lines);
-            System.out.format("metaIter=%d found %d lines in %d greedy iterations\n",
-                              metaIter, lines.size(), iter);
             totalIter += iter;
-            if(iter < iterations) {
-                // Matched all points in few iterations -- good!
+            int confounds = countConfounds(laser, lines);
+            System.out.format("metaIter=%d found %d lines (%d confounds) in %d greedy iterations\n",
+                              metaIter, lines.size(), confounds, iter);
+            if(iter < iterations && confounds < confoundThreshold) {
+                // This is a good catch because:
+                // - it ran for few iterations, therefore many points were matched
+                // - there are few confounds, therefore there are no "duplicate" lines
+                metaIter++; // for stats only
                 break;
             }
         }
         // If we don't break early, we just return the lines from the last attempt.
 
         timer = System.currentTimeMillis() - timer;
-        System.out.format("RANSAC ran %d iterations in %.3f seconds, " +
-                          "found %d lines, ? points left unmatched.\n",
-                          totalIter, timer / 1000.0, lines.size());
+        System.out.format("RANSAC ran %d meta-iterations (%d total iterations) " +
+                          "in %.3f seconds, found %d lines.\n",
+                          metaIter, totalIter, timer / 1000.0, lines.size());
         if(tester != null)
             tester.totalIter = totalIter;
         return lines.toArray(new Line[0]); // I can't believe Java requires the type like this.
     }
 
+    /**
+     * Finds lines in the given laser readings, using RANSAC.
+     * Fills in the lines array, and returns the number of iterations ran.
+     */
     public int findLinesGreedy(final double[] laser, ArrayList<Line> lines) {
         // Points considered for next matching.
         Point2D.Double[] points = laser2cartesian(laser);
@@ -224,5 +235,24 @@ public class Ransac {
         line.m = ss_xy / ss_xx;
         line.b = mean_y - line.m * mean_x;
         return r2;
+    }
+
+    /*
+     * Returns number of points that are within maxBelongDist of more than one
+     * line.
+     */
+    int countConfounds(final double[] laser, ArrayList<Line> lines) {
+        Point2D.Double[] points = laser2cartesian(laser);
+        int count = 0;
+        for(Point2D.Double p : points) {
+            int claimers = 0;
+            for(Line l : lines) {
+                if(l.distance(p) < maxBelongDist)
+                    claimers++;
+            }
+            if(claimers > 1)
+                count++;
+        }
+        return count;
     }
 };
