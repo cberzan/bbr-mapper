@@ -9,10 +9,14 @@ import java.util.Random;
 /**
  * RANSAC line-detection algorithm.
  * All parameters are public fields.
+ *
+ * TODO explain modifications
  */
 public class Ransac {
-    /// Iterations to attmept to find lines.
-    public int iterations = 1000;
+    /// Iterations of the greedy line-finder.
+    public int metaIterations = 10;
+    /// Iterations random sampling to find one line.
+    public int iterations = 100;
     /// Size of initial sample.
     public int sampleSize = 5;
     /// Width of laser beam to consider for initial sample.
@@ -37,12 +41,35 @@ public class Ransac {
 
     /// Finds lines in the given laser readings, using RANSAC.
     public Line[] findLines(final double[] laser) {
-        // Benchmark.
         long timer = System.currentTimeMillis();
+        ArrayList<Line> lines = new ArrayList<Line>();
+        int totalIter = 0;
+
+        for(int metaIter = 0; metaIter < metaIterations; metaIter++) {
+            lines.clear();
+            int iter = findLinesGreedy(laser, lines);
+            System.out.format("metaIter=%d found %d lines in %d greedy iterations\n",
+                              metaIter, lines.size(), iter);
+            totalIter += iter;
+            if(iter < iterations) {
+                // Matched all points in few iterations -- good!
+                break;
+            }
+        }
+        // If we don't break early, we just return the lines from the last attempt.
+
+        timer = System.currentTimeMillis() - timer;
+        System.out.format("RANSAC ran %d iterations in %.3f seconds, " +
+                          "found %d lines, ? points left unmatched.\n",
+                          totalIter, timer / 1000.0, lines.size());
+        if(tester != null)
+            tester.totalIter = totalIter;
+        return lines.toArray(new Line[0]); // I can't believe Java requires the type like this.
+    }
+
+    public int findLinesGreedy(final double[] laser, ArrayList<Line> lines) {
         // Points considered for next matching.
         Point2D.Double[] points = laser2cartesian(laser);
-        // Good lines saved.
-        ArrayList<Line> lines = new ArrayList<Line>();
 
         int iter;
         for(iter = 0; iter < iterations; iter++) {
@@ -101,14 +128,7 @@ public class Ransac {
             if(tester != null)
                 tester.consentingFitLine.add(bestFit);
         }
-
-        timer = System.currentTimeMillis() - timer;
-        System.out.format("RANSAC ran %d iterations in %.3f seconds, " +
-                          "found %d lines, %d points left unmatched.\n",
-                          iter, timer / 1000.0, lines.size(), points.length);
-        if(tester != null)
-            tester.totalIter = iter;
-        return lines.toArray(new Line[0]); // I can't believe Java requires the type like this.
+        return iter;
     }
 
     /// Converts the laser readings to cartesian points.
