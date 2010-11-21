@@ -1,6 +1,7 @@
 package com.slam;
 
 import java.awt.*;
+import java.awt.event.*;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import javax.swing.*;
@@ -20,6 +21,24 @@ public class TestRansac extends JPanel {
     protected ArrayList<ArrayList<Integer>> consenting;
     protected ArrayList<Line> consentingFitLine;
     protected int totalIter;
+
+    private class MyKeyListener extends KeyAdapter {
+        public void keyTyped(KeyEvent e) {
+            char c = e.getKeyChar();
+            if(c == 'n' || c == 'N') {
+                if(displayedIter + 1 < totalIter)
+                    displayedIter++;
+                else
+                    System.out.println("This is the last iteration.");
+            } else if(c == 'p' || c == 'P') {
+                if(displayedIter > 0)
+                    displayedIter--;
+                else
+                    System.out.println("This is the first iteration.");
+            }
+            repaint();
+        }
+    }
 
     public TestRansac() {
         super();
@@ -77,6 +96,8 @@ public class TestRansac extends JPanel {
         assert(sampleFitLine.size()     == totalIter);
         assert(consenting.size()        == totalIter);
         assert(consentingFitLine.size() == totalIter);
+
+        addKeyListener(new MyKeyListener());
     }
 
     @Override
@@ -103,7 +124,8 @@ public class TestRansac extends JPanel {
         // Draw iteration number.
         g.setColor(Color.black);
         assert(displayedIter >= 0 && displayedIter < totalIter);
-        g.drawString("Iteration: " + displayedIter + " (n and p to change)",
+        g.drawString("Iteration: " + (displayedIter + 1) + " of " + totalIter
+                     + " (n and p to change)",
                      0, height / 2 - 20);
 
         // Draw points being considered in current iteration.
@@ -215,6 +237,7 @@ public class TestRansac extends JPanel {
         frame.add(panel);
         frame.pack();
         frame.setVisible(true);
+        panel.requestFocus(); // grab the keyboard
     }
 
     public static void main(String[] args) {
