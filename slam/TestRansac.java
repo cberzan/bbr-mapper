@@ -108,6 +108,98 @@ public class TestRansac extends JPanel {
                    y = p.y * scale + ycenter;
             g.drawOval((int)x - 2, (int)y - 2, 4, 4);
         }
+
+        // Draw beginning of random beam.
+        /*
+        g.setColor(Color.cyan);
+        {
+            Point2D.Double[] iterPoints = points.get(displayedIter);
+            int index = beamBegin.get(displayedIter);
+            Point2D.Double p = iterPoints[index];
+            double x = p.x * scale + xcenter,
+                   y = p.y * scale + ycenter;
+            g.drawOval((int)x - 3, (int)y - 3, 6, 6);
+        }
+        */
+
+        // Draw sample.
+        g.setColor(Color.cyan);
+        for(Point2D.Double p : sample.get(displayedIter)) {
+            double x = p.x * scale + xcenter,
+                   y = p.y * scale + ycenter;
+            g.fillOval((int)x - 2, (int)y - 2, 4, 4);
+        }
+
+        // Draw best-fit line through sample.
+        g.setColor(Color.red);
+        {
+            Line l = sampleFitLine.get(displayedIter);
+            // In the robot's coordinate system:
+            double x1 = -xcenter / scale,
+                   y1 = l.m * x1 + l.b,
+                   x2 = xcenter / scale,
+                   y2 = l.m * x2 + l.b;
+            // In the canvas coordinate system:
+            double x1s = x1 * scale + xcenter,
+                   y1s = y1 * scale + ycenter,
+                   x2s = x2 * scale + xcenter,
+                   y2s = y2 * scale + ycenter;
+            g.drawLine((int)x1s, (int)y1s, (int)x2s, (int)y2s);
+        }
+
+        // Draw consenting points.
+        g.setColor(Color.magenta);
+        for(int index : consenting.get(displayedIter)) {
+            Point2D.Double p = points.get(displayedIter)[index];
+            double x = p.x * scale + xcenter,
+                   y = p.y * scale + ycenter;
+            g.drawOval((int)x - 2, (int)y - 2, 4, 4);
+        }
+
+        // Show square error of best-fit line through sample.
+        g.setColor(Color.black);
+        double errSample = calcSquareDist(sampleFitLine.get(displayedIter),
+                                          points.get(displayedIter),
+                                          consenting.get(displayedIter));
+        g.drawString("Sample error:       " + errSample, 0, height / 2);
+
+        // Draw best-fit line through consenting points.
+        g.setColor(Color.black);
+        if(consentingFitLine.get(displayedIter) != null) {
+            Line l = consentingFitLine.get(displayedIter);
+            // In the robot's coordinate system:
+            double x1 = -xcenter / scale,
+                   y1 = l.m * x1 + l.b,
+                   x2 = xcenter / scale,
+                   y2 = l.m * x2 + l.b;
+            // In the canvas coordinate system:
+            double x1s = x1 * scale + xcenter,
+                   y1s = y1 * scale + ycenter,
+                   x2s = x2 * scale + xcenter,
+                   y2s = y2 * scale + ycenter;
+            g.drawLine((int)x1s, (int)y1s, (int)x2s, (int)y2s);
+        }
+
+        // Show square error of best-fit line through sample.
+        g.setColor(Color.black);
+        if(consentingFitLine.get(displayedIter) != null) {
+            double errCons = calcSquareDist(consentingFitLine.get(displayedIter),
+                                            points.get(displayedIter),
+                                            consenting.get(displayedIter));
+            g.drawString("Consensus error: " + errCons, 0, height / 2 + 20);
+        } else {
+            g.drawString("No consensus", 0, height / 2 + 20);
+        }
+    }
+
+    private static double calcSquareDist(Line line, Point2D.Double[] points,
+                                         ArrayList<Integer> indices) {
+        double sum = 0;
+        for(int index : indices) {
+            double dist = line.distance(points[index]);
+            sum += dist * dist;
+        }
+        return sum;
     }
 
     private static void createAndShowGUI() {
