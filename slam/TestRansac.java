@@ -238,6 +238,11 @@ public class TestRansac extends JPanel {
         frame.pack();
         frame.setVisible(true);
         panel.requestFocus(); // grab the keyboard
+
+        // Quit if the window is closed.
+        frame.addWindowListener(new WindowAdapter() {
+                public void windowClosing(WindowEvent e) { System.exit(0); }
+            });
     }
 
     public static void main(String[] args) {
