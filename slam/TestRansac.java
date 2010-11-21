@@ -44,7 +44,6 @@ public class TestRansac extends JPanel {
         super();
         setPreferredSize(new Dimension(800,600));
 
-        /*
         // In hallway, directly along it.
         double[] hereLaser = {
             0.705001, 0.705084, 0.705382, 0.705895, 0.706624, 0.707571,
@@ -79,8 +78,8 @@ public class TestRansac extends JPanel {
             0.708737, 0.707571, 0.706624, 0.705895, 0.705382, 0.705084,
             0.705001
         };
-        */
 
+        /*
         // In hallway, at an angle.
         double[] hereLaser = {
             0.576925, 0.573079, 0.569456, 0.566050, 0.562855, 0.559865,
@@ -115,6 +114,7 @@ public class TestRansac extends JPanel {
             0.982012, 0.973412, 0.965254, 0.957521, 0.950199, 0.943273,
             0.936731
         };
+        */
         laser = hereLaser;
 
         points            = new ArrayList<Point2D.Double[]>();
