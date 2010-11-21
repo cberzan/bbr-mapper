@@ -14,13 +14,13 @@ public class Ransac {
     /// Iterations to attmept to find lines.
     public int iterations = 1000;
     /// Size of initial sample.
-    public int sampleSize = 10;
+    public int sampleSize = 5;
     /// Width of laser beam to consider for initial sample.
-    public int sampleBeamWidth = 20;
+    public int sampleBeamWidth = 10;
     /// Max distance of a point that still counts as being on the line.
     public double maxBelongDist = 0.05;
     /// Min number of points on a line to count it as valid.
-    public int minConsensus = 30;
+    public int minConsensus = 20;
     /// Number of laser readings.
     final public int numLaser = 181;
     /// Tester object to store intermediary data in. Null unless testing.
