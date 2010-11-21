@@ -101,10 +101,12 @@ public class Ransac {
 
     /// Converts the laser readings to cartesian points.
     private Point2D.Double[] laser2cartesian(final double laser[]) {
+        /*
         System.out.format("{ %f", laser[0]);
         for(int i = 1; i < numLaser; i++)
             System.out.format(", %f", laser[i]);
         System.out.format(" }\n");
+        */
 
         assert(laser.length == numLaser);
         Point2D.Double[] points = new Point2D.Double[numLaser];
