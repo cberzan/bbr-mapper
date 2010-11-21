@@ -20,7 +20,9 @@ public class Ransac {
     /// Max distance of a point that still counts as being on the line.
     public double maxBelongDist = 0.05;
     /// Min number of points on a line to count it as valid.
-    public int minConsensus = 20;
+    public int minConsensus = 30;
+    /// R2 threshold under which a best-fit-line is bad.
+    public double badR2threshold = 0.95;
     /// Number of laser readings.
     final public int numLaser = 181;
     /// Tester object to store intermediary data in. Null unless testing.
@@ -54,7 +56,8 @@ public class Ransac {
             Point2D.Double[] sample = getInitialSample(points);
 
             // Compute best-fit line.
-            Line bestFit = bestFitLine(sample);
+            Line bestFit = new Line();
+            bestFitLine(sample, bestFit);
 
             // See how many points fit this line well.
             ArrayList<Integer> consenting = new ArrayList<Integer>();
@@ -78,8 +81,17 @@ public class Ransac {
                 Point2D.Double[] selected = new Point2D.Double[consenting.size()];
                 for(int i = 0; i < consenting.size(); i++)
                     selected[i] = points[consenting.get(i)];
-                bestFit = bestFitLine(selected);
-                lines.add(bestFit);
+                Line newBestFit = new Line();
+                double r2 = bestFitLine(selected, newBestFit);
+                System.out.format("iter=%d Consensus r2 = %f\n", iter, r2);
+                if(r2 < badR2threshold) {
+                    // Go out on a limb and save the original line, rather than
+                    // the new "best fit" line. This is a HACK against the new
+                    // line fitting points with high density too well...
+                    lines.add(bestFit);
+                } else {
+                    lines.add(newBestFit);
+                }
                 points = removeIndices(points, consenting);
             } else {
                 // Otherwise discard the line and try again.
@@ -162,7 +174,7 @@ public class Ransac {
      * According to http://mathworld.wolfram.com/LeastSquaresFitting.html
      * (formulae 16 and on).
      */
-    Line bestFitLine(Point2D.Double[] points) {
+    double bestFitLine(Point2D.Double[] points, Line line) {
         int n = points.length;
 
         double ss_xx = 0, ss_yy = 0, ss_xy = 0,
@@ -180,20 +192,17 @@ public class Ransac {
         ss_yy -= n * mean_y * mean_y;
         ss_xy -= n * mean_x * mean_y;
 
+        double r2 = ss_xy * ss_xy / (ss_xx * ss_yy);
         /*
-        {
-            double r2 = ss_xy * ss_xy / (ss_xx * ss_yy);
-            System.out.format("n=%d R2=%f\n", n, r2);
-            System.out.format("{ (%.4f, %.4f)", points[0].x, points[0].y);
-            for(int i = 1; i < points.length; i++)
-                System.out.format(", (%.4f, %.4f)", points[i].x, points[i].y);
-            System.out.format(" }\n");
-        }
+        System.out.format("n=%d R2=%f\n", n, r2);
+        System.out.format("{ (%.4f, %.4f)", points[0].x, points[0].y);
+        for(int i = 1; i < points.length; i++)
+            System.out.format(", (%.4f, %.4f)", points[i].x, points[i].y);
+        System.out.format(" }\n");
         */
 
-        Line line = new Line();
         line.m = ss_xy / ss_xx;
         line.b = mean_y - line.m * mean_x;
-        return line;
+        return r2;
     }
 };
