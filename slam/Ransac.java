@@ -1,3 +1,7 @@
+/**
+ * @author Constantin Berzan
+ */
+
 package com.slam;
 
 import java.awt.geom.Point2D;
@@ -10,7 +14,20 @@ import java.util.Random;
  * RANSAC line-detection algorithm.
  * All parameters are public fields.
  *
- * TODO explain modifications
+ * Modifications to avoid overfitting to "dense areas" (in a hallway, have many
+ * more points to our sides than we do in front).
+ * - If R2 from best-fit line is bad, store the original line (computed based on
+ *   a sample, and with enough consenting points) rather than the new
+ *   (overfitted) least-squares line.
+ * - Run the greedy RANSAC algorithm repeatedly, and choose a result that
+ *   matches enough points in less than the maximum number of iterations.
+ * - Additionally in the step above, don't select a result if it has many
+ *   confounded points (points nearby more than one line).
+ *
+ * Ideas for further improvement:
+ * - If we run 10 times now and we're in a bad spot, we stupidly return the last
+ *   result. Instead of rejecting results based on thresholds, score results,
+ *   and select the best.
  */
 public class Ransac {
     /// Iterations of the greedy line-finder.
@@ -41,7 +58,7 @@ public class Ransac {
         tester = tester0;
     }
 
-    /// docu TODO
+    /// Repeatedly runs RANSAC until it finds a good-enough solution.
     public Line[] findLines(final double[] laser) {
         long timer = System.currentTimeMillis();
         ArrayList<Line> lines = new ArrayList<Line>();
@@ -53,8 +70,8 @@ public class Ransac {
             int iter = findLinesGreedy(laser, lines);
             totalIter += iter;
             int confounds = countConfounds(laser, lines);
-            System.out.format("metaIter=%d found %d lines (%d confounds) in %d greedy iterations\n",
-                              metaIter, lines.size(), confounds, iter);
+            //System.out.format("metaIter=%d found %d lines (%d confounds) in %d greedy iterations\n",
+            //                  metaIter, lines.size(), confounds, iter);
             if(iter < iterations && confounds < confoundThreshold) {
                 // This is a good catch because:
                 // - it ran for few iterations, therefore many points were matched
@@ -121,7 +138,7 @@ public class Ransac {
                     selected[i] = points[consenting.get(i)];
                 Line newBestFit = new Line();
                 double r2 = bestFitLine(selected, newBestFit);
-                System.out.format("iter=%d Consensus r2 = %f\n", iter, r2);
+                //System.out.format("iter=%d Consensus r2 = %f\n", iter, r2);
                 if(r2 < badR2threshold) {
                     // Go out on a limb and save the original line, rather than
                     // the new "best fit" line. This is a HACK against the new
