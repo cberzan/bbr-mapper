@@ -22,6 +22,7 @@ public class ArchImpl extends ActionServerImpl implements Arch {
     double[] laser = null;
 
     /// Server references.
+    private Object positionServer = null; // sim testing only
     private Object ekfServer      = null;
     private Object landmarkServer = null;
 
@@ -191,6 +192,14 @@ public class ArchImpl extends ActionServerImpl implements Arch {
             rand = new Random();
         }
 
+        if(positionServer == null) {
+            positionServer = getClient("com.interfaces.PositionServer");
+            if(positionServer == null) {
+                System.out.println("allServersReady: waiting for PositionServer.");
+                return false;
+            }
+        }
+
         if(ekfServer == null) {
             ekfServer = getClient("com.slam.EKFServer");
             if(ekfServer == null) {
@@ -220,23 +229,29 @@ public class ArchImpl extends ActionServerImpl implements Arch {
         //    System.out.format("%f, ", laser[i]);
         //System.out.println();
 
-        // Test sim landmarks.
-        /*
+        // Test RANSAC landmarks.
         try {
-            Landmark[] landmarks = (Landmark[])call(landmarkServer, "getLandmarks",
-                FIXME need to pass pose);
+            // We pass in the true global position -- this is impossible in the
+            // real world.
+            double[] poseADE = (double[])call(positionServer, "getPoseGlobal");
+            Pose pose        = new Pose();
+            pose.x           = poseADE[0];
+            pose.y           = poseADE[1];
+            pose.theta       = poseADE[2];
+
+            Landmark[] landmarks = (Landmark[])call(landmarkServer, "getLandmarks", pose);
             System.out.format("Got %d landmarks:\n", landmarks.length);
-            for(Landmark l : landmarks)
-                System.out.format("id=%d mag=%f dir=%f\n",
-                        l.id, l.position.getMag(), l.position.getDir());
+            for(Landmark l : landmarks) {
+                System.out.format("id=%d x=%f y=%f\n",
+                        l.id, l.position.x, l.position.y);
+            }
         } catch(Exception e) {
             System.out.println("FAILED to get landmarks: " + e);
             e.printStackTrace();
         }
-        */
 
         // Perform desired motion.
-        doMotion(getSchemaSum());
+        //doMotion(getSchemaSum());
 
         /*
         try {
