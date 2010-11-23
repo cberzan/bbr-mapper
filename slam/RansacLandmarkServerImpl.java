@@ -168,8 +168,7 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
 
         // Get ref to LRF server, from which we get the laser data.
         while(lrfServer == null) {
-            // Try to connect to the simulator.
-            lrfServer = getClient("com.lrf.LRFServer");
+            lrfServer = getClient("com.interfaces.LaserServer");
             if(lrfServer != null)
                 break;
 
@@ -204,8 +203,21 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
                 Landmark lm = new Landmark();
                 lm.id = i;
                 lm.position = landmarkDB[i].point;
+                good.add(lm);
             }
         }
+
+        System.out.println("======================================================================");
+        System.out.format("getLandmarks (pose x=%f y=%f theta=%f):\n",
+                robotPose.x, robotPose.y, robotPose.theta);
+        for(int i = 0; i < maxLandmarks; i++) {
+            if(landmarkDB[i] == null)
+                continue;
+            System.out.format("(id=%d timesSeen=%d) ", i, landmarkDB[i].timesSeen);
+        }
+        System.out.format("\n-> about to return %d landmarks\n", good.size());
+        System.out.println("======================================================================");
+
         return good.toArray(new Landmark[0]);
     }
 
@@ -390,6 +402,8 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
             lm.line        = line;
             lm.point       = landmarkPoint(robotPose, line);
             lms.add(lm);
+            System.out.format("extracted landmark: line m=%f b=%f, point x=%f y=%f\n",
+                    line.m, line.b, lm.point.x, lm.point.y);
         }
         return lms;
     }
