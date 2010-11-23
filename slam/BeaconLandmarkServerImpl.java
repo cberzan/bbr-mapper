@@ -149,6 +149,10 @@ public class BeaconLandmarkServerImpl extends ADEServerImpl implements BeaconLan
     }
 
     public Landmark[] getLandmarks(Pose robotPose) throws RemoteException {
+		// FIXME: need to return global position of landmarks, not relative to
+		// robot!
+
+		/*
         if(beacons == null)
             return null;
         Landmark[] landmarks = new Landmark[beacons.length];
@@ -161,6 +165,8 @@ public class BeaconLandmarkServerImpl extends ADEServerImpl implements BeaconLan
             landmarks[i].position.setPol(beacons[i][DISTANCE], beacons[i][HEADING]);
         }
         return landmarks;
+		*/
+		return null;
     }
 
     public int[] flushDiscardedLandmarks() throws RemoteException {
