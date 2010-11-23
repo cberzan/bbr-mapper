@@ -48,6 +48,7 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
     private PriorityQueue<Integer> availableIDs = null;
     private ArrayList<Integer> discardedIDs     = null;
     private long msLastUpdate                   = 0;
+    private boolean initialized                 = false;
 
     /// Max number of landmarks in database.
     private int maxLandmarks = 400;
@@ -185,11 +186,17 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
 
         // This server does not have an Updater thread -- the landmarks are
         // extracted and updated only when getLandmarks() is called.
+
+        initialized = true;
     }
 
     public Landmark[] getLandmarks(Pose robotPose) throws RemoteException {
-        updateLandmarks(robotPose);
+        if(!initialized) {
+            System.err.println("getLandmarks: not initialized yet!");
+            return new Landmark[0];
+        }
 
+        updateLandmarks(robotPose);
         ArrayList<Landmark> good = new ArrayList<Landmark>();
         for(int i = 0; i < maxLandmarks; i++) {
             if(landmarkDB[i] != null && landmarkDB[i].seenLastRun &&
