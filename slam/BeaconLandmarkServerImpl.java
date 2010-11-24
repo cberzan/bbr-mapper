@@ -29,7 +29,6 @@ public class BeaconLandmarkServerImpl extends ADEServerImpl implements BeaconLan
     private static boolean verbose = false;
 
     /* Server-specific fields */
-    private boolean initialized = false;
     private Object actionServer = null;
     private Double[][] beacons  = null;
     final int HEADING = 0, DISTANCE = 1;
@@ -131,23 +130,24 @@ public class BeaconLandmarkServerImpl extends ADEServerImpl implements BeaconLan
     // ***********************************************************************
     public BeaconLandmarkServerImpl() throws RemoteException {
         super();
+    }
 
+    private boolean allServersReady() {
         // Get ref to action server, from which we get the beacon data.
-        while(actionServer == null) {
+        if(actionServer == null) {
             // Try to connect to the simulator.
             actionServer = getClient("com.action.ActionServer");
-            if(actionServer != null)
-                break;
-            
-            System.out.println("BeaconLandmarkServerImpl waiting for actionServer ref.");
-            Sleep(200);
+            if(actionServer == null) {
+                System.out.println("BeaconLandmarkServerImpl waiting for actionServer ref.");
+                return false;
+            }
         }
 
-        initialized = true;
+        return true;
     }
 
     public Landmark[] getLandmarks(Pose robotPose) throws RemoteException {
-        if(!initialized) {
+        if(!allServersReady()) {
             System.err.println("getLandmarks: not initialized yet!");
             return new Landmark[0];
         }
