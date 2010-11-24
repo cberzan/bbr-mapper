@@ -83,9 +83,9 @@ public class Ransac {
         // If we don't break early, we just return the lines from the last attempt.
 
         timer = System.currentTimeMillis() - timer;
-        System.out.format("RANSAC ran %d meta-iterations (%d total iterations) " +
-                          "in %.3f seconds, found %d lines.\n",
-                          metaIter, totalIter, timer / 1000.0, lines.size());
+        //System.out.format("RANSAC ran %d meta-iterations (%d total iterations) " +
+        //                  "in %.3f seconds, found %d lines.\n",
+        //                  metaIter, totalIter, timer / 1000.0, lines.size());
         if(tester != null)
             tester.totalIter = totalIter;
         return lines.toArray(new Line[0]); // I can't believe Java requires the type like this.

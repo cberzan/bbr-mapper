@@ -331,7 +331,8 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
                     System.err.println("ERROR: updateLandmarks saw duplicate landmarks");
                 lm.timesSeen        = landmarkDB[nearest].timesSeen + 1;
                 landmarkDB[nearest] = lm;
-                System.out.println("updateLandmarks: re-observed landmark " + nearest);
+                System.out.format("updateLandmarks: re-observed landmark %d: x=%f y=%f\n",
+                        nearest, lm.point.x, lm.point.y);
             } else {
                 // Seen a new landmark.
                 if(availableIDs.isEmpty()) {
@@ -457,8 +458,8 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
     Point2D.Double robot2world(Pose robotPose, Point2D.Double point) {
         Vector2D v = new Vector2D();
         v.setCart(point.x, point.y);
-        System.out.format("original  : x=%f y=%f mag=%f dir=%f\n",
-                v.getX(), v.getY(), v.getMag(), v.getDir());
+        //System.out.format("original  : x=%f y=%f mag=%f dir=%f\n",
+        //        v.getX(), v.getY(), v.getMag(), v.getDir());
 
         // Rotate.
         double dir = v.getDir() + robotPose.theta;
@@ -466,15 +467,15 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
             dir -= 2 * Math.PI;
         v.setDir(dir);
 
-        System.out.format("rotated   : x=%f y=%f mag=%f dir=%f\n",
-                v.getX(), v.getY(), v.getMag(), v.getDir());
+        //System.out.format("rotated   : x=%f y=%f mag=%f dir=%f\n",
+        //        v.getX(), v.getY(), v.getMag(), v.getDir());
 
         // Translate.
         Point2D.Double result = new Point2D.Double();
         result.x = v.getX() + robotPose.x;
         result.y = v.getY() + robotPose.y;
-        System.out.format("translated: x=%f y=%f mag=%f dir=%f\n",
-                v.getX(), v.getY(), v.getMag(), v.getDir());
+        //System.out.format("translated: x=%f y=%f mag=%f dir=%f\n",
+        //        v.getX(), v.getY(), v.getMag(), v.getDir());
 
         return result;
     }
