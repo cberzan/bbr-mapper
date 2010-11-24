@@ -28,7 +28,8 @@ impls: \
 
 tests: \
 	$(PACKAGE_PREFIX)/TestVector2D.class \
-	$(PACKAGE_PREFIX)/TestRansac.class
+	$(PACKAGE_PREFIX)/TestRansac.class \
+	$(PACKAGE_PREFIX)/TestUtil.class
 
 ### Utils ###################################################################
 
@@ -83,11 +84,14 @@ $(PACKAGE_PREFIX)/BeaconLandmarkServerImpl.class: $(PACKAGE_PREFIX)/BeaconLandma
 $(PACKAGE_PREFIX)/RansacLandmarkServerImpl.class: $(PACKAGE_PREFIX)/RansacLandmarkServerImpl.java
 	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/RansacLandmarkServerImpl.java
 
-### Impls ###################################################################
+### Tests ###################################################################
 
 $(PACKAGE_PREFIX)/TestVector2D.class: $(PACKAGE_PREFIX)/TestVector2D.java
 	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/TestVector2D.java
 
 $(PACKAGE_PREFIX)/TestRansac.class: $(PACKAGE_PREFIX)/TestRansac.java
 	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/TestRansac.java
+
+$(PACKAGE_PREFIX)/TestUtil.class: $(PACKAGE_PREFIX)/TestUtil.java
+	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/TestUtil.java
 
