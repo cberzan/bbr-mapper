@@ -213,9 +213,11 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
         for(int i = 0; i < maxLandmarks; i++) {
             if(landmarkDB[i] == null)
                 continue;
-            System.out.format("(id=%d timesSeen=%d) ", i, landmarkDB[i].timesSeen);
+            System.out.format("(id=%d timesSeen=%d x=%f y=%f)\n",
+                    i, landmarkDB[i].timesSeen,
+                    landmarkDB[i].point.x, landmarkDB[i].point.y);
         }
-        System.out.format("\n-> about to return %d landmarks\n", good.size());
+        System.out.format("-> about to return %d landmarks\n", good.size());
         System.out.println("======================================================================");
 
         return good.toArray(new Landmark[0]);
@@ -461,11 +463,9 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
         //System.out.format("original  : x=%f y=%f mag=%f dir=%f\n",
         //        v.getX(), v.getY(), v.getMag(), v.getDir());
 
-        // Rotate.
-        double dir = v.getDir() + robotPose.theta;
-        if(dir > 2 * Math.PI)
-            dir -= 2 * Math.PI;
-        v.setDir(dir);
+        // Rotate: -90deg for lasers, theta for robot orientation.
+        double dir = v.getDir() - Math.PI / 2 + robotPose.theta;
+        v.setDir(Util.normalizeRad(dir));
 
         //System.out.format("rotated   : x=%f y=%f mag=%f dir=%f\n",
         //        v.getX(), v.getY(), v.getMag(), v.getDir());
