@@ -155,7 +155,8 @@ public class BeaconLandmarkServerImpl extends ADEServerImpl implements BeaconLan
         try {
             beacons = (Double[][])call(actionServer, "getBeaconData");
         } catch(Exception e) {
-            System.err.println("ERROR: getLandmarks could not getBeaconData");
+            System.err.println("ERROR: getLandmarks could not getBeaconData: " + e);
+            e.printStackTrace();
             return new Landmark[0];
         }
 
@@ -165,9 +166,10 @@ public class BeaconLandmarkServerImpl extends ADEServerImpl implements BeaconLan
             //        i, beacons[i][DISTANCE], beacons[i][HEADING]);
 
             // Convert from robot's coord sys to world coord sys.
+            // Apparently, in ADESim2010 the beacon orientation is relative to
+            // the robot position only, i.e. it is independent of pose.theta.
             Vector2D v = new Vector2D();
-            v.setPol(beacons[i][DISTANCE], beacons[i][HEADING]);
-            v.setDir(Util.normalizeRad(v.getDir() + robotPose.theta));
+            v.setPol(beacons[i][DISTANCE], Util.deg2rad(beacons[i][HEADING]));
             v.setX(v.getX() + robotPose.x);
             v.setY(v.getY() + robotPose.y);
 
