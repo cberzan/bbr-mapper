@@ -237,10 +237,12 @@ public class TestRansac extends JPanel {
         {
             Line l = sampleFitLine.get(displayedIter);
             // In the robot's coordinate system:
+            double m = -l.a / l.b,
+                   b = -l.c / l.b;
             double x1 = -xcenter / scale,
-                   y1 = l.m * x1 + l.b,
+                   y1 = m * x1 + b,
                    x2 = xcenter / scale,
-                   y2 = l.m * x2 + l.b;
+                   y2 = m * x2 + b;
             // In the canvas coordinate system:
             double x1s = x1 * scale + xcenter,
                    y1s = y1 * scale + ycenter,
@@ -271,10 +273,12 @@ public class TestRansac extends JPanel {
         if(consentingFitLine.get(displayedIter) != null) {
             Line l = consentingFitLine.get(displayedIter);
             // In the robot's coordinate system:
+            double m = -l.a / l.b,
+                   b = -l.c / l.b;
             double x1 = -xcenter / scale,
-                   y1 = l.m * x1 + l.b,
+                   y1 = m * x1 + b,
                    x2 = xcenter / scale,
-                   y2 = l.m * x2 + l.b;
+                   y2 = m * x2 + b;
             // In the canvas coordinate system:
             double x1s = x1 * scale + xcenter,
                    y1s = y1 * scale + ycenter,

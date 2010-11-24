@@ -1,6 +1,6 @@
 Index: com/lrf/LRFServerVis.java
 ===================================================================
---- com/lrf/LRFServerVis.java	(revision 2746)
+--- com/lrf/LRFServerVis.java	(revision 2760)
 +++ com/lrf/LRFServerVis.java	(working copy)
 @@ -28,6 +28,9 @@
  import javax.swing.JPanel;
@@ -52,7 +52,7 @@ Index: com/lrf/LRFServerVis.java
          }
      }
  
-@@ -356,10 +366,38 @@
+@@ -356,10 +366,40 @@
                      }
                  }
              }
@@ -69,10 +69,12 @@ Index: com/lrf/LRFServerVis.java
 +                    //System.out.format("line: m=%f b=%f (y=mx+b)\n", line.m, line.b);
 +                    // Compute line endpoints (may be off-screen -- that's OK)
 +                    // in robot's coordinate system.
++                    double m = -line.a / line.b,
++                           b = -line.c / line.b;
 +                    double x1 = -xCenter * mPerPixel,
-+                           y1 = line.m * x1 + line.b,
++                           y1 = m * x1 + b,
 +                           x2 = xCenter * mPerPixel,
-+                           y2 = line.m * x2 + line.b;
++                           y2 = m * x2 + b;
 +                    //System.out.format("original: x1=%f y1=%f x2=%f y2=%f\n", x1, y1, x2, y2);
 +                    // Convert to coord system of canvas (y is reversed...)
 +                    double x1s = x1 / mPerPixel + xCenter,

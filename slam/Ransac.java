@@ -249,8 +249,11 @@ public class Ransac {
         System.out.format(" }\n");
         */
 
-        line.m = ss_xy / ss_xx;
-        line.b = mean_y - line.m * mean_x;
+        double m = ss_xy / ss_xx;
+        double b = mean_y - m * mean_x;
+        line.a = m;
+        line.b = -1;
+        line.c = b;
         return r2;
     }
 
