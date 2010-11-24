@@ -221,6 +221,10 @@ public class Ransac {
      * Finds the least-squares best-fit line for a given set of points.
      * According to http://mathworld.wolfram.com/LeastSquaresFitting.html
      * (formulae 16 and on).
+     *
+     * Uses a trick to handle vertical lines: it just swaps the x and y
+     * coordinates to turn it into a horizontal line and avoid division by
+     * near-zero.
      */
     double bestFitLine(Point2D.Double[] points, Line line) {
         int n = points.length;
@@ -249,11 +253,22 @@ public class Ransac {
         System.out.format(" }\n");
         */
 
-        double m = ss_xy / ss_xx;
-        double b = mean_y - m * mean_x;
-        line.a = m;
-        line.b = -1;
-        line.c = b;
+        double slope = ss_xy / ss_xx;
+        if(slope >= -1 && slope <= 1) {
+            // Line closer to horizontal.
+            double m = ss_xy / ss_xx;
+            double b = mean_y - m * mean_x;
+            line.a = m;
+            line.b = -1;
+            line.c = b;
+        } else {
+            // Line closer to vertical.
+            double rm = ss_xx / ss_xy;
+            double rb = mean_x - rm * mean_y;
+            line.a = -1;
+            line.b = rm;
+            line.c = rb;
+        }
         return r2;
     }
 
