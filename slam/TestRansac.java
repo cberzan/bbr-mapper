@@ -184,6 +184,23 @@ public class TestRansac extends JPanel {
         g.setColor(Color.white);
         g.fillRect(0, 0, width, height);
 
+        /*
+        // Draw test lines.
+        g.setColor(Color.magenta);
+        Line testVert  = new Line(), // line x = 3
+             testHoriz = new Line(); // line y = 8/2
+        testVert.a = 1;
+        testVert.b = 0;
+        testVert.c = -3;
+        testHoriz.a = 0;
+        testHoriz.b = 2;
+        testHoriz.c = -8;
+        if(displayedIter % 2 == 0)
+            myDrawLine(g, testVert);
+        else
+            myDrawLine(g, testHoriz);
+        */
+
         // Draw laser beams.
         g.setColor(Color.green);
         for(int i = 0; i < numLaser; i++) {
