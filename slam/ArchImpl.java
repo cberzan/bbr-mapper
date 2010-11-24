@@ -242,14 +242,12 @@ public class ArchImpl extends ActionServerImpl implements Arch {
             pose.theta       = poseADE[2];
             //System.out.format("Pose: x=%f y=%f theta=%f\n", pose.x, pose.y, pose.theta);
 
-            /*
             Landmark[] landmarks = (Landmark[])call(landmarkServer, "getLandmarks", pose);
             System.out.format("Got %d landmarks:\n", landmarks.length);
             for(Landmark l : landmarks) {
                 System.out.format("id=%d x=%f y=%f\n",
                         l.id, l.position.x, l.position.y);
             }
-            */
         } catch(Exception e) {
             System.out.println("FAILED to get landmarks: " + e);
             e.printStackTrace();
