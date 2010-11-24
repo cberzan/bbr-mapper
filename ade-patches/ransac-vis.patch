@@ -52,7 +52,7 @@ Index: com/lrf/LRFServerVis.java
          }
      }
  
-@@ -356,10 +366,40 @@
+@@ -356,10 +366,47 @@
                      }
                  }
              }
@@ -66,23 +66,30 @@ Index: com/lrf/LRFServerVis.java
 +                // Graphics size limited by (0, 0), (xSize, ySize).
 +                comp2D.setColor(Color.red);
 +                for(com.slam.Line line : ransacLines) {
-+                    //System.out.format("line: m=%f b=%f (y=mx+b)\n", line.m, line.b);
-+                    // Compute line endpoints (may be off-screen -- that's OK)
-+                    // in robot's coordinate system.
-+                    double m = -line.a / line.b,
-+                           b = -line.c / line.b;
-+                    double x1 = -xCenter * mPerPixel,
-+                           y1 = m * x1 + b,
-+                           x2 = xCenter * mPerPixel,
-+                           y2 = m * x2 + b;
-+                    //System.out.format("original: x1=%f y1=%f x2=%f y2=%f\n", x1, y1, x2, y2);
-+                    // Convert to coord system of canvas (y is reversed...)
++                    double x1, y1, x2, y2;
++                    double slope = -line.a / line.b;
++                    if(slope >= -1 && slope <= 1) {
++                        // Line is closer to horizontal.
++                        double m = -line.a / line.b,
++                               b = -line.c / line.b;
++                        x1 = -xCenter * mPerPixel;
++                        y1 = m * x1 + b;
++                        x2 = xCenter * mPerPixel;
++                        y2 = m * x2 + b;
++                    } else {
++                        // Line is closer to vertical.
++                        double rm = -line.b / line.a,
++                               rb = -line.c / line.a;
++                        y1 = -getSize().height * mPerPixel;
++                        x1 = rm * y1 + rb;
++                        y2 = getSize().height * mPerPixel;
++                        x2 = rm * y2 + rb;
++                    }
++                    // In the canvas coordinate system (y is reversed...)
 +                    double x1s = x1 / mPerPixel + xCenter,
 +                           y1s = yCenter - y1 / mPerPixel,
 +                           x2s = x2 / mPerPixel + xCenter,
 +                           y2s = yCenter - y2 / mPerPixel;
-+                    //System.out.format("adjusted: x1s=%f y1s=%f x2s=%f y2s=%f\n", x1s, y1s, x2s, y2s);
-+                    // Draw the sucker!
 +                    comp2D.drawLine((int)x1s, (int)y1s, (int)x2s, (int)y2s);
 +                }
 +            }
