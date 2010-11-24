@@ -13,6 +13,7 @@ package com.slam;
 import ade.*;
 import ade.exceptions.ADECallException;
 import com.*;
+import java.awt.geom.Point2D;
 import java.io.*;
 import java.math.*;
 import java.net.*;
@@ -28,9 +29,9 @@ public class BeaconLandmarkServerImpl extends ADEServerImpl implements BeaconLan
     private static boolean verbose = false;
 
     /* Server-specific fields */
-    private Updater u;
+    private boolean initialized = false;
     private Object actionServer = null;
-    private Double[][] beacons = null;
+    private Double[][] beacons  = null;
     final int HEADING = 0, DISTANCE = 1;
 
     // ***********************************************************************
@@ -116,7 +117,6 @@ public class BeaconLandmarkServerImpl extends ADEServerImpl implements BeaconLan
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         System.out.print(prg + " shutting down...");
         //finalize();
-        u.halt();
         Sleep(100);
         System.out.println("done.");
     }
@@ -143,30 +143,40 @@ public class BeaconLandmarkServerImpl extends ADEServerImpl implements BeaconLan
             Sleep(200);
         }
 
-        // Thread to do whatever periodic updating needs to be done
-        u = new Updater();
-        u.start();
+        initialized = true;
     }
 
     public Landmark[] getLandmarks(Pose robotPose) throws RemoteException {
-		// FIXME: need to return global position of landmarks, not relative to
-		// robot!
+        if(!initialized) {
+            System.err.println("getLandmarks: not initialized yet!");
+            return new Landmark[0];
+        }
 
-		/*
-        if(beacons == null)
-            return null;
+        try {
+            beacons = (Double[][])call(actionServer, "getBeaconData");
+        } catch(Exception e) {
+            System.err.println("ERROR: getLandmarks could not getBeaconData");
+            return new Landmark[0];
+        }
+
         Landmark[] landmarks = new Landmark[beacons.length];
         for(int i = 0; i < beacons.length; i++) {
             //System.out.format("id = %d, dist=%f heading=%f\n",
             //        i, beacons[i][DISTANCE], beacons[i][HEADING]);
-			landmarks[i] = new Landmark();
-            landmarks[i].id  = i;
-            landmarks[i].position = new Vector2D();
-            landmarks[i].position.setPol(beacons[i][DISTANCE], beacons[i][HEADING]);
+
+            // Convert from robot's coord sys to world coord sys.
+            Vector2D v = new Vector2D();
+            v.setPol(beacons[i][DISTANCE], beacons[i][HEADING]);
+            v.setDir(Util.normalizeRad(v.getDir() + robotPose.theta));
+            v.setX(v.getX() + robotPose.x);
+            v.setY(v.getY() + robotPose.y);
+
+            Landmark lm  = new Landmark();
+            lm.id        = i;
+            lm.position  = new Point2D.Double(v.getX(), v.getY());
+            landmarks[i] = lm;
         }
         return landmarks;
-		*/
-		return null;
     }
 
     public int[] flushDiscardedLandmarks() throws RemoteException {
@@ -200,43 +210,6 @@ public class BeaconLandmarkServerImpl extends ADEServerImpl implements BeaconLan
             }
         }
         return found;
-    }
-
-    /**
-     * The <code>Updater</code> is the main loop that does whatever this
-     * server does.
-     */
-    private class Updater extends Thread {
-
-        private boolean shouldRead;
-
-        public Updater() {
-            shouldRead = true;
-        }
-
-        public void run() {
-            int i = 0;
-            while (shouldRead) {
-                try {
-                    Double[][] newBeacons = (Double[][])call(actionServer, "getBeaconData");
-                    if(newBeacons != null)
-                        beacons = newBeacons;
-                    else
-                        System.out.println("BeaconLandmarkServerImpl: got null beacons");
-                } catch(Exception e) {
-                    System.err.println("Error getting beacons: " + e);
-                    e.printStackTrace();
-                    // Don't exit, hoping this is a temporary problem.
-                }
-                Sleep(200);
-            }
-            System.out.println(prg + ": Exiting Updater thread...");
-        }
-
-        public void halt() {
-            System.out.print("halting update thread...");
-            shouldRead = false;
-        }
     }
 
     /**
