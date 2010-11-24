@@ -402,8 +402,8 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
             lm.line        = line;
             lm.point       = landmarkPoint(robotPose, line);
             lms.add(lm);
-            System.out.format("extracted landmark: line m=%f b=%f, point x=%f y=%f\n",
-                    line.m, line.b, lm.point.x, lm.point.y);
+            System.out.format("extracted landmark: line a=%f b=%f c=%f, point x=%f y=%f\n",
+                    line.a, line.b, line.c, lm.point.x, lm.point.y);
         }
         return lms;
     }
@@ -416,8 +416,26 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
     // TODO There is probably a more efficient / elegant way of doing this...
     Point2D.Double landmarkPoint(Pose robotPose, Line line) {
         // Take two points on the line, w.r.t. robot origin.
-        Point2D.Double ar = new Point2D.Double(0, line.b),
-                       br = new Point2D.Double(1, line.m + line.b);
+        Point2D.Double ar = new Point2D.Double(),
+                       br = new Point2D.Double();
+        double slope = -line.a / line.b;
+        if(slope >= -1 && slope <= 1) {
+            // Line closer to horizontal.
+            double m = -line.a / line.b,
+                   b = -line.c / line.b;
+            ar.x = 0;
+            ar.y = m * ar.x + b;
+            br.x = 1;
+            br.y = m * br.x + b;
+        } else {
+            // Line closer to vertical.
+            double rm = -line.b / line.a,
+                   rb = -line.c / line.a;
+            ar.y = 0;
+            ar.x = rm * ar.y + rb;
+            br.y = 1;
+            br.x = rm * br.y + rb;
+        }
         // Convert the points to world coordinates.
         Point2D.Double aw = robot2world(robotPose, ar),
                        bw = robot2world(robotPose, br);
