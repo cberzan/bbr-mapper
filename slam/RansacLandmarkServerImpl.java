@@ -68,6 +68,17 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
         identified as the same landmark. */
     private double assocDist = 0.1;
 
+    /**
+     * Orientation of laser's 0deg vs. robot's 0deg. Depends on robot, but
+     * usually 90 degrees.
+     */
+    final double laserTheta = -Math.PI / 2;
+    /**
+     * Distances between laser's origin and robot's center of rotation. Depends
+     * on robot. Assuming LRF is on x axis in the robot's coordinate system.
+     */
+    final double laserDispl = 0.2; // empirically determined, see sim-rot-center.ods
+
     // ***********************************************************************
     // *** Abstract methods in ADEServerImpl that need to be implemented
     // ***********************************************************************
@@ -458,13 +469,17 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
     /// Converts a point from robot coordinates to world coordinates.
     // TODO There is probably a more efficient / elegant way of doing this...
     Point2D.Double robot2world(Pose robotPose, Point2D.Double point) {
+        // Initialize: point in robot's coordinate system, corrected for the
+        // distance between LRF and center of rotation.
+        double rx = point.x + laserDispl * Math.cos(robotPose.theta),
+               ry = point.y + laserDispl * Math.sin(robotPose.theta);
         Vector2D v = new Vector2D();
-        v.setCart(point.x, point.y);
+        v.setCart(rx, ry);
         //System.out.format("original  : x=%f y=%f mag=%f dir=%f\n",
         //        v.getX(), v.getY(), v.getMag(), v.getDir());
 
-        // Rotate: -90deg for lasers, theta for robot orientation.
-        double dir = v.getDir() - Math.PI / 2 + robotPose.theta;
+        // Rotate: laserTheta for lasers, theta for robot orientation.
+        double dir = v.getDir() + laserTheta + robotPose.theta;
         v.setDir(Util.normalizeRad(dir));
 
         //System.out.format("rotated   : x=%f y=%f mag=%f dir=%f\n",
