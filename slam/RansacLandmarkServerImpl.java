@@ -440,9 +440,12 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
         Point2D.Double aw = robot2world(robotPose, ar),
                        bw = robot2world(robotPose, br);
         // Compute projection of (0, 0) onto line through aw and bw.
-        double ab2 = (aw.x - bw.x) * (aw.x - bw.x) +
-                     (aw.y - bw.y) * (aw.y - bw.y);
-        double r   = (aw.x * bw.x + aw.y * bw.y) / ab2;
+        double abx = bw.x - aw.x,
+               aby = bw.y - aw.y,
+               acx = 0 - aw.x,
+               acy = 0 - aw.y;
+        double ab2 = abx * abx + aby * aby;
+        double r   = (abx * acx + aby * acy) / ab2;
         Point2D.Double result = new Point2D.Double();
         result.x = aw.x + r * (bw.x - aw.x);
         result.y = aw.y + r * (bw.y - aw.y);
@@ -454,10 +457,25 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
     Point2D.Double robot2world(Pose robotPose, Point2D.Double point) {
         Vector2D v = new Vector2D();
         v.setCart(point.x, point.y);
-        v.setDir(v.getDir() + robotPose.theta);
+        System.out.format("original  : x=%f y=%f mag=%f dir=%f\n",
+                v.getX(), v.getY(), v.getMag(), v.getDir());
+
+        // Rotate.
+        double dir = v.getDir() + robotPose.theta;
+        if(dir > 2 * Math.PI)
+            dir -= 2 * Math.PI;
+        v.setDir(dir);
+
+        System.out.format("rotated   : x=%f y=%f mag=%f dir=%f\n",
+                v.getX(), v.getY(), v.getMag(), v.getDir());
+
+        // Translate.
         Point2D.Double result = new Point2D.Double();
         result.x = v.getX() + robotPose.x;
         result.y = v.getY() + robotPose.y;
+        System.out.format("translated: x=%f y=%f mag=%f dir=%f\n",
+                v.getX(), v.getY(), v.getMag(), v.getDir());
+
         return result;
     }
 
