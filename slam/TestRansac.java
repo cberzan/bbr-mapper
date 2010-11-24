@@ -12,6 +12,7 @@ public class TestRansac extends JPanel {
     Ransac ransac      = null;
     Line[] result      = null;
     int displayedIter  = 0;
+    final double scale = 50;
 
     // Stuff filled-in by Ransac.
     protected ArrayList<Point2D.Double[]> points;
@@ -177,12 +178,28 @@ public class TestRansac extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
-        final double scale = 50;
         int height = getHeight(), width = getWidth();
         int xcenter = width / 2, ycenter = 10;
 
         g.setColor(Color.white);
         g.fillRect(0, 0, width, height);
+
+        /*
+        // Draw test lines.
+        g.setColor(Color.magenta);
+        Line testVert  = new Line(), // line x = 3
+             testHoriz = new Line(); // line y = 8/2
+        testVert.a = 1;
+        testVert.b = 0;
+        testVert.c = -3;
+        testHoriz.a = 0;
+        testHoriz.b = 2;
+        testHoriz.c = -8;
+        if(displayedIter % 2 == 0)
+            myDrawLine(g, testVert);
+        else
+            myDrawLine(g, testHoriz);
+        */
 
         // Draw laser beams.
         g.setColor(Color.green);
@@ -234,20 +251,7 @@ public class TestRansac extends JPanel {
 
         // Draw best-fit line through sample.
         g.setColor(Color.red);
-        {
-            Line l = sampleFitLine.get(displayedIter);
-            // In the robot's coordinate system:
-            double x1 = -xcenter / scale,
-                   y1 = l.m * x1 + l.b,
-                   x2 = xcenter / scale,
-                   y2 = l.m * x2 + l.b;
-            // In the canvas coordinate system:
-            double x1s = x1 * scale + xcenter,
-                   y1s = y1 * scale + ycenter,
-                   x2s = x2 * scale + xcenter,
-                   y2s = y2 * scale + ycenter;
-            g.drawLine((int)x1s, (int)y1s, (int)x2s, (int)y2s);
-        }
+        myDrawLine(g, sampleFitLine.get(displayedIter));
 
         // Draw consenting points.
         g.setColor(Color.magenta);
@@ -268,20 +272,8 @@ public class TestRansac extends JPanel {
 
         // Draw best-fit line through consenting points.
         g.setColor(Color.black);
-        if(consentingFitLine.get(displayedIter) != null) {
-            Line l = consentingFitLine.get(displayedIter);
-            // In the robot's coordinate system:
-            double x1 = -xcenter / scale,
-                   y1 = l.m * x1 + l.b,
-                   x2 = xcenter / scale,
-                   y2 = l.m * x2 + l.b;
-            // In the canvas coordinate system:
-            double x1s = x1 * scale + xcenter,
-                   y1s = y1 * scale + ycenter,
-                   x2s = x2 * scale + xcenter,
-                   y2s = y2 * scale + ycenter;
-            g.drawLine((int)x1s, (int)y1s, (int)x2s, (int)y2s);
-        }
+        if(consentingFitLine.get(displayedIter) != null)
+            myDrawLine(g, consentingFitLine.get(displayedIter));
 
         // Show square error of best-fit line through sample.
         g.setColor(Color.black);
@@ -304,6 +296,44 @@ public class TestRansac extends JPanel {
             sum += dist * dist;
         }
         return sum;
+    }
+
+    /**
+     * Draws the given line on the given graphics object.
+     * @param size - something larger than the width and height of the graphics
+     *               (used to determine line segment boundaries)
+     * @param scale - how many pixels is a meter in robot coordinates.
+     * @param xcenter, ycenter - position of robot in canvas coordinates.
+     */
+    private void myDrawLine(Graphics g, Line l) {
+        int height = getHeight(), width = getWidth();
+        int xcenter = width / 2, ycenter = 10;
+
+        double x1, y1, x2, y2;
+        double slope = -l.a / l.b;
+        if(slope >= -1 && slope <= 1) {
+            // Line is closer to horizontal.
+            double m = -l.a / l.b,
+                   b = -l.c / l.b;
+            x1 = -xcenter / scale;
+            y1 = m * x1 + b;
+            x2 = xcenter / scale;
+            y2 = m * x2 + b;
+        } else {
+            // Line is closer to vertical.
+            double rm = -l.b / l.a,
+                   rb = -l.c / l.a;
+            y1 = -height / scale;
+            x1 = rm * y1 + rb;
+            y2 = height / scale;
+            x2 = rm * y2 + rb;
+        }
+        // In the canvas coordinate system:
+        double x1s = x1 * scale + xcenter,
+               y1s = y1 * scale + ycenter,
+               x2s = x2 * scale + xcenter,
+               y2s = y2 * scale + ycenter;
+        g.drawLine((int)x1s, (int)y1s, (int)x2s, (int)y2s);
     }
 
     private static void createAndShowGUI() {

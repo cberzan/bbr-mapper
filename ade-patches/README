@@ -5,11 +5,5 @@ reset-videre-odometry.patch - Make a public (remotely-callable) resetOdometry()
                               function in VidereServer that resets the odometry
                               by calling the internal COMorigin() function.
 
-public-beacons.patch - Makes the getBeaconData() function public in
-                       ActionServer.
-
-adesim-getbeacons-hack.patch - HACK: wrap getBeaconData() call in try/catch
-                               block, caused by public-beacons.patch.
-
 ransac-vis.patch - HACK: modify LRFServer vis to enable visualization of RANSAC
                    results.

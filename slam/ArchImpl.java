@@ -200,6 +200,7 @@ public class ArchImpl extends ActionServerImpl implements Arch {
             }
         }
 
+        /*
         if(ekfServer == null) {
             ekfServer = getClient("com.slam.EKFServer");
             if(ekfServer == null) {
@@ -207,6 +208,7 @@ public class ArchImpl extends ActionServerImpl implements Arch {
                 return false;
             }
         }
+        */
 
         if(landmarkServer == null) {
             landmarkServer = getClient("com.slam.LandmarkServer");
@@ -238,6 +240,7 @@ public class ArchImpl extends ActionServerImpl implements Arch {
             pose.x           = poseADE[0];
             pose.y           = poseADE[1];
             pose.theta       = poseADE[2];
+            //System.out.format("Pose: x=%f y=%f theta=%f\n", pose.x, pose.y, pose.theta);
 
             Landmark[] landmarks = (Landmark[])call(landmarkServer, "getLandmarks", pose);
             System.out.format("Got %d landmarks:\n", landmarks.length);
@@ -251,7 +254,7 @@ public class ArchImpl extends ActionServerImpl implements Arch {
         }
 
         // Perform desired motion.
-        //doMotion(getSchemaSum());
+        doMotion(getSchemaSum());
 
         /*
         try {

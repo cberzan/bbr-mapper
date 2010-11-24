@@ -83,9 +83,9 @@ public class Ransac {
         // If we don't break early, we just return the lines from the last attempt.
 
         timer = System.currentTimeMillis() - timer;
-        System.out.format("RANSAC ran %d meta-iterations (%d total iterations) " +
-                          "in %.3f seconds, found %d lines.\n",
-                          metaIter, totalIter, timer / 1000.0, lines.size());
+        //System.out.format("RANSAC ran %d meta-iterations (%d total iterations) " +
+        //                  "in %.3f seconds, found %d lines.\n",
+        //                  metaIter, totalIter, timer / 1000.0, lines.size());
         if(tester != null)
             tester.totalIter = totalIter;
         return lines.toArray(new Line[0]); // I can't believe Java requires the type like this.
@@ -221,6 +221,10 @@ public class Ransac {
      * Finds the least-squares best-fit line for a given set of points.
      * According to http://mathworld.wolfram.com/LeastSquaresFitting.html
      * (formulae 16 and on).
+     *
+     * Uses a trick to handle vertical lines: it just swaps the x and y
+     * coordinates to turn it into a horizontal line and avoid division by
+     * near-zero.
      */
     double bestFitLine(Point2D.Double[] points, Line line) {
         int n = points.length;
@@ -249,8 +253,22 @@ public class Ransac {
         System.out.format(" }\n");
         */
 
-        line.m = ss_xy / ss_xx;
-        line.b = mean_y - line.m * mean_x;
+        double slope = ss_xy / ss_xx;
+        if(slope >= -1 && slope <= 1) {
+            // Line closer to horizontal.
+            double m = ss_xy / ss_xx;
+            double b = mean_y - m * mean_x;
+            line.a = m;
+            line.b = -1;
+            line.c = b;
+        } else {
+            // Line closer to vertical.
+            double rm = ss_xx / ss_xy;
+            double rb = mean_x - rm * mean_y;
+            line.a = -1;
+            line.b = rm;
+            line.c = rb;
+        }
         return r2;
     }
 

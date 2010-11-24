@@ -68,6 +68,17 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
         identified as the same landmark. */
     private double assocDist = 0.1;
 
+    /**
+     * Orientation of laser's 0deg vs. robot's 0deg. Depends on robot, but
+     * usually 90 degrees.
+     */
+    final double laserTheta = -Math.PI / 2;
+    /**
+     * Distance between laser's origin and robot's center of rotation. Depends
+     * on robot. Assuming LRF is on x axis in the robot's coordinate system.
+     */
+    final double laserX = 0.2; // empirically determined, see sim-rot-center.ods
+
     // ***********************************************************************
     // *** Abstract methods in ADEServerImpl that need to be implemented
     // ***********************************************************************
@@ -213,9 +224,11 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
         for(int i = 0; i < maxLandmarks; i++) {
             if(landmarkDB[i] == null)
                 continue;
-            System.out.format("(id=%d timesSeen=%d) ", i, landmarkDB[i].timesSeen);
+            System.out.format("(id=%d timesSeen=%d x=%f y=%f)\n",
+                    i, landmarkDB[i].timesSeen,
+                    landmarkDB[i].point.x, landmarkDB[i].point.y);
         }
-        System.out.format("\n-> about to return %d landmarks\n", good.size());
+        System.out.format("-> about to return %d landmarks\n", good.size());
         System.out.println("======================================================================");
 
         return good.toArray(new Landmark[0]);
@@ -331,7 +344,8 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
                     System.err.println("ERROR: updateLandmarks saw duplicate landmarks");
                 lm.timesSeen        = landmarkDB[nearest].timesSeen + 1;
                 landmarkDB[nearest] = lm;
-                System.out.println("updateLandmarks: re-observed landmark " + nearest);
+                System.out.format("updateLandmarks: re-observed landmark %d: x=%f y=%f\n",
+                        nearest, lm.point.x, lm.point.y);
             } else {
                 // Seen a new landmark.
                 if(availableIDs.isEmpty()) {
@@ -402,8 +416,8 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
             lm.line        = line;
             lm.point       = landmarkPoint(robotPose, line);
             lms.add(lm);
-            System.out.format("extracted landmark: line m=%f b=%f, point x=%f y=%f\n",
-                    line.m, line.b, lm.point.x, lm.point.y);
+            System.out.format("extracted landmark: line a=%f b=%f c=%f, point x=%f y=%f\n",
+                    line.a, line.b, line.c, lm.point.x, lm.point.y);
         }
         return lms;
     }
@@ -416,15 +430,36 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
     // TODO There is probably a more efficient / elegant way of doing this...
     Point2D.Double landmarkPoint(Pose robotPose, Line line) {
         // Take two points on the line, w.r.t. robot origin.
-        Point2D.Double ar = new Point2D.Double(0, line.b),
-                       br = new Point2D.Double(1, line.m + line.b);
+        Point2D.Double ar = new Point2D.Double(),
+                       br = new Point2D.Double();
+        double slope = -line.a / line.b;
+        if(slope >= -1 && slope <= 1) {
+            // Line closer to horizontal.
+            double m = -line.a / line.b,
+                   b = -line.c / line.b;
+            ar.x = 0;
+            ar.y = m * ar.x + b;
+            br.x = 1;
+            br.y = m * br.x + b;
+        } else {
+            // Line closer to vertical.
+            double rm = -line.b / line.a,
+                   rb = -line.c / line.a;
+            ar.y = 0;
+            ar.x = rm * ar.y + rb;
+            br.y = 1;
+            br.x = rm * br.y + rb;
+        }
         // Convert the points to world coordinates.
         Point2D.Double aw = robot2world(robotPose, ar),
                        bw = robot2world(robotPose, br);
         // Compute projection of (0, 0) onto line through aw and bw.
-        double ab2 = (aw.x - bw.x) * (aw.x - bw.x) +
-                     (aw.y - bw.y) * (aw.y - bw.y);
-        double r   = (aw.x * bw.x + aw.y * bw.y) / ab2;
+        double abx = bw.x - aw.x,
+               aby = bw.y - aw.y,
+               acx = 0 - aw.x,
+               acy = 0 - aw.y;
+        double ab2 = abx * abx + aby * aby;
+        double r   = (abx * acx + aby * acy) / ab2;
         Point2D.Double result = new Point2D.Double();
         result.x = aw.x + r * (bw.x - aw.x);
         result.y = aw.y + r * (bw.y - aw.y);
@@ -432,15 +467,20 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
     }
 
     /// Converts a point from robot coordinates to world coordinates.
-    // TODO There is probably a more efficient / elegant way of doing this...
     Point2D.Double robot2world(Pose robotPose, Point2D.Double point) {
         Vector2D v = new Vector2D();
         v.setCart(point.x, point.y);
-        v.setDir(v.getDir() + robotPose.theta);
-        Point2D.Double result = new Point2D.Double();
-        result.x = v.getX() + robotPose.x;
-        result.y = v.getY() + robotPose.y;
-        return result;
+
+        // Convert from LRF coord sys to robot's coord sys.
+        v.setDir(Util.normalizeRad(v.getDir() + laserTheta));
+        v.setX(v.getX() + laserX);
+
+        // Convert from robot's coord sys to world coord sys.
+        v.setDir(Util.normalizeRad(v.getDir() + robotPose.theta));
+        v.setX(v.getX() + robotPose.x);
+        v.setY(v.getY() + robotPose.y);
+
+        return new Point2D.Double(v.getX(), v.getY());
     }
 
     /**
