@@ -1,0 +1,104 @@
+Index: com/lrf/LRFServerVis.java
+===================================================================
+--- com/lrf/LRFServerVis.java	(revision 2760)
++++ com/lrf/LRFServerVis.java	(working copy)
+@@ -28,6 +28,9 @@
+ import javax.swing.JPanel;
+ import javax.swing.SwingConstants;
+ 
++import com.slam.*; // avoid nasty name clash of Line with fully qualified names
++
++
+ public class LRFServerVis extends ADEGuiPanel {
+ 
+     private static final long serialVersionUID = 1L;
+@@ -74,6 +77,7 @@
+     private JCheckBox drawexit = new JCheckBox("Exit", false);
+     private JCheckBox drawlines = new JCheckBox("Lines", false);
+     private JCheckBox drawoldlines = new JCheckBox("Old lines", false);
++    private JCheckBox drawransac = new JCheckBox("RANSAC", false);
+     double[] laserReadings;
+     int possibleDoor[] = new int[numVals];
+     int totalnumdoors = 0;
+@@ -84,6 +88,7 @@
+     Line[] oldlines = new Line[numVals]; // to store the previous lines
+     double[] X = new double[numVals];
+     double[] Y = new double[numVals];
++    com.slam.Line[] ransacLines = null;
+ 
+     public LRFServerVis(ClientAndCallHelper passedClientAndCallHelper) {
+         super(passedClientAndCallHelper); // MUST call constructor!
+@@ -140,6 +145,7 @@
+         optionCheckboxPanel.add(drawexit);
+         optionCheckboxPanel.add(drawlines);
+         optionCheckboxPanel.add(drawoldlines);
++        optionCheckboxPanel.add(drawransac);
+ 
+         return optionCheckboxPanel;
+     }
+@@ -173,11 +179,15 @@
+             X = detector.X;
+             Y = detector.Y;
+ 
++            Ransac ransac = new Ransac();
++            ransacLines = ransac.findLines(laserReadings);
++
+             setLaserVals(laserReadings);
+             laserPanel.repaint();
+         } catch (Exception ex) {
+             System.err.println(this.getClass().getSimpleName()
+                     + ":  Could not obtain visualization data! \n" + ex);
++            ex.printStackTrace();
+         }
+     }
+ 
+@@ -356,10 +366,47 @@
+                     }
+                 }
+             }
++            if(drawransac.isSelected()) {
++                if(ransacLines == null) {
++                    System.out.println("ransacLines == null");
++                    return;
++                }
++                //System.out.format("Have %d ransac lines.\n", ransacLines.length);
++                // Robot's origin is at (xCenter, yCenter);
++                // Graphics size limited by (0, 0), (xSize, ySize).
++                comp2D.setColor(Color.red);
++                for(com.slam.Line line : ransacLines) {
++                    double x1, y1, x2, y2;
++                    double slope = -line.a / line.b;
++                    if(slope >= -1 && slope <= 1) {
++                        // Line is closer to horizontal.
++                        double m = -line.a / line.b,
++                               b = -line.c / line.b;
++                        x1 = -xCenter * mPerPixel;
++                        y1 = m * x1 + b;
++                        x2 = xCenter * mPerPixel;
++                        y2 = m * x2 + b;
++                    } else {
++                        // Line is closer to vertical.
++                        double rm = -line.b / line.a,
++                               rb = -line.c / line.a;
++                        y1 = -getSize().height * mPerPixel;
++                        x1 = rm * y1 + rb;
++                        y2 = getSize().height * mPerPixel;
++                        x2 = rm * y2 + rb;
++                    }
++                    // In the canvas coordinate system (y is reversed...)
++                    double x1s = x1 / mPerPixel + xCenter,
++                           y1s = yCenter - y1 / mPerPixel,
++                           x2s = x2 / mPerPixel + xCenter,
++                           y2s = yCenter - y2 / mPerPixel;
++                    comp2D.drawLine((int)x1s, (int)y1s, (int)x2s, (int)y2s);
++                }
++            }
+         }
+     }
+ 
+     private static double round(double v, int d) {
+         return (double) ((int) (v * Math.pow(10, d))) / Math.pow(10, d);
+     }
+-}
+\ No newline at end of file
++}

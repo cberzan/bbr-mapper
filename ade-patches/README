@@ -1,20 +1,9 @@
 This directory contains modifications to ADE that we performed as part of this
 project.
 
-sim-odom-noise.patch - Add a function getNoisyPoseEgo() to ADESimActorServer and
-                       SimLocationSpecifier, so that we have a source of noisy
-                       odometry data for our EKF. Unfortunately, the simulator
-                       relies on having accurate getPoseEgo(), so we cannot add
-                       noise to the odometry data that is kept for that.
-                       The noise is Gaussian and scaled by the true dx, dy,
-                       dtheta. This is probably a poor model for the real world.
-
 reset-videre-odometry.patch - Make a public (remotely-callable) resetOdometry()
                               function in VidereServer that resets the odometry
                               by calling the internal COMorigin() function.
 
-public-beacons.patch - Makes the getBeaconData() function public in
-                       ActionServer.
-
-adesim-getbeacons-hack.patch - HACK: wrap getBeaconData() call in try/catch
-                               block, caused by public-beacons.patch.
+ransac-vis.patch - HACK: modify LRFServer vis to enable visualization of RANSAC
+                   results.

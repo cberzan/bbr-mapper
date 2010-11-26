@@ -13,6 +13,7 @@ package com.slam;
 import ade.*;
 import ade.exceptions.ADECallException;
 import com.*;
+import java.awt.geom.Point2D;
 import java.io.*;
 import java.math.*;
 import java.net.*;
@@ -26,10 +27,57 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
     private static String type = "LandmarkServer";
     private static boolean verbose = false;
 
-    /* Server-specific fields */
-    private Updater u;
-    private Object lrfServer = null;
-    private double[] laser;
+    /// Internal structure holding all info about a landmark.
+    private class Seamark {
+        /// Last time seen.
+        public long msLastSeen = 0;
+        /// Seen in the most recent run.
+        public boolean seenLastRun = false;
+        /// Number of times it has been seen.
+        public int timesSeen = 0;
+        /// Line seen last as this landmark.
+        public Line line = null;
+        /// Point this landmark has been converted to.
+        public Point2D.Double point = null;
+    };
+
+    /// Server-specific fields
+    private Object lrfServer                    = null;
+    private double[] laser                      = null;
+    private Seamark[] landmarkDB                = null;
+    private PriorityQueue<Integer> availableIDs = null;
+    private ArrayList<Integer> discardedIDs     = null;
+    private long msLastUpdate                   = 0;
+    private boolean initialized                 = false;
+
+    /// Max number of landmarks in database.
+    private int maxLandmarks = 400;
+    /// Time it takes to forget a landmark after last seeing it.
+    private int msForget = 60 * 1000;
+    /// Times a landmark has to be seen before it is shown to the EKF.
+    private int seeCount = 15;
+    /// Maximum recommended time between polls.
+    private long msBetweenPolls = 100;
+
+    /// Laser range for detecting anomalous readings.
+    private double lrfRange = 4; // m
+    /// Number of laser readings.
+    final private int numLaser = 181;
+
+    /** Distance a landmark has to be from its predicted position in order to be
+        identified as the same landmark. */
+    private double assocDist = 0.1;
+
+    /**
+     * Orientation of laser's 0deg vs. robot's 0deg. Depends on robot, but
+     * usually 90 degrees.
+     */
+    final double laserTheta = -Math.PI / 2;
+    /**
+     * Distance between laser's origin and robot's center of rotation. Depends
+     * on robot. Assuming LRF is on x axis in the robot's coordinate system.
+     */
+    final double laserX = 0.2; // empirically determined, see sim-rot-center.ods
 
     // ***********************************************************************
     // *** Abstract methods in ADEServerImpl that need to be implemented
@@ -114,7 +162,6 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         System.out.print(prg + " shutting down...");
         //finalize();
-        u.halt();
         Sleep(100);
         System.out.println("done.");
     }
@@ -132,8 +179,7 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
 
         // Get ref to LRF server, from which we get the laser data.
         while(lrfServer == null) {
-            // Try to connect to the simulator.
-            lrfServer = getClient("com.lrf.LRFServerl");
+            lrfServer = getClient("com.interfaces.LaserServer");
             if(lrfServer != null)
                 break;
 
@@ -141,19 +187,61 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
             Sleep(200);
         }
 
-        // Thread to do whatever periodic updating needs to be done
-        u = new Updater();
-        u.start();
+        // Initialize data structures.
+        landmarkDB   = new Seamark[maxLandmarks];
+        discardedIDs = new ArrayList<Integer>();
+        availableIDs = new PriorityQueue<Integer>();
+        for(int i = 0; i < maxLandmarks; i++)
+            availableIDs.add(i);
+
+        // This server does not have an Updater thread -- the landmarks are
+        // extracted and updated only when getLandmarks() is called.
+
+        initialized = true;
     }
 
     public Landmark[] getLandmarks(Pose robotPose) throws RemoteException {
-        // TODO
-        return null;
+        if(!initialized) {
+            System.err.println("getLandmarks: not initialized yet!");
+            return new Landmark[0];
+        }
+
+        updateLandmarks(robotPose);
+        ArrayList<Landmark> good = new ArrayList<Landmark>();
+        for(int i = 0; i < maxLandmarks; i++) {
+            if(landmarkDB[i] != null && landmarkDB[i].seenLastRun &&
+                    landmarkDB[i].timesSeen >= seeCount) {
+                Landmark lm = new Landmark();
+                lm.id = i;
+                lm.position = landmarkDB[i].point;
+                good.add(lm);
+            }
+        }
+
+        System.out.println("======================================================================");
+        System.out.format("getLandmarks (pose x=%f y=%f theta=%f):\n",
+                robotPose.x, robotPose.y, robotPose.theta);
+        for(int i = 0; i < maxLandmarks; i++) {
+            if(landmarkDB[i] == null)
+                continue;
+            System.out.format("(id=%d timesSeen=%d x=%f y=%f)\n",
+                    i, landmarkDB[i].timesSeen,
+                    landmarkDB[i].point.x, landmarkDB[i].point.y);
+        }
+        System.out.format("-> about to return %d landmarks\n", good.size());
+        System.out.println("======================================================================");
+
+        return good.toArray(new Landmark[0]);
     }
 
     public int[] flushDiscardedLandmarks() throws RemoteException {
-        // TODO
-        return null;
+        int[] result = new int[discardedIDs.size()];
+        for(int i = 0; i < discardedIDs.size(); i++) {
+            result[i] = discardedIDs.get(i);
+            availableIDs.add(result[i]);
+        }
+        availableIDs.clear();
+        return result;
     }
 
     /**
@@ -183,33 +271,6 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
             }
         }
         return found;
-    }
-
-    /**
-     * The <code>Updater</code> is the main loop that does whatever this
-     * server does.
-     */
-    private class Updater extends Thread {
-
-        private boolean shouldRead;
-
-        public Updater() {
-            shouldRead = true;
-        }
-
-        public void run() {
-            int i = 0;
-            while (shouldRead) {
-                // TODO
-                Sleep(200);
-            }
-            System.out.println(prg + ": Exiting Updater thread...");
-        }
-
-        public void halt() {
-            System.out.print("halting update thread...");
-            shouldRead = false;
-        }
     }
 
     /**
@@ -246,12 +307,200 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
     protected void updateFromLog(String logEntry) {
     }
 
+
+    // ***********************************************************************
+    // Landmark updating
+    // ***********************************************************************
+
     /**
-     * <code>main</code> passes the arguments up to the ADEServerImpl
-     * parent.  The parent does some magic and gets the system going.
-     *
-    public static void main(String[] args) throws Exception {
-        ADEServerImpl.main(args);
-    }
+     * Updates the landmarkDB: extracts new landmarks, associates them with old
+     * landmarks if possible, and discards long-lost landmarks.
      */
+    private void updateLandmarks(Pose robotPose) {
+        long ms = System.currentTimeMillis();
+
+        // Mark everything as not seen.
+        for(int i = 0; i < maxLandmarks; i++) {
+            if(landmarkDB[i] != null)
+                landmarkDB[i].seenLastRun = false;
+        }
+
+        // Extract new landmarks.
+        if(!updateLasers()) {
+            System.err.println("ERROR: updateLandmarks could not updateLasers");
+            return;
+        }
+        ArrayList<Seamark> fresh = extractLandmarks(robotPose);
+        // TODO on the real robot, may want to adjust pose to deal with
+        // difference between center of rotation and LRF position.
+
+        // Associate landmarks to previously-seen landmarks.
+        // Simple strategy: associate to nearest landmark.
+        for(Seamark lm : fresh) {
+            int nearest = findNearestLandmark(lm);
+            if(nearest != -1) {
+                // Seen an old landmark.
+                if(landmarkDB[nearest].seenLastRun)
+                    System.err.println("ERROR: updateLandmarks saw duplicate landmarks");
+                lm.timesSeen        = landmarkDB[nearest].timesSeen + 1;
+                landmarkDB[nearest] = lm;
+                System.out.format("updateLandmarks: re-observed landmark %d: x=%f y=%f\n",
+                        nearest, lm.point.x, lm.point.y);
+            } else {
+                // Seen a new landmark.
+                if(availableIDs.isEmpty()) {
+                    System.err.println("ERROR: updateLandmarks has no free slots");
+                } else {
+                    int id = availableIDs.poll();
+                    lm.timesSeen   = 1;
+                    landmarkDB[id] = lm;
+                    System.out.println("updateLandmarks: observed new landmark " + id);
+                }
+            }
+        }
+
+        // Discard landmarks that have not been seen for a long time.
+        for(int i = 0; i < maxLandmarks; i++) {
+            if(landmarkDB[i] != null && !landmarkDB[i].seenLastRun &&
+                    ms - landmarkDB[i].msLastSeen > msForget) {
+                landmarkDB[i] = null;
+                discardedIDs.add(i);
+                System.out.println("updateLandmarks: forgot landmark " + i);
+            }
+        }
+
+        // Warn if not called frequently enough.
+        if(msLastUpdate > 0 && ms - msLastUpdate > msBetweenPolls)
+            System.err.println("WARNING: updateLandmarks called too infrequently");
+        msLastUpdate = ms;
+    }
+
+    /**
+     * Gets laser readings from the LRFServer, performs some preprocessing on
+     * them.
+     * @return true on success
+     */
+    boolean updateLasers() {
+        try {
+            laser = (double[])call(lrfServer, "getLaserReadings");
+            // Limit laser range.
+            // TODO discuss if we want this on the real robot.
+            for(int i = 0; i < numLaser; i++) {
+                if(laser[i] > lrfRange)
+                    laser[i] = lrfRange;
+            }
+            return true;
+        } catch(Exception e) {
+            System.err.println("Error getting lasers:");
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Extracts landmarks.
+     * Uses Ransac to detect lines, then uses the robotPose to determine the
+     * projection of the origin onto each line, and that is the non-moving point
+     * that is taken as a landmark.
+     */
+    ArrayList<Seamark> extractLandmarks(Pose robotPose) {
+        long ms                = System.currentTimeMillis();
+        ArrayList<Seamark> lms = new ArrayList<Seamark>();
+        Ransac ransac          = new Ransac();
+        Line[] lines           = ransac.findLines(laser);
+        for(Line line : lines) {
+            Seamark lm     = new Seamark();
+            lm.msLastSeen  = ms;
+            lm.seenLastRun = true;
+            lm.timesSeen   = -1;
+            lm.line        = line;
+            lm.point       = landmarkPoint(robotPose, line);
+            lms.add(lm);
+            System.out.format("extracted landmark: line a=%f b=%f c=%f, point x=%f y=%f\n",
+                    line.a, line.b, line.c, lm.point.x, lm.point.y);
+        }
+        return lms;
+    }
+
+    /**
+     * Computes a landmark point from a line, using the robotPose.
+     * A landmark point is the projection of (0, 0) in the world coordinates
+     * onto the given line.
+     */
+    // TODO There is probably a more efficient / elegant way of doing this...
+    Point2D.Double landmarkPoint(Pose robotPose, Line line) {
+        // Take two points on the line, w.r.t. robot origin.
+        Point2D.Double ar = new Point2D.Double(),
+                       br = new Point2D.Double();
+        double slope = -line.a / line.b;
+        if(slope >= -1 && slope <= 1) {
+            // Line closer to horizontal.
+            double m = -line.a / line.b,
+                   b = -line.c / line.b;
+            ar.x = 0;
+            ar.y = m * ar.x + b;
+            br.x = 1;
+            br.y = m * br.x + b;
+        } else {
+            // Line closer to vertical.
+            double rm = -line.b / line.a,
+                   rb = -line.c / line.a;
+            ar.y = 0;
+            ar.x = rm * ar.y + rb;
+            br.y = 1;
+            br.x = rm * br.y + rb;
+        }
+        // Convert the points to world coordinates.
+        Point2D.Double aw = robot2world(robotPose, ar),
+                       bw = robot2world(robotPose, br);
+        // Compute projection of (0, 0) onto line through aw and bw.
+        double abx = bw.x - aw.x,
+               aby = bw.y - aw.y,
+               acx = 0 - aw.x,
+               acy = 0 - aw.y;
+        double ab2 = abx * abx + aby * aby;
+        double r   = (abx * acx + aby * acy) / ab2;
+        Point2D.Double result = new Point2D.Double();
+        result.x = aw.x + r * (bw.x - aw.x);
+        result.y = aw.y + r * (bw.y - aw.y);
+        return result;
+    }
+
+    /// Converts a point from robot coordinates to world coordinates.
+    Point2D.Double robot2world(Pose robotPose, Point2D.Double point) {
+        Vector2D v = new Vector2D();
+        v.setCart(point.x, point.y);
+
+        // Convert from LRF coord sys to robot's coord sys.
+        v.setDir(Util.normalizeRad(v.getDir() + laserTheta));
+        v.setX(v.getX() + laserX);
+
+        // Convert from robot's coord sys to world coord sys.
+        v.setDir(Util.normalizeRad(v.getDir() + robotPose.theta));
+        v.setX(v.getX() + robotPose.x);
+        v.setY(v.getY() + robotPose.y);
+
+        return new Point2D.Double(v.getX(), v.getY());
+    }
+
+    /**
+     * Returns id of landmark closest to the given landmark.
+     * If no landmark is within assocDist, returns -1.
+     */
+    int findNearestLandmark(Seamark lm) {
+        int bestId = -1;
+        double bestDist2 = assocDist * assocDist;
+        for(int i = 0; i < maxLandmarks; i++) {
+            if(landmarkDB[i] != null) {
+                double dx = landmarkDB[i].point.x - lm.point.x,
+                       dy = landmarkDB[i].point.y - lm.point.y,
+                       dist2 = dx * dx + dy * dy;
+                if(dist2 < bestDist2) {
+                    bestId    = i;
+                    bestDist2 = dist2;
+                }
+            }
+        }
+        return bestId;
+    }
 }
