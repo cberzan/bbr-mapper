@@ -200,7 +200,6 @@ public class ArchImpl extends ActionServerImpl implements Arch {
             }
         }
 
-        /*
         if(ekfServer == null) {
             ekfServer = getClient("com.slam.EKFServer");
             if(ekfServer == null) {
@@ -208,7 +207,6 @@ public class ArchImpl extends ActionServerImpl implements Arch {
                 return false;
             }
         }
-        */
 
         if(landmarkServer == null) {
             landmarkServer = getClient("com.slam.LandmarkServer");
@@ -222,6 +220,7 @@ public class ArchImpl extends ActionServerImpl implements Arch {
     }
 
     public void runArchitecture() {
+        System.out.println("------ runArchitecture ------");
         if(!allServersReady())
             return;
 
