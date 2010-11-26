@@ -178,6 +178,8 @@ public class BeaconLandmarkServerImpl extends ADEServerImpl implements BeaconLan
             lm.position  = new Point2D.Double(v.getX(), v.getY());
             landmarks[i] = lm;
         }
+        System.out.format("BeaconLandmarkServer returning %d landmarks.\n",
+                landmarks.length);
         return landmarks;
     }
 
