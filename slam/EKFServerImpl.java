@@ -21,6 +21,7 @@ import java.rmi.*;
 import java.util.*;
 import static utilities.Util.*;
 import java.util.Hashtable.*;
+import java.util.ArrayList.*;
 import Jama.*;
 
 public class EKFServerImpl extends ADEServerImpl implements EKFServer {
@@ -35,7 +36,6 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
     private Updater u;
     private Object odomServer = null;
     private Object landmarkServer = null;
-    private Hashtable landmarkTable = null;
     private Pose currentPose;
 
     // ***********************************************************************
@@ -193,8 +193,6 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
             System.err.println("Original cause: " + e.getCause());
             e.printStackTrace();
         }
-        //Initialize Hashtable to empty
-        landmarkTable = new Hashtable();
         
         // Thread to do whatever periodic updating needs to be done
         u = new Updater();
@@ -208,6 +206,10 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
         System.out.println("EKFServerImpl: currentPose " + currentPose);
         return currentPose;
     }
+    
+    //Global Vars
+    private Hashtable<Integer, Integer> landmarkTable = null;
+    
     //Kalman Vars
     private Matrix matX = null; //State
     private Matrix matP = null; //Covariance
@@ -238,6 +240,9 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
         //Global Constatns
         cq = .01;
 
+        //Global Vars
+        landmarkTable = new Hashtable<Integer, Integer>();
+        
         //Local Contants
         double initXvar = .01;
         double initYvar = .01;
@@ -303,8 +308,62 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
 
     }
 
+    //Step 2.0 
+    private void updateLandmarkLists(Landmark[] landmarks,
+                                    ArrayList<Landmark> newLandmarks,
+                                    ArrayList<Landmark> oldLandmarks){
+        for(int i = 0; i < landmarks.length; i++){
+            if(landmarkTable.containsKey(landmarks[i].id)){
+                oldLandmarks.add(landmarks[i]);
+            }
+            else {
+                newLandmarks.add(landmarks[i]);
+            }
+        }
+    }
+    
     //Step 2
     private void updateKalman(){
+        //TODO: Everythingy
+    }
+
+    //Step 3
+    private void addLandmarks(ArrayList<Landmark> newLandmarks){
+        //TODO: Delete Dead landmarks here?
+        
+        //Update Hashtable
+        int matrixBase = matX.getRowDimension();
+        int matrixSize = matX.getRowDimension();
+        for(int i = 0; i < newLandmarks.size(); i++){
+            Landmark lm = (Landmark)newLandmarks.get(i);
+            //Associte new landmark ID with its base postion in the matricies
+            matrixSize = matrixBase + (i*2);
+            if(landmarkTable.put(lm.id, matrixSize) != null){
+                System.err.println("!!!ERROR: Landmark Key In Use!!!");
+            }
+        }
+        matrixSize = matrixSize + 2;
+
+        //Update Matrix X
+        System.err.println("New Matrix X Size: " + matrixSize);
+        Matrix newX = new Matrix(matrixSize, 1);
+        //Copy old matX
+        newX.setMatrix(0, (matrixBase-1), 0, 0, matX);
+        //Add new Landmarks
+        for(int i = 0; i < newLandmarks.size(); i++){
+            Landmark lm = (Landmark)newLandmarks.get(i);            
+            Integer lmBase = (Integer)landmarkTable.get(lm.id);
+            if(lmBase != null){
+                newX.set(lmBase    , 0, lm.position.getX());
+                newX.set(lmBase + 1, 0, lm.position.getY());
+            }
+            else{
+                System.err.println("!!!ERROR: Landmark Key Missing!!!");
+            }
+        }
+        
+        //TODO: Update matP
+        //TODO: Update matK
         
     }
 
@@ -358,9 +417,9 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
             while (shouldRead) {
                 //Get Noisy Odometry
                 System.err.println("-----EKF Update-----");
+                double[] odom = null;
                 try {
-                    double[] odom = (double[])call(odomServer,
-                                                   "getPoseEgo");
+                    odom = (double[])call(odomServer, "getPoseEgo");
                     if(odom != null) {
                         // HACK: figure out how to handle this better
                         odomPose.x = odom[0];
@@ -423,10 +482,11 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                 System.err.println("Odom Updated currentPose: " + currentPose);
                 
                 //Get Landmarks
+                Landmark[] landmarks = null;
                 try {
-                    Landmark[] landmarks = (Landmark[])call(landmarkServer,
-                                                            "getLandmarks",
-                                                            currentPose);
+                    landmarks = (Landmark[])call(landmarkServer,
+                                                 "getLandmarks",
+                                                 currentPose);
                     if(landmarks == null) {
                         // HACK: figure out how to handle this better
                         System.out.println("Warning: Null Landmarks!");
@@ -438,7 +498,21 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                     // Don't exit, hoping this is a temporary problem.
                 }
                 
-                //Update Kalman Filter
+                //Update Landmark List/Hashtable
+                ArrayList<Landmark> newLandmarks =
+                    new ArrayList<Landmark>(landmarks.length);
+                ArrayList<Landmark> oldLandmarks =
+                    new ArrayList<Landmark>(landmarks.length);
+                try {
+                    updateLandmarkLists(landmarks, newLandmarks, oldLandmarks);
+                } catch(Exception e) {
+                    System.err.println("Error updating landmark list: " + e);
+                    System.err.println("Original cause: " + e.getCause());
+                    e.printStackTrace();
+                    // Don't exit, hoping this is a temporary problem.
+                }
+
+                //Step 2 - Update Kalman Filter
                 try {
                     updateKalman();
                 } catch(Exception e) {
@@ -448,7 +522,18 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                     // Don't exit, hoping this is a temporary problem.
                 }
 
-                System.err.println("Final Updated currentPose: " + currentPose);
+                //Step 3 - Add new Landmarks
+                try {
+                    addLandmarks(newLandmarks);
+                } catch(Exception e) {
+                    System.err.println("Error adding landmarks: " + e);
+                    System.err.println("Original cause: " + e.getCause());
+                    e.printStackTrace();
+                    // Don't exit, hoping this is a temporary problem.
+                }
+
+                System.err.println("Final Updated currentPose: "
+                                   + currentPose);
                 /*
                 //Get True Position
                 try {
