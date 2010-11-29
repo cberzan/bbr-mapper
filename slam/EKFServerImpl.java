@@ -22,6 +22,7 @@ import java.util.*;
 import static utilities.Util.*;
 import java.util.Hashtable.*;
 import java.util.ArrayList.*;
+import java.io.PrintWriter.*;
 import Jama.*;
 
 public class EKFServerImpl extends ADEServerImpl implements EKFServer {
@@ -170,7 +171,8 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
         }
         
         // Initialize odometry to zero.
-        currentPose = new Pose();
+        currentPose = new Pose(0, 0, 0);
+        Pose initPose = new Pose(0, 0, 0);
 
         // Get ref to landmark server.
         while(landmarkServer == null) {
@@ -187,7 +189,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
         
         //Initialize Kalman Matricies and vars
         try {
-            initKalman();
+            initKalman(initPose);
         } catch(Exception e){
             System.err.println("Error on EKF Initialization: " + e);
             System.err.println("Original cause: " + e.getCause());
@@ -209,6 +211,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
     
     //Global Vars
     private Hashtable<Integer, Integer> landmarkTable = null;
+    private Pose oldPose = null;
     
     //Kalman Vars
     private Matrix matX = null; //State
@@ -236,13 +239,14 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
     }
     
     //Step 0: Initialize
-    private void initKalman() {
+    private void initKalman(Pose initPose) {
         //Global Constatns
         cq = .01;
 
         //Global Vars
         landmarkTable = new Hashtable<Integer, Integer>();
-        
+        oldPose = new Pose(initPose.x, initPose.y, initPose.theta);
+
         //Local Contants
         double initXvar = .01;
         double initYvar = .01;
@@ -250,9 +254,9 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
 
         //Initialize X
         matX = new Matrix(3, 1);
-        matX.set(0, 0, 0);
-        matX.set(1, 0, 0);
-        matX.set(2, 0, 0);
+        matX.set(0, 0, oldPose.x);
+        matX.set(1, 0, oldPose.y);
+        matX.set(2, 0, oldPose.theta);
         
         //Initialize P
         matP = new Matrix(3, 3);
@@ -263,7 +267,10 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
     
     //Step 1: Update from Odometry
     private void odoStateUpdate(double delX, double delY, double delTheta) {
-        
+
+        //Calculate delT
+        double delT = Math.sqrt(delX*delX + delY*delY); //delT
+
         //Update X - State
         double newX = matX.get(0, 0) + delX;
         matX.set(0, 0, newX);
@@ -277,8 +284,11 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
         matA.set(0, 2, (-1 * delY)); //(1,3) = -delY
         matA.set(1, 2, (delX));      //(2,3) = delX
 
+        //Update Jxr - Landmark Jacobian
+        
+        //Update Jxr - Landmark Jacobian
+
         //Update Q
-        double delT = Math.sqrt(delX*delX + delY*delY); //delT
         matQ = new Matrix(3, 3);
         matQ.set(0, 0, (cq*delX*delX)); //(1,1) = cq * delX^2
         matQ.set(0, 1, (cq*delX*delY)); //(1,2) = cq * delX * delY
@@ -342,29 +352,32 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                 System.err.println("!!!ERROR: Landmark Key In Use!!!");
             }
         }
-        matrixSize = matrixSize + 2;
+        matrixSize = matrixBase + (newLandmarks.size()*2);
 
-        //Update Matrix X
+        //Update Matrix X and P
         System.err.println("New Matrix X Size: " + matrixSize);
         Matrix newX = new Matrix(matrixSize, 1);
-        //Copy old matX
+        Matrix newP = new Matrix(matrixSize, matrixSize);
+        //Copy old matrix
         newX.setMatrix(0, (matrixBase-1), 0, 0, matX);
+        newP.setMatrix(0, (matrixBase-1), 0, (matrixBase-1), matP);
         //Add new Landmarks
         for(int i = 0; i < newLandmarks.size(); i++){
             Landmark lm = (Landmark)newLandmarks.get(i);            
             Integer lmBase = (Integer)landmarkTable.get(lm.id);
             if(lmBase != null){
+                //Update matX
                 newX.set(lmBase    , 0, lm.position.getX());
                 newX.set(lmBase + 1, 0, lm.position.getY());
+                //TODO: Update matP
+        
             }
             else{
                 System.err.println("!!!ERROR: Landmark Key Missing!!!");
             }
         }
-        
-        //TODO: Update matP
-        //TODO: Update matK
-        
+        matX = newX;
+        matP = newP;
     }
 
     
@@ -415,8 +428,14 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
             Pose truePose = new Pose();
 
             while (shouldRead) {
+                //Print Output
+                System.err.println("-------------EKF Update-------------");
+                //System.out.println("-----matX-Pre-----");
+                //matX.print(4,2);
+                //System.out.println("-----matP-Pre-----");
+                //matP.print(4,2);
+
                 //Get Noisy Odometry
-                System.err.println("-----EKF Update-----");
                 double[] odom = null;
                 try {
                     odom = (double[])call(odomServer, "getPoseEgo");
@@ -439,13 +458,20 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                 System.err.println("Initial currentPose: " + currentPose);
                 System.err.println("Initial odomPose: " + odomPose);
                 
-                //Find Odom Deltas 
+                //Find Odom Deltas
+                //TODO: Should these be deltas between this and last odom, 
+                //or between odom and curretn estimate? Currently set to
+                //between this at last odom
                 Pose odomDelPose = new Pose();
-                odomDelPose.x = odomPose.x - currentPose.x;
-                odomDelPose.y = odomPose.y - currentPose.y;
-                odomDelPose.theta = odomPose.theta - currentPose.theta;
-                System.err.println("Native odomDelPose: " + odomDelPose);
+                odomDelPose.x = odomPose.x - oldPose.x;
+                odomDelPose.y = odomPose.y - oldPose.y;
+                odomDelPose.theta = odomPose.theta - oldPose.theta;
+                //Set new oldOdom
+                oldPose.x = odomPose.x;
+                oldPose.y = odomPose.y;
+                oldPose.theta = odomPose.theta;
                 //Unwrap Theta
+                System.err.println("Native odomDelPose: " + odomDelPose);                
                 while(odomDelPose.theta > Math.PI) {
                     odomDelPose.theta = ((-1 * odomDelPose.theta) +
                                          (2 * Math.PI));
@@ -456,7 +482,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                                          (2 * Math.PI));
                     System.err.println("Warning: Unwrapping Theta - Neg!");
                 }
-
+                
                 System.err.println("Unwrapped odomDelPose: " + odomDelPose);
 
                 //EKF: Step 1 - Updated Pose from Odo Estimate
@@ -512,6 +538,10 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                     // Don't exit, hoping this is a temporary problem.
                 }
 
+                System.err.println("Hashtable: " + landmarkTable.toString());
+                System.err.println("Old Landmarks: " + oldLandmarks.size());
+                System.err.println("New Landmarks: " + newLandmarks.size());
+
                 //Step 2 - Update Kalman Filter
                 try {
                     updateKalman();
@@ -555,6 +585,12 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                 
                 System.out.println("truePose: " + truePose);
                 */
+                
+                //System.out.println("-----matX-Post-----");
+                //matX.print(4,2);
+                //System.out.println("-----matP-Post-----");
+                //matP.print(4,2);
+                                
                 Sleep(100);
             }
             System.out.println(prg + ": Exiting Updater thread...");
