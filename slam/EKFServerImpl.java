@@ -148,7 +148,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                 System.err.println("Connected to ADESimActorServer.");
                 break;
             }
-            /*
+            
             // Try to connect to the robot.
             System.err.println("Trying to connect to VidereServer.");
             odomServer = getClient("com.videre.VidereServer");
@@ -164,7 +164,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                 }
                 break;
             }
-            */
+            
             System.out.println("EKFServerImpl waiting for odomServer ref.");
             Sleep(200);
         }
@@ -223,12 +223,12 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
         currentPose.x = matX.get(0,0);
         currentPose.y = matX.get(1,0);
         //Theta limited to between 0 and 2pi
-        double theta = matX.get(0,0);
+        double theta = matX.get(2,0);
         while(theta < 0){
-            theta = theta + 2 * Math.PI;
+            theta = theta + (2 * Math.PI);
         }
         while(theta > 2 * Math.PI) {
-            theta = theta - 2 * Math.PI;
+            theta = theta - (2 * Math.PI);
         }
         currentPose.theta = theta;
     }
@@ -357,6 +357,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
 
             while (shouldRead) {
                 //Get Noisy Odometry
+                System.err.println("-----EKF Update-----");
                 try {
                     double[] odom = (double[])call(odomServer,
                                                    "getPoseEgo");
@@ -376,26 +377,30 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                     // Don't exit, hoping this is a temporary problem.
                 }
 
-                System.out.println("odomPose: " + odomPose);
+                System.err.println("Initial currentPose: " + currentPose);
+                System.err.println("Initial odomPose: " + odomPose);
                 
                 //Find Odom Deltas 
                 Pose odomDelPose = new Pose();
                 odomDelPose.x = odomPose.x - currentPose.x;
                 odomDelPose.y = odomPose.y - currentPose.y;
                 odomDelPose.theta = odomPose.theta - currentPose.theta;
+                System.err.println("Native odomDelPose: " + odomDelPose);
                 //Unwrap Theta
                 while(odomDelPose.theta > Math.PI) {
-                    odomDelPose.theta = odomDelPose.theta - Math.PI;
-                    System.out.println("Warning: Unwrapping Theta - Pos!");
+                    odomDelPose.theta = ((-1 * odomDelPose.theta) +
+                                         (2 * Math.PI));
+                    System.err.println("Warning: Unwrapping Theta - Pos!");
                 }
                 while(odomDelPose.theta < (-1 * Math.PI)) {
-                    odomDelPose.theta = odomDelPose.theta + Math.PI;
-                    System.out.println("Warning: Unwrapping Theta - Neg!");
+                    odomDelPose.theta = ((-1 * odomDelPose.theta) -
+                                         (2 * Math.PI));
+                    System.err.println("Warning: Unwrapping Theta - Neg!");
                 }
 
-                System.out.println("odomDelPose: " + odomDelPose);
+                System.err.println("Unwrapped odomDelPose: " + odomDelPose);
 
-                //EKF: Step 1
+                //EKF: Step 1 - Updated Pose from Odo Estimate
                 try {
                     odoStateUpdate(odomDelPose.x,
                                    odomDelPose.y, odomDelPose.theta);
@@ -415,7 +420,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                     e.printStackTrace();
                     // Don't exit, hoping this is a temporary problem.
                 }
-                System.out.println("currentPose: " + currentPose);
+                System.err.println("Odom Updated currentPose: " + currentPose);
                 
                 //Get Landmarks
                 try {
@@ -442,6 +447,8 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                     e.printStackTrace();
                     // Don't exit, hoping this is a temporary problem.
                 }
+
+                System.err.println("Final Updated currentPose: " + currentPose);
                 /*
                 //Get True Position
                 try {
@@ -463,7 +470,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                 
                 System.out.println("truePose: " + truePose);
                 */
-                Sleep(200);
+                Sleep(100);
             }
             System.out.println(prg + ": Exiting Updater thread...");
         }
