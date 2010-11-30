@@ -385,6 +385,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
 
                 //Create matR for Landmark (Measurment Error)
                 matR = new Matrix(2, 2);
+                //TODO: 
                 matR.set(0, 0, rc * rangeEst);
                 matR.set(1, 1, bd);
 
@@ -644,6 +645,19 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
 
                 System.err.println("Final Updated currentPose: "
                                    + currentPose);
+               
+                //Update Pose with Filtered Position
+                try {
+                    updatePose();
+                } catch(Exception e){
+                    System.err.println("Error on EKF updatePose: " + e);
+                    System.err.println("Original cause: " + e.getCause());
+                    e.printStackTrace();
+                    // Don't exit, hoping this is a temporary problem.
+                }
+                System.err.println("Odom Updated currentPose: " + currentPose);
+                
+
                 /*
                 //Get True Position
                 try {

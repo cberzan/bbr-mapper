@@ -258,7 +258,30 @@ Literature review:
         \setlength{\itemsep}{0pt}
         \setlength{\parskip}{0pt}
         \setlength{\parsep}{0pt}
-        \item bla
+        \item Prediction
+          \begin{itemize}
+            \setlength{\itemsep}{0pt}
+            \setlength{\parskip}{0pt}
+            \setlength{\parsep}{0pt}
+            \item Update location from delta odometry. Use
+              delta odometry to minimize odometry error
+              (odometry most trusted for small deltas) - Done
+            \item Update covariance with new robot prediction. Update
+              robot location covariance and robot to feature covariance. - Done
+          \end{itemize}
+        \item Correction
+          \begin{itemize}
+            \setlength{\itemsep}{0pt}
+            \setlength{\parskip}{0pt}
+            \setlength{\parsep}{0pt}
+            \item Cycle through all old landmarks. Calculate Kalman Gain,
+              predicted location, and delta location for each. Use each
+              to update robot and landmark position.
+            \item Update covariance with landmark position deltas and Kalman
+              gains.
+            \item Ignore old landmarks that have not been re-observed.
+            \item Add new landmarks to state and covariance matrix.
+          \end{itemize}
     \end{itemize}
 \end{itemize}
 
@@ -268,7 +291,16 @@ Literature review:
     \setlength{\itemsep}{0pt}
     \setlength{\parskip}{0pt}
     \setlength{\parsep}{0pt}
-    \item EKF Implementation -- Andy
+    \item Finish EKF Implementation -- Andy
+      \begin{itemize}
+            \setlength{\itemsep}{0pt}
+            \setlength{\parskip}{0pt}
+            \setlength{\parsep}{0pt}
+            \item Resolve inconsistencies in ``Slam for Dummies'' tutorial.
+            \item Add covariance update to EKF correction step
+      \end{itemize}
+    \item Test and tune EKF Implementation -- Andy
+    \item Create contingency plan if EKF fails to operate -- Both
     \item Simulated Landmark Implementation -- Constantin
     \item Basic Navigation -- Constantin
 \end{itemize}
