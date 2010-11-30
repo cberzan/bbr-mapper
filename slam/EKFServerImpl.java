@@ -213,17 +213,23 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
     private Hashtable<Integer, Integer> landmarkTable = null;
     private Pose oldPose = null;
     
-    //Kalman Vars
-    private Matrix matX = null; //State
-    private Matrix matP = null; //Covariance
-    private Matrix matK = null; //Kalman gain
-    private Matrix[] matH; //Measurement Jacobian
-    private Matrix matA = null; //Prediction Jacobian
-    private Matrix[] matJxr; //Landmark Prediction Jacobian - cartesian 
-    private Matrix[] matJz;  //Landmark Prediction Jacobian - polar
-    private Matrix matQ = null; //Process Noise
-    private double cq; //Process Noise Gaussian 
+    //Global Consts
+    private double cq = 0.01; //Process Noise Gaussian 
+    private double rc = 0.01; //range measurment error percent
+    private double bd = Math.PI / 180; //range measurment error
 
+    //Kalman Vars
+    private Matrix matX = null; //State (Global)
+    private Matrix matP = null; //Covariance (Global)
+    private Matrix matK = null; //Kalman gain (Per Landmark)
+    private Matrix matS = null; //Innovation covariance (Per Landmark)
+    private Matrix matH = null; //Measurement Jacobian (Per Landmark)
+    private Matrix matR = null; //Measurment Error Matrix (Per Landmark)
+    private Matrix matA = null; //Prediction Jacobian (Per Timestep)
+    private Matrix[] matJxr; //Landmark Prediction Jacobian - cartesian (?) 
+    private Matrix[] matJz;  //Landmark Prediction Jacobian - polar (?)
+    private Matrix matQ = null; //Process Noise (Per Timestep)
+    
     private void updatePose() {
         currentPose.x = matX.get(0,0);
         currentPose.y = matX.get(1,0);
@@ -240,9 +246,6 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
     
     //Step 0: Initialize
     private void initKalman(Pose initPose) {
-        //Global Constatns
-        cq = .01;
-
         //Global Vars
         landmarkTable = new Hashtable<Integer, Integer>();
         oldPose = new Pose(initPose.x, initPose.y, initPose.theta);
@@ -265,7 +268,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
         matP.set(2, 2, initThetaVar);
     }
     
-    //Step 1: Update from Odometry
+    //Step 1: Estimate - Update from Odometry
     private void odoStateUpdate(double delX, double delY, double delTheta) {
 
         //Calculate delT
@@ -284,10 +287,6 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
         matA.set(0, 2, (-1 * delY)); //(1,3) = -delY
         matA.set(1, 2, (delX));      //(2,3) = delX
 
-        //Update Jxr - Landmark Jacobian
-        
-        //Update Jxr - Landmark Jacobian
-
         //Update Q
         matQ = new Matrix(3, 3);
         matQ.set(0, 0, (cq*delX*delX)); //(1,1) = cq * delX^2
@@ -303,16 +302,16 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
         //Update P upper left
         Matrix matPrr = matP.getMatrix(0, 2, 0, 2);
         Matrix temp = matA.copy(); // temp = A
-        temp.times(matPrr);        // temp = A * Prr
-        temp.times(matA);          // temp = (A * Prr * A)
-        temp.plus(matQ);           // temp = (A * Prr * A) + Q
+        temp = temp.times(matPrr);        // temp = A * Prr
+        temp = temp.times(matA);          // temp = (A * Prr * A)
+        temp = temp.plus(matQ);           // temp = (A * Prr * A) + Q
         matP.setMatrix(0, 2, 0, 2, temp);
 
         //Update P upper rows
         //TODO: Check if we need to include cols 0-2? Already updated?
         Matrix matPri = matP.getMatrix(0, 2, 0, matP.getColumnDimension()-1); 
         temp = matA.copy(); // temp = A
-        temp.times(matPri);
+        temp = temp.times(matPri); // temp = A * Pri
         //TODO: Check if we need to include cols 0-2? Already updated?
         matP.setMatrix(0, 2, 0, matP.getColumnDimension()-1, temp); 
 
@@ -333,8 +332,89 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
     }
     
     //Step 2
-    private void updateKalman(){
-        //TODO: Everythingy
+    private void updateKalman(ArrayList<Landmark> oldLandmarks){
+        System.err.println("-------------Update Landmarks-------------");
+        
+        //Cycle old Landmarks
+        for(int i = 0; i < oldLandmarks.size(); i++){
+            Landmark lm = (Landmark)oldLandmarks.get(i);
+            System.err.println("--- Update Landmark " + lm.id + " ---");
+            Integer lmBase = (Integer)landmarkTable.get(lm.id);
+            if(lmBase != null){            
+                //Find estimated range and bearing to last landmark measurment
+                double robotX = matX.get(0, 0);
+                double robotY = matX.get(1, 0);
+                double robotTheta = matX.get(2, 0);
+                double lmX = matX.get(lmBase    , 0);
+                double lmY = matX.get(lmBase + 1, 0);
+                double delX = lmX - robotX;
+                double delY = lmY - robotY;
+                double rangeEst = Math.sqrt(Math.pow(delX, 2) + 
+                                         Math.pow(delY, 2));
+                double bearingEst = Math.atan2(delX, delY);
+                if(bearingEst < 0){
+                    bearingEst = bearingEst + (2 * Math.PI);
+                }
+                bearingEst = bearingEst - robotTheta;
+                System.err.println("rangeEst = " + rangeEst);
+                System.err.println("bearingEst = " + bearingEst);
+                
+                //Create matH for Landmark
+                matH = new Matrix(2, matX.getRowDimension());
+                //Claculate params A to F from measurment jacobian
+                //TODO: What is r? rangeEst?
+                double r = rangeEst;
+                double A = (-1 * delX) / r;
+                double B = (-1 * delY) / r;
+                double C = 0;
+                double D = delY / (r * r);
+                double E = delX / (r * r);
+                double F = -1;
+                //Standard H (Standard Measurment Jacobian)
+                matH.set(0, 0, A);
+                matH.set(0, 1, B);
+                matH.set(0, 2, C);
+                matH.set(1, 0, D);
+                matH.set(1, 1, E);
+                matH.set(1, 2, F);
+                //Landmark H (SLAM Specific Measurment Jacobian)
+                matH.set(0, lmBase    , (-1 * A));
+                matH.set(0, lmBase + 1, (-1 * B));
+                matH.set(1, lmBase    , (-1 * D));
+                matH.set(1, lmBase + 1, (-1 * E));
+
+                //Create matR for Landmark (Measurment Error)
+                matR = new Matrix(2, 2);
+                matR.set(0, 0, rc * rangeEst);
+                matR.set(1, 1, bd);
+
+                //Create matS for Landmark (Innovation Covariance)
+                matS = new Matrix(2, 2);
+                //Covariance
+                Matrix temp1 = new Matrix(2, 2);
+                temp1 = matH.copy(); //temp1 = H
+                temp1 = temp1.times(matP); //temp1 = H * P
+                temp1 = temp1.times(matH.transpose()); //temp1 = H * P * H'
+                //Noise
+                Matrix temp2 = new Matrix(2, 2);
+                temp2 = matR.copy(); //temp2 = V * R * V'
+                //Calculate matS
+                matS = temp1.plus(temp2);
+
+                //Create matK for Landmark (Kalman Gain)
+                matK = new Matrix(2, 2);
+                matK = matP.times(matH.transpose()); //K = P * H'
+                matK = matK.times(matS.inverse()); //K = P * H' * S^(-1)
+                
+                //TODO: Update State (X)
+                
+                //TODO: Update Covariance (P)
+                                
+            }
+            else{
+                System.err.println("!!!ERROR: Landmark Key Missing!!!");
+            }
+        }
     }
 
     //Step 3
@@ -369,7 +449,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                 //Update matX
                 newX.set(lmBase    , 0, lm.position.getX());
                 newX.set(lmBase + 1, 0, lm.position.getY());
-                //TODO: Update matP
+                //TODO: Update Covariance (P)
         
             }
             else{
@@ -544,7 +624,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
 
                 //Step 2 - Update Kalman Filter
                 try {
-                    updateKalman();
+                    updateKalman(oldLandmarks);
                 } catch(Exception e) {
                     System.err.println("Error updating Kalman: " + e);
                     System.err.println("Original cause: " + e.getCause());
