@@ -31,18 +31,17 @@
 
 \begin{document}
 
-\title{BBR Progress Report 005:\\ Autonomous 2-D Mapping of a Building Floor}
+\title{BBR Progress Report 006:\\ Autonomous 2-D Mapping of a Building Floor}
 \author{Andy Sayler \& Constantin Berzan}
 \maketitle
 
 \begin{abstract}
-This week we met and composed the interfaces for each of our servers. We also
-coded all necessary custom data types (objects) and learned to pass these
-via the java RMI. We implemented a dummy EKF server for test purposes
-that returns the robot's odometry position and wrote a start-up script
-to start all necessary servers. Next week we will continue implementing all
-of the necessary servers, beginning with a replacement of the dummy EKF
-with an actual EKF and with a simulated landmark server.
+In the past two weeks, we implemented and tested landmark extraction based on
+the RANSAC algorithm. We implemented the prediction phase of the EKF, and part
+of the correction phase. We have found inconsistencies in the tutorial we are
+following, which we are now trying to reconcile. The next step is to finish
+implementing the EKF, either by computing the equations ourselves, or by finding
+another source.
 \end{abstract}
 
 \emph{The code for this project is located at
@@ -198,17 +197,6 @@ Literature review:
         \end{itemize}
 \end{itemize}
 
-\noindent{High-level Design:}
-\begin{itemize}
-    \setlength{\itemsep}{0pt}
-    \setlength{\parskip}{0pt}
-    \setlength{\parsep}{0pt}
-    \item Discussed high-level design of the SLAM system. We will have our
-          Extended Kalman Filter in its own ADE server. We will also have a
-          separate ADE server for landmark extraction (from laser data). Our
-          robot will be ran by a third ADE server, modeled after ArchImpl.
-\end{itemize}
-
 \noindent{Implementation Plan:}
 \begin{itemize}
     \setlength{\itemsep}{0pt}
@@ -233,7 +221,7 @@ Literature review:
           update. We may decide to change the noise model later
 \end{itemize}
 
-\noindent{SLAM Implementation:}
+\noindent{High-level Design:}
 \begin{itemize}
     \setlength{\itemsep}{0pt}
     \setlength{\parskip}{0pt}
@@ -250,6 +238,28 @@ Literature review:
       \end{itemize}
     \item Wrote config file to start all necessary servers.
     \item Learned to pass custom objects via java RMI.
+\end{itemize}
+
+\noindent{SLAM implementation:}
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \item Landmark extraction
+    \begin{itemize}
+        \setlength{\itemsep}{0pt}
+        \setlength{\parskip}{0pt}
+        \setlength{\parsep}{0pt}
+        \item bla
+    \end{itemize}
+    
+    \item EKF
+    \begin{itemize}
+        \setlength{\itemsep}{0pt}
+        \setlength{\parskip}{0pt}
+        \setlength{\parsep}{0pt}
+        \item bla
+    \end{itemize}
 \end{itemize}
 
 \section{Next Steps}
