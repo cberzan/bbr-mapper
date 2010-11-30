@@ -1,0 +1,266 @@
+% Template for progress reports
+% For examples on how to use latex see, for example,
+% http://www.mat.bham.ac.uk/R.W.Kaye/latex/examples.htm
+%
+% Andy Sayler
+% Constantin Berzan
+
+\documentclass[12pt]{article}
+
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage{xspace}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{hyperref}
+\usepackage{url}
+
+\setlength {\topmargin} {0 mm}
+\setlength {\headsep} {0 mm}
+\setlength {\headheight} {0 in}
+\setlength {\voffset} {0 mm}
+\setlength {\oddsidemargin} {0 mm}
+\setlength {\evensidemargin} {0 mm}
+\setlength {\hoffset} {0 mm}
+\setlength {\textwidth} {6.5 in}
+\setlength {\textheight} {9 in}
+
+\hypersetup{
+    colorlinks=true
+}
+
+\begin{document}
+
+\title{BBR Progress Report 005:\\ Autonomous 2-D Mapping of a Building Floor}
+\author{Andy Sayler \& Constantin Berzan}
+\maketitle
+
+\begin{abstract}
+This week we met and composed the interfaces for each of our servers. We also
+coded all necessary custom data types (objects) and learned to pass these
+via the java RMI. We implemented a dummy EKF server for test purposes
+that returns the robot's odometry position and wrote a start-up script
+to start all necessary servers. Next week we will continue implementing all
+of the necessary servers, beginning with a replacement of the dummy EKF
+with an actual EKF and with a simulated landmark server.
+\end{abstract}
+
+\emph{The code for this project is located at
+\url{http://github.com/cberzan/bbr-mapper}}
+
+\section{Introduction}
+SLAM is the problem of Simultaneous Localization and Mapping using a mobile
+robot.  We aim to develop a proof-of-concept SLAM system adhering to the
+behavior-based philosophy.  The robot will use odometry and laser range data to
+navigate the first floor of Halligan, and produce an image representation of
+the floor map.
+
+\section{Project Summary}
+
+We will be developing our robot using a schema (or possibly hybrid)
+architecture. The robot will utilize schema based functions to manifest the
+following behaviors:
+
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \item Avoid obstacles
+    \item Avoid local minima
+    \item Seek new areas
+    \item Utilize SLAM (laser + odometry) to deduce current location
+    \item Utilize SLAM (laser + odometry) to generate persistent environmental
+          map
+\end{itemize}
+
+We will utilize the ADE robotics environment to complete our implementation.
+The first objective will be to create code capable of navigating our robot
+through unfamiliar environments and exploring these environments to their full
+potential without getting stuck or colliding with obstacles. 
+
+The next goal will be to build a map of the environment and provide
+localization abilities. This will be done by implementing a basic SLAM
+system using laser and odomtery data.  We aim to develop a 2D floor plan map
+using data from our SLAM system.\\
+
+Should we complete the initial scope of this project ahead of schedule, we may
+opt to pursue one or more of the following extensions:
+
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \item Utilize vision data in SLAM system
+    \item Utilize vision data in 2D map generation
+    \item Compare performance of our SLAM system to Carmen
+    \item Augment SLAM system with additional sensor packages (radio ranging,
+          etc)
+\end{itemize}
+
+
+\section{Problems tackled}
+
+Literature review:
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \item SLAM for Dummies tutorial -- both
+    \item Carmen -- Andy
+    \item Vision-based SLAM -- Constantin
+\end{itemize}
+
+\noindent{Discussed and refined project scope:}
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \item Opted to implement SLAM ourselves
+    \item Decided to use SLAM data as primary source for persistent 2D map data
+\end{itemize}
+
+\noindent{Logistical issues:}
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \item Decided on workflow and code layout for interfacing our code with ADE
+    \item Figured out bootstrapping of ADE registry and simulator
+    \item Wrote SSH scripts for easy remote operation of the robot
+\end{itemize}
+
+\noindent{Discussed Odometry Testing Setup:}
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \item Linear Distance Testing (i.e. Drive 10m, then measure actual
+      distance and angle)
+    \item Start/Stop Testing (i.e. drive 1m in 10cm steps issuing
+      start and stop commands between each step to measure start/stop drift)
+    \item Rotational Distance Testing (i.e. Turn 180 degrees, then measure
+      actual angle.)
+    \item Acceleration Test (i.e. drive 10m and use internal timer to log
+      distance at each tenth second interval to compute robot dynamics)
+\end{itemize}
+
+\noindent{Created Map of Halligan for the Simulator:}
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \item The map was auto-generated by extracting all rectangles from a SVG
+          image, which was drawn by hand
+    \item The svg-to-xml conversion script is reusable, and allows the map to be
+          modified easily, using a graphical editor such as Inkscape
+    \item The goal is to capture the complexity of the environment, while not
+          necessarily drawing it to scale
+\end{itemize}
+
+\noindent{Odometry Testing:}
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \item Performed drive-forward test:
+        \begin{itemize}
+            \setlength{\itemsep}{0pt}
+            \setlength{\parskip}{0pt}
+            \setlength{\parsep}{0pt}
+            \item Varied distance: 1 m, 2 m
+            \item Varied velocity: 0.1 m/s, 0.25 m/s, 0.5 m/s
+            \item Surface: lenolium in Halligan
+        \end{itemize}
+    \item Performed start-stop test:
+        \begin{itemize}
+            \setlength{\itemsep}{0pt}
+            \setlength{\parskip}{0pt}
+            \setlength{\parsep}{0pt}
+            \item Move interval: 2 sec; Stop interval: 1 sec
+            \item Distance: 2 m
+            \item Velocity: 0.1 m/s
+            \item Surface: lenolium in Halligan
+        \end{itemize}
+    \item Studied odometry data to understand the coordinate system of the
+          robot
+    \item Characterized the error in odometry data versus actual motion:
+        \begin{itemize}
+            \setlength{\itemsep}{0pt}
+            \setlength{\parskip}{0pt}
+            \setlength{\parsep}{0pt}
+            \item Surprisingly, the errors were greater at smaller speeds
+            \item At small speeds, there was a consistent drift to the left
+                  (this effect disappeared at higher speeds)
+            \item The stop-start test did not increase the error significantly
+            \item Mean error at 0.1 m/s was about 10\%
+            \item Mean error at 0.25 m/s was about 8\%
+            \item Mean error at 0.5 m/s was about 1\%
+        \end{itemize}
+\end{itemize}
+
+\noindent{High-level Design:}
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \item Discussed high-level design of the SLAM system. We will have our
+          Extended Kalman Filter in its own ADE server. We will also have a
+          separate ADE server for landmark extraction (from laser data). Our
+          robot will be ran by a third ADE server, modeled after ArchImpl.
+\end{itemize}
+
+\noindent{Implementation Plan:}
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \item The initial implementation is going to work in the ADE simulator,
+          using beacons as landmarks. This will allow us to implement and test
+          the EKF separately from the landmark detection algorithm.
+    \item The next step will be extracting landmarks from laser data. This can
+          also be tested in simulation.
+    \item Output useful mapping data. Test it in the simulator.
+    \item Test everything in the real world. Tweak Kalman filter.
+\end{itemize}
+
+\noindent{Odometry data in the simulator:}
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \item We managed to obtain odometry data from ADESim
+    \item We modified ADESim to add Gaussian noise to the odometry data on each
+          update. We may decide to change the noise model later
+\end{itemize}
+
+\noindent{SLAM Implementation:}
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+  \item Coded high level SLAM interfaces
+      \begin{itemize}
+          \item EKFServer - Provides best estimate of current location by
+            performing EKF.
+          \item LandmarkServer - Provides a list of currently seen landmarks
+            and their location relative to the robot.
+          \item MappingServer - Maintains persistent representation of map and
+            outputs a map representation to the user.
+          \item Arch - Implements exploratory schema based behavioral code.
+      \end{itemize}
+    \item Wrote config file to start all necessary servers.
+    \item Learned to pass custom objects via java RMI.
+\end{itemize}
+
+\section{Next Steps}
+
+\begin{itemize}
+    \setlength{\itemsep}{0pt}
+    \setlength{\parskip}{0pt}
+    \setlength{\parsep}{0pt}
+    \item EKF Implementation -- Andy
+    \item Simulated Landmark Implementation -- Constantin
+    \item Basic Navigation -- Constantin
+\end{itemize}
+
+\end{document}
