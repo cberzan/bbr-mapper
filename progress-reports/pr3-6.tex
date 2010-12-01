@@ -250,7 +250,25 @@ Literature review:
         \setlength{\itemsep}{0pt}
         \setlength{\parskip}{0pt}
         \setlength{\parsep}{0pt}
-        \item bla
+        \item Fit lines to laser readings using RANSAC.
+        \item Use estimated robot position from the EKF to find origin of
+              global coordinate system.
+        \item Project origin of coordinate system onto each fitted line, and
+              take the projected point as a global point landmark.
+        \item Report landmarks to the EKF only if they have been reobserved a
+              sufficient number of times.
+        \item ``Forget'' landmarks that have not been reobserved in a long time.
+        \item Wrote a simple architecture to help find the distance between the
+              robot's center of rotation and the position of the LRF.
+        \item Added correction for the distance between the robot's center of
+              rotation and the position of the LRF \emph{in simulation}. The
+              correction constant will be different on the real robot.
+        \item Testing: offline visualization of RANSAC results, stepping through
+              the iterations of the algorithm.
+        \item Testing: online visualization of RANSAC results, written on top of
+              LRFServerVis.
+        \item Testing: in simulation, the robot consistently re-observes
+              landmarks when driving and turning in a random manner.
     \end{itemize}
     
     \item EKF
@@ -301,8 +319,8 @@ Literature review:
       \end{itemize}
     \item Test and tune EKF Implementation -- Andy
     \item Create contingency plan if EKF fails to operate -- Both
-    \item Simulated Landmark Implementation -- Constantin
-    \item Basic Navigation -- Constantin
+    \item Figure out persistent mapping -- Constantin
+    \item Create visualization of persistent mapping for the demo -- Constantin
 \end{itemize}
 
 \end{document}
