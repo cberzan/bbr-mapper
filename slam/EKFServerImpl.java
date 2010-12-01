@@ -301,7 +301,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
 
         //Update P upper left
         Matrix matPrr = matP.getMatrix(0, 2, 0, 2);
-        Matrix temp = matA.copy(); // temp = A
+        Matrix temp = matA.copy();        // temp = A
         temp = temp.times(matPrr);        // temp = A * Prr
         temp = temp.times(matA);          // temp = (A * Prr * A)
         temp = temp.plus(matQ);           // temp = (A * Prr * A) + Q
@@ -314,7 +314,9 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
         temp = temp.times(matPri); // temp = A * Pri
         //TODO: Check if we need to include cols 0-2? Already updated?
         matP.setMatrix(0, 2, 0, matP.getColumnDimension()-1, temp); 
-
+        //TODO: Set transpose?
+        //temp = matP.getMatrix(0, 2, 3, matP.getColumnDimension()-1);
+        //matP.setMatrix(3, matP.getColumnDimension()-1, 0, 2, temp.transpose());
     }
 
     //Step 2.0 
@@ -333,42 +335,55 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
     
     //Step 2
     private void updateKalman(ArrayList<Landmark> oldLandmarks){
-        System.err.println("-------------Update Landmarks-------------");
+        //System.err.println("-------------Update Landmarks-------------");
         
         //Cycle old Landmarks
         for(int i = 0; i < oldLandmarks.size(); i++){
             Landmark lm = (Landmark)oldLandmarks.get(i);
-            System.err.println("--- Update Landmark " + lm.id + " ---");
+            //System.err.println("--- Update Landmark " + lm.id + " ---");
             Integer lmBase = (Integer)landmarkTable.get(lm.id);
             if(lmBase != null){            
                 //Find estimated range and bearing to last landmark measurment
                 double robotX = matX.get(0, 0);
                 double robotY = matX.get(1, 0);
                 double robotTheta = matX.get(2, 0);
-                double lmX = matX.get(lmBase    , 0);
-                double lmY = matX.get(lmBase + 1, 0);
-                double delX = lmX - robotX;
-                double delY = lmY - robotY;
-                double rangeEst = Math.sqrt(Math.pow(delX, 2) + 
-                                         Math.pow(delY, 2));
-                double bearingEst = Math.atan2(delX, delY);
+                double previousLMX = matX.get(lmBase    , 0);
+                double previousLMY = matX.get(lmBase + 1, 0);
+                double estDelX = previousLMX - robotX;
+                double estDelY = previousLMY - robotY;
+                double rangeEst = Math.sqrt(Math.pow(estDelX, 2) + 
+                                         Math.pow(estDelY, 2));
+                double bearingEst = Math.atan2(estDelX, estDelY);
                 if(bearingEst < 0){
                     bearingEst = bearingEst + (2 * Math.PI);
                 }
                 bearingEst = bearingEst - robotTheta;
-                System.err.println("rangeEst = " + rangeEst);
-                System.err.println("bearingEst = " + bearingEst);
-                
+                //System.err.println("rangeEst = " + rangeEst);
+                //System.err.println("bearingEst = " + bearingEst);
+                //Find measured range and bearing
+                double newLMX = lm.position.getX();
+                double newLMY = lm.position.getY();
+                double meaDelX = newLMX - robotX;
+                double meaDelY = newLMY - robotY;
+                double rangeMea = Math.sqrt(Math.pow(meaDelX, 2) + 
+                                            Math.pow(meaDelY, 2));
+                double bearingMea = Math.atan2(meaDelX, meaDelY);
+                if(bearingMea < 0){
+                    bearingMea = bearingMea + (2 * Math.PI);
+                }
+                bearingMea = bearingMea - robotTheta;
+                //System.err.println("rangeMea = " + rangeMea);
+                //System.err.println("bearingMea = " + bearingMea);
+
                 //Create matH for Landmark
                 matH = new Matrix(2, matX.getRowDimension());
                 //Claculate params A to F from measurment jacobian
-                //TODO: What is r? rangeEst?
                 double r = rangeEst;
-                double A = (-1 * delX) / r;
-                double B = (-1 * delY) / r;
+                double A = (-1 * estDelX) / r;
+                double B = (-1 * estDelY) / r;
                 double C = 0;
-                double D = delY / (r * r);
-                double E = delX / (r * r);
+                double D = estDelY / (r * r);
+                double E = estDelX / (r * r);
                 double F = -1;
                 //Standard H (Standard Measurment Jacobian)
                 matH.set(0, 0, A);
@@ -385,7 +400,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
 
                 //Create matR for Landmark (Measurment Error)
                 matR = new Matrix(2, 2);
-                //TODO: 
+                //TODO: Good error model?
                 matR.set(0, 0, rc * rangeEst);
                 matR.set(1, 1, bd);
 
@@ -403,12 +418,19 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                 matS = temp1.plus(temp2);
 
                 //Create matK for Landmark (Kalman Gain)
-                matK = new Matrix(2, 2);
+                matK = new Matrix(matX.getRowDimension(), 2);
                 matK = matP.times(matH.transpose()); //K = P * H'
                 matK = matK.times(matS.inverse()); //K = P * H' * S^(-1)
-                
+
                 //TODO: Update State (X)
-                
+                Matrix matz = new Matrix(2,1);
+                matz.set(0, 0, (rangeMea - rangeEst));
+                matz.set(1, 0, (bearingMea - bearingEst));
+                //System.err.println("rangeZ = " + matz.get(0,0));
+                //System.err.println("bearingZ = " + matz.get(1,0));
+                Matrix temp3 = matK.times(matz);
+                matX = matX.plus(temp3);
+
                 //TODO: Update Covariance (P)
                                 
             }
@@ -451,7 +473,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                 newX.set(lmBase    , 0, lm.position.getX());
                 newX.set(lmBase + 1, 0, lm.position.getY());
                 //TODO: Update Covariance (P)
-        
+                
             }
             else{
                 System.err.println("!!!ERROR: Landmark Key Missing!!!");
@@ -643,9 +665,6 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                     // Don't exit, hoping this is a temporary problem.
                 }
 
-                System.err.println("Final Updated currentPose: "
-                                   + currentPose);
-               
                 //Update Pose with Filtered Position
                 try {
                     updatePose();
@@ -655,30 +674,32 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                     e.printStackTrace();
                     // Don't exit, hoping this is a temporary problem.
                 }
-                System.err.println("Odom Updated currentPose: " + currentPose);
-                
-
-                /*
+                System.err.println("Final currentPose: " + currentPose);
+                                
                 //Get True Position
                 try {
-                    double[] odom = (double[])call(odomServer,
-                                                   "getPoseEgo");
+                    double[] trueOdom = (double[])call(odomServer,
+                                                       "getPoseGlobal");
                     if(odom != null) {
                         // HACK: figure out how to handle this better
                         truePose.x = odom[0];
                         truePose.y = odom[1];
                         truePose.theta = odom[2];
-                        }
+                    }
                     
-                    } catch(Exception e) {
-                System.err.println("Error getting true odometry: " + e);
+                } catch(Exception e) {
+                    System.err.println("Error getting true odometry: " + e);
                     System.err.println("Original cause: " + e.getCause());
                     e.printStackTrace();
                     // Don't exit, hoping this is a temporary problem.
-                    }
+                }
                 
-                System.out.println("truePose: " + truePose);
-                */
+                System.err.println("truePose: " + truePose);
+                System.err.println("Delta X: " + (currentPose.x - truePose.x));
+                System.err.println("Delta Y: " + (currentPose.y - truePose.y));
+                System.err.println("Delta Theta: " + (currentPose.theta
+                                                      - truePose.theta));
+                
                 
                 //System.out.println("-----matX-Post-----");
                 //matX.print(4,2);
