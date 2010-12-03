@@ -232,23 +232,24 @@ public class ArchImpl extends ActionServerImpl implements Arch {
         //    System.out.format("%f, ", laser[i]);
         //System.out.println();
 
-        // Test RANSAC landmarks.
         try {
-            // We pass in the true global position -- this is impossible in the
-            // real world.
+            // Get true global position -- this is impossible in the real world.
             double[] poseADE = (double[])call(positionServer, "getPoseGlobal");
             Pose pose        = new Pose();
             pose.x           = poseADE[0];
             pose.y           = poseADE[1];
             pose.theta       = poseADE[2];
-            //System.out.format("Pose: x=%f y=%f theta=%f\n", pose.x, pose.y, pose.theta);
+            System.out.format("Pose: x=%f y=%f theta=%f\n", pose.x, pose.y, pose.theta);
 
+            /*
+            // Test RANSAC landmarks.
             Landmark[] landmarks = (Landmark[])call(landmarkServer, "getLandmarks", pose);
             System.out.format("Got %d landmarks:\n", landmarks.length);
             for(Landmark l : landmarks) {
                 System.out.format("id=%d x=%f y=%f\n",
                         l.id, l.position.x, l.position.y);
             }
+            */
         } catch(Exception e) {
             System.out.println("FAILED to get landmarks: " + e);
             e.printStackTrace();
