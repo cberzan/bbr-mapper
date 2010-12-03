@@ -19,6 +19,7 @@ interfaces: \
 	$(PACKAGE_PREFIX)/LandmarkServer.class \
 	$(PACKAGE_PREFIX)/BeaconLandmarkServer.class \
 	$(PACKAGE_PREFIX)/RansacLandmarkServer.class \
+	$(PACKAGE_PREFIX)/MappingServer.class \
 	$(PACKAGE_PREFIX)/RotCenter.class
 
 impls: \
@@ -26,6 +27,7 @@ impls: \
 	$(PACKAGE_PREFIX)/EKFServerImpl.class \
 	$(PACKAGE_PREFIX)/BeaconLandmarkServerImpl.class \
 	$(PACKAGE_PREFIX)/RansacLandmarkServerImpl.class \
+	$(PACKAGE_PREFIX)/MappingServerImpl.class \
 	$(PACKAGE_PREFIX)/RotCenterImpl.class
 
 tests: \
@@ -71,6 +73,9 @@ $(PACKAGE_PREFIX)/BeaconLandmarkServer.class: $(PACKAGE_PREFIX)/BeaconLandmarkSe
 $(PACKAGE_PREFIX)/RansacLandmarkServer.class: $(PACKAGE_PREFIX)/RansacLandmarkServer.java
 	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/RansacLandmarkServer.java
 
+$(PACKAGE_PREFIX)/MappingServer.class: $(PACKAGE_PREFIX)/MappingServer.java
+	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/MappingServer.java
+
 $(PACKAGE_PREFIX)/RotCenter.class: $(PACKAGE_PREFIX)/RotCenter.java
 	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/RotCenter.java
 
@@ -88,6 +93,9 @@ $(PACKAGE_PREFIX)/BeaconLandmarkServerImpl.class: $(PACKAGE_PREFIX)/BeaconLandma
 
 $(PACKAGE_PREFIX)/RansacLandmarkServerImpl.class: $(PACKAGE_PREFIX)/RansacLandmarkServerImpl.java
 	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/RansacLandmarkServerImpl.java
+
+$(PACKAGE_PREFIX)/MappingServerImpl.class: $(PACKAGE_PREFIX)/MappingServerImpl.java
+	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/MappingServerImpl.java
 
 $(PACKAGE_PREFIX)/RotCenterImpl.class: $(PACKAGE_PREFIX)/RotCenterImpl.java
 	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/RotCenterImpl.java

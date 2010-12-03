@@ -25,6 +25,7 @@ public class ArchImpl extends ActionServerImpl implements Arch {
     private Object positionServer = null; // sim testing only
     private Object ekfServer      = null;
     private Object landmarkServer = null;
+    private Object mapServer      = null;
 
     /// Data for wanderSchema (TODO: consider making nested class?)
     private Random rand          = null;
@@ -218,6 +219,14 @@ public class ArchImpl extends ActionServerImpl implements Arch {
             }
         }
 
+        if(mapServer == null) {
+            mapServer = getClient("com.slam.MappingServer");
+            if(mapServer == null) {
+                System.out.println("allServersReady: waiting for MappingServer.");
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -241,6 +250,9 @@ public class ArchImpl extends ActionServerImpl implements Arch {
             pose.theta       = poseADE[2];
             System.out.format("Pose: x=%f y=%f theta=%f\n", pose.x, pose.y, pose.theta);
 
+            // Test mapping.
+            call(mapServer, "updateMap", poseADE, laser);
+
             /*
             // Test RANSAC landmarks.
             Landmark[] landmarks = (Landmark[])call(landmarkServer, "getLandmarks", pose);
@@ -251,7 +263,7 @@ public class ArchImpl extends ActionServerImpl implements Arch {
             }
             */
         } catch(Exception e) {
-            System.out.println("FAILED to get landmarks: " + e);
+            System.out.println("runArchitecture loop FAILED: " + e);
             e.printStackTrace();
         }
 
