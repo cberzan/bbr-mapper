@@ -128,7 +128,7 @@ public class MappingServerImpl extends ADEServerImpl implements MappingServer {
         visData.mapMin         = new Point2D.Double(-15, -15);
         visData.mapMax         = new Point2D.Double(15, 15);
         visData.mapCenter      = new Point2D.Double(0, 0);
-        visData.mapPixPerMeter = 100;
+        visData.mapPixPerMeter = 20;
         visData.robotPose      = new Pose();
 
         int xPix    = (int)((visData.mapMax.x - visData.mapMin.x) *
@@ -155,7 +155,11 @@ public class MappingServerImpl extends ADEServerImpl implements MappingServer {
             //        i, laser[i], pointR, pointW, pointM);
             //if(visData.map[pointM.x][pointM.y] < 127)
             //    visData.map[pointM.x][pointM.y]++;
-            visData.map[pointM.x][pointM.y] = 127;
+
+            // Point may be out of bounds due to laser noise.
+            if(pointM.x >= 0 && pointM.x < visData.map[0].length &&
+               pointM.y >= 0 && pointM.y < visData.map.length)
+                visData.map[pointM.x][pointM.y] = 127;
         }
         visData.robotPose = pose;
         updateGUIs();

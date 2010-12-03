@@ -34,14 +34,19 @@ public class MappingServerVis extends ADEGuiPanel
             return;
 
         // Update every pixel based on map data.
+        // We assume that more than one map pixel corresponds to a screen pixel.
+        // If this assumption is violated, a choppy map will result.
         Dimension ssize = getSize();
         Dimension msize = new Dimension(data.map[0].length, data.map.length);
         double mPixPerSPixX = 1.0 * msize.width / ssize.width;
         double mPixPerSPixY = 1.0 * msize.height / ssize.height;
-        int maxSum = (int)(mPixPerSPixX * mPixPerSPixY * 127);
+        int maxSum = (int)(Math.ceil(mPixPerSPixX) *
+                           Math.ceil(mPixPerSPixY) * 127);
+        //System.out.format("mPixPerSPixX=%f mPixPerSPixY=%f maxSum=%d\n",
+        //        mPixPerSPixX, mPixPerSPixY, maxSum);
+        assert(mPixPerSPixX >= 1 && mPixPerSPixY >= 1);
         for(int sx = 0; sx < ssize.width; sx++) {
             for(int sy = 0; sy < ssize.height; sy++) {
-                // More than one map pixel corresponds to a screen pixel.
                 int sum = 0;
                 for(int mx = 0; mx < mPixPerSPixX; mx++) {
                     for(int my = 0; my < mPixPerSPixY; my++) {
