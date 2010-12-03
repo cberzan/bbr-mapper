@@ -70,9 +70,9 @@ public class MappingServerVis extends ADEGuiPanel
                    robotRadius * 2, robotRadius * 2);
         g.drawLine(robotCenterS.x, robotCenterS.y,
                    robotHeadingS.x, robotHeadingS.y);
-        System.out.format("robotCenter: world %s map %s screen %s\n",
-                robotCenter, data.world2map(robotCenter),
-                map2screen(data.world2map(robotCenter)));
+        //System.out.format("robotCenter: world %s map %s screen %s\n",
+        //        robotCenter, data.world2map(robotCenter),
+        //        map2screen(data.world2map(robotCenter)));
     }
 
     /// Converts from map coordinates to screen coordinates.
