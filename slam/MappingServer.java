@@ -7,5 +7,6 @@ import java.rmi.*;
 
 public interface MappingServer extends ADEServer {
     public void updateMap(Pose pose, double[] laser) throws RemoteException;
+    public MappingServerVisData getVisData() throws RemoteException;
 }
 

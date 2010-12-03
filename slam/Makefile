@@ -3,7 +3,7 @@ PACKAGE_PREFIX = com/slam
 
 ### Targets ################################################################
 
-all: utils interfaces impls tests
+all: utils interfaces impls visuals tests
 
 utils: \
 	$(PACKAGE_PREFIX)/Landmark.class \
@@ -30,10 +30,15 @@ impls: \
 	$(PACKAGE_PREFIX)/MappingServerImpl.class \
 	$(PACKAGE_PREFIX)/RotCenterImpl.class
 
+visuals: \
+	$(PACKAGE_PREFIX)/MappingServerVisData.class \
+	$(PACKAGE_PREFIX)/MappingServerVis.class
+
 tests: \
 	$(PACKAGE_PREFIX)/TestVector2D.class \
 	$(PACKAGE_PREFIX)/TestRansac.class \
 	$(PACKAGE_PREFIX)/TestUtil.class
+
 
 ### Utils ###################################################################
 
@@ -99,6 +104,15 @@ $(PACKAGE_PREFIX)/MappingServerImpl.class: $(PACKAGE_PREFIX)/MappingServerImpl.j
 
 $(PACKAGE_PREFIX)/RotCenterImpl.class: $(PACKAGE_PREFIX)/RotCenterImpl.java
 	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/RotCenterImpl.java
+
+
+### Visuals #################################################################
+
+$(PACKAGE_PREFIX)/MappingServerVisData.class: $(PACKAGE_PREFIX)/MappingServerVisData.java
+	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/MappingServerVisData.java
+
+$(PACKAGE_PREFIX)/MappingServerVis.class: $(PACKAGE_PREFIX)/MappingServerVis.java
+	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/MappingServerVis.java
 
 
 ### Tests ###################################################################

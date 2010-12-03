@@ -26,6 +26,7 @@ public class MappingServerImpl extends ADEServerImpl implements MappingServer {
                                  mapCenter = new Point2D.Double(0, 0);
     private final double mapPixPerMeter    = 100;
     private byte[][] map                   = null; // addressed as (x, y)
+    private MappingServerVisData visData   = null;
 
     // ***********************************************************************
     // *** Abstract methods in ADEServerImpl that need to be implemented
@@ -128,10 +129,22 @@ public class MappingServerImpl extends ADEServerImpl implements MappingServer {
         int xPix = (int)((mapMax.x - mapMin.x) * mapPixPerMeter),
             yPix = (int)((mapMax.y - mapMin.y) * mapPixPerMeter);
         map = new byte[xPix][yPix];
+
+        visData                = new MappingServerVisData();
+        visData.mapMin         = mapMin;
+        visData.mapMax         = mapMax;
+        visData.mapCenter      = mapCenter;
+        visData.mapPixPerMeter = mapPixPerMeter;
+        visData.map            = map;
     }
 
     public void updateMap(Pose pose, double[] laser) throws RemoteException {
         System.out.println("updateMap() ------------------------");
+        updateGUIs();
+    }
+
+    public MappingServerVisData getVisData() throws RemoteException {
+        return visData;
     }
 
     /**
@@ -195,5 +208,13 @@ public class MappingServerImpl extends ADEServerImpl implements MappingServer {
 
     /** read in one update from the log once */
     protected void updateFromLog(String logEntry) {
+    }
+
+    @Override
+    public HashMap<String, Class<?>> getVisualizationClasses() throws RemoteException
+    {
+        HashMap<String, Class<?>> classes = new HashMap<String, Class<?>>();
+        classes.put("Map", MappingServerVis.class);
+        return classes;
     }
 }
