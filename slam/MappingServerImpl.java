@@ -22,6 +22,7 @@ public class MappingServerImpl extends ADEServerImpl implements MappingServer {
     private static boolean verbose = false;
 
     /* Server-specific fields */
+    private byte maxDensity              = 50;
     private RobotInfo robot              = null;
     private MappingServerVisData visData = null;
 
@@ -154,13 +155,12 @@ public class MappingServerImpl extends ADEServerImpl implements MappingServer {
             Point pointM          = visData.world2map(pointW);
             //System.out.format("angle %d dist %f. point: robot %s world %s map %s\n",
             //        i, laser[i], pointR, pointW, pointM);
-            //if(visData.map[pointM.x][pointM.y] < 127)
-            //    visData.map[pointM.x][pointM.y]++;
 
             // Point may be out of bounds due to laser noise.
             if(pointM.x >= 0 && pointM.x < visData.map.length &&
                pointM.y >= 0 && pointM.y < visData.map[0].length) {
-                visData.map[pointM.x][pointM.y] = 127;
+                if(visData.map[pointM.x][pointM.y] < maxDensity)
+                    visData.map[pointM.x][pointM.y]++;
             } else {
                 System.out.format("OUT OF MAP: angle %d dist %f. point: robot %s world %s map %s\n",
                         i, laser[i], pointR, pointW, pointM);
