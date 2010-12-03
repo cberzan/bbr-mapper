@@ -14,7 +14,6 @@ public class MappingServerVis extends ADEGuiPanel
     private RobotInfo robot           = null;
     private Dimension preferredDim    = null;
     private MappingServerVisData data = null;
-    private int[][] buffer            = null;
 
     public MappingServerVis(ClientAndCallHelper helper) {
         super(helper);
@@ -34,7 +33,6 @@ public class MappingServerVis extends ADEGuiPanel
         System.out.println("MappingServerVis dimension: " + dim);
         return dim;
         */
-        buffer        = new int[preferredDim.width][preferredDim.height];
     }
 
     @Override
@@ -53,26 +51,26 @@ public class MappingServerVis extends ADEGuiPanel
         if(data == null)
             return;
 
-        Dimension ssize = preferredDim;
-        Dimension msize = new Dimension(data.map[0].length, data.map.length);
+        Dimension ssize = getSize();
+        Dimension msize = new Dimension(data.map.length, data.map[0].length);
         double sPixPerMPixX = 1.0 * ssize.width / msize.width,
                sPixPerMPixY = 1.0 * ssize.height / msize.height;
         System.out.format("sPixPerMPixX=%f sPixPerMPixY=%f\n",
                 sPixPerMPixX, sPixPerMPixY);
 
-        // Zero buffer.
-        for(int sx = 0; sx < ssize.width; sx++)
-            for(int sy = 0; sy < ssize.height; sy++)
-                buffer[sx][sy] = 0;
-
         // Fill buffer based on map.
+        int[][] buffer = new int[ssize.width][ssize.height];
         int maxSum = 0;
         for(int sx = 0; sx < ssize.width; sx++) {
             for(int sy = 0; sy < ssize.height; sy++) {
                 int mx = (int)(sx / sPixPerMPixX),
                     my = (int)(sy / sPixPerMPixY);
                 for(int dx = 0; dx < sPixPerMPixX; dx++) {
+                    if(mx + dx >= msize.width)
+                        break;
                     for(int dy = 0; dy < sPixPerMPixY; dy++) {
+                        if(my + dy >= msize.height)
+                            break;
                         buffer[sx][sy] += data.map[mx + dx][my + dy];
                         if(buffer[sx][sy] > maxSum)
                             maxSum = buffer[sx][sy];
@@ -85,12 +83,15 @@ public class MappingServerVis extends ADEGuiPanel
         if(maxSum > 0) {
             for(int sx = 0; sx < ssize.width; sx++) {
                 for(int sy = 0; sy < ssize.height; sy++) {
-                    float component = (float)(1.0 - buffer[sx][sy] / maxSum);
+                    float component = (float)(1.0 - 1.0 * buffer[sx][sy] / maxSum);
                     g.setColor(new Color(component, component, component));
                     g.fillRect(sx, ssize.height - sy - 1, 1, 1);
                     // TODO is there really no setPixel?!
                 }
             }
+        } else {
+            g.setColor(Color.white);
+            g.fillRect(0, 0, ssize.width, ssize.height);
         }
 
         // Draw robot.
@@ -115,7 +116,7 @@ public class MappingServerVis extends ADEGuiPanel
     /// Converts from map coordinates to screen coordinates.
     Point map2screen(Point onMap) {
         Dimension ssize     = getSize();
-        Dimension msize     = new Dimension(data.map[0].length, data.map.length);
+        Dimension msize     = new Dimension(data.map.length, data.map[0].length);
         double mPixPerSPixX = 1.0 * msize.width / ssize.width;
         double mPixPerSPixY = 1.0 * msize.height / ssize.height;
         Point onScreen      = new Point();

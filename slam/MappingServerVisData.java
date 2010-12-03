@@ -19,8 +19,8 @@ public class MappingServerVisData {
         Point onMap = new Point();
         onMap.x = (int)((onWorld.x - mapMin.x) * mapPixPerMeter);
         onMap.y = (int)((onWorld.y - mapMin.y) * mapPixPerMeter);
-        assert(onMap.x >= 0 && onMap.x < map[0].length);
-        assert(onMap.y >= 0 && onMap.y < map.length);
+        assert(onMap.x >= 0 && onMap.x < map.length);
+        assert(onMap.y >= 0 && onMap.y < map[0].length);
         return onMap;
     }
 }

@@ -135,6 +135,7 @@ public class MappingServerImpl extends ADEServerImpl implements MappingServer {
                                visData.mapPixPerMeter),
             yPix    = (int)((visData.mapMax.y - visData.mapMin.y) *
                                visData.mapPixPerMeter);
+        System.out.format("Map dimensions: xPix %d yPix %d\n", xPix, yPix);
         visData.map = new byte[xPix][yPix];
     }
 
@@ -157,9 +158,13 @@ public class MappingServerImpl extends ADEServerImpl implements MappingServer {
             //    visData.map[pointM.x][pointM.y]++;
 
             // Point may be out of bounds due to laser noise.
-            if(pointM.x >= 0 && pointM.x < visData.map[0].length &&
-               pointM.y >= 0 && pointM.y < visData.map.length)
+            if(pointM.x >= 0 && pointM.x < visData.map.length &&
+               pointM.y >= 0 && pointM.y < visData.map[0].length) {
                 visData.map[pointM.x][pointM.y] = 127;
+            } else {
+                System.out.format("OUT OF MAP: angle %d dist %f. point: robot %s world %s map %s\n",
+                        i, laser[i], pointR, pointW, pointM);
+            }
         }
         visData.robotPose = pose;
         updateGUIs();
