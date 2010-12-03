@@ -7,6 +7,7 @@ import ade.*;
 import ade.exceptions.ADECallException;
 import com.*;
 import java.awt.geom.Point2D;
+import java.awt.Point;
 import java.io.*;
 import java.math.*;
 import java.net.*;
@@ -16,11 +17,12 @@ import static utilities.Util.*;
 
 public class MappingServerImpl extends ADEServerImpl implements MappingServer {
     /* ADE-related fields (pseudo-refs, etc.) */
-    private static String prg = "MappingServerImpl";
-    private static String type = "MappingServer";
+    private static String prg      = "MappingServerImpl";
+    private static String type     = "MappingServer";
     private static boolean verbose = false;
 
     /* Server-specific fields */
+    private RobotInfo robot              = null;
     private MappingServerVisData visData = null;
 
     // ***********************************************************************
@@ -121,6 +123,7 @@ public class MappingServerImpl extends ADEServerImpl implements MappingServer {
     public MappingServerImpl() throws RemoteException {
         super();
 
+        robot                  = new RobotInfo();
         visData                = new MappingServerVisData();
         visData.mapMin         = new Point2D.Double(-15, -15);
         visData.mapMax         = new Point2D.Double(15, 15);
@@ -137,6 +140,23 @@ public class MappingServerImpl extends ADEServerImpl implements MappingServer {
 
     public void updateMap(Pose pose, double[] laser) throws RemoteException {
         System.out.println("updateMap() ------------------------");
+
+        // Put obstacles on the map.
+        Vector2D tmp = new Vector2D();
+        for(int i = 0; i < 181; i++) {
+            if(laser[i] > robot.lrfRange)
+                continue; // no obstacle, just limit of visual field
+
+            tmp.setPol(laser[i], Util.deg2rad(i));
+            Point2D.Double pointR = new Point2D.Double(tmp.getX(), tmp.getY());
+            Point2D.Double pointW = robot.robot2world(pose, pointR);
+            Point pointM          = visData.world2map(pointW);
+            //System.out.format("angle %d dist %f. point: robot %s world %s map %s\n",
+            //        i, laser[i], pointR, pointW, pointM);
+            //if(visData.map[pointM.x][pointM.y] < 127)
+            //    visData.map[pointM.x][pointM.y]++;
+            visData.map[pointM.x][pointM.y] = 127;
+        }
         visData.robotPose = pose;
         updateGUIs();
     }
