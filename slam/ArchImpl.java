@@ -251,7 +251,7 @@ public class ArchImpl extends ActionServerImpl implements Arch {
             System.out.format("Pose: x=%f y=%f theta=%f\n", pose.x, pose.y, pose.theta);
 
             // Test mapping.
-            call(mapServer, "updateMap", poseADE, laser);
+            call(mapServer, "updateMap", pose, laser);
 
             /*
             // Test RANSAC landmarks.
