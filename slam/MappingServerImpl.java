@@ -21,12 +21,7 @@ public class MappingServerImpl extends ADEServerImpl implements MappingServer {
     private static boolean verbose = false;
 
     /* Server-specific fields */
-    private final Point2D.Double mapMin    = new Point2D.Double(-15, -15),
-                                 mapMax    = new Point2D.Double(15, 15),
-                                 mapCenter = new Point2D.Double(0, 0);
-    private final double mapPixPerMeter    = 100;
-    private byte[][] map                   = null; // addressed as (x, y)
-    private MappingServerVisData visData   = null;
+    private MappingServerVisData visData = null;
 
     // ***********************************************************************
     // *** Abstract methods in ADEServerImpl that need to be implemented
@@ -126,20 +121,23 @@ public class MappingServerImpl extends ADEServerImpl implements MappingServer {
     public MappingServerImpl() throws RemoteException {
         super();
 
-        int xPix = (int)((mapMax.x - mapMin.x) * mapPixPerMeter),
-            yPix = (int)((mapMax.y - mapMin.y) * mapPixPerMeter);
-        map = new byte[xPix][yPix];
-
         visData                = new MappingServerVisData();
-        visData.mapMin         = mapMin;
-        visData.mapMax         = mapMax;
-        visData.mapCenter      = mapCenter;
-        visData.mapPixPerMeter = mapPixPerMeter;
-        visData.map            = map;
+        visData.mapMin         = new Point2D.Double(-15, -15);
+        visData.mapMax         = new Point2D.Double(15, 15);
+        visData.mapCenter      = new Point2D.Double(0, 0);
+        visData.mapPixPerMeter = 100;
+        visData.robotPose      = new Pose();
+
+        int xPix    = (int)((visData.mapMax.x - visData.mapMin.x) *
+                               visData.mapPixPerMeter),
+            yPix    = (int)((visData.mapMax.y - visData.mapMin.y) *
+                               visData.mapPixPerMeter);
+        visData.map = new byte[xPix][yPix];
     }
 
     public void updateMap(Pose pose, double[] laser) throws RemoteException {
         System.out.println("updateMap() ------------------------");
+        visData.robotPose = pose;
         updateGUIs();
     }
 
