@@ -17,22 +17,15 @@ public class MappingServerVis extends ADEGuiPanel
 
     public MappingServerVis(ClientAndCallHelper helper) {
         super(helper);
-        robot        = new RobotInfo();
-        preferredDim = new Dimension(600, 600);
-        /*
-        if(robot == null) {
-            System.err.println("getPreferredSize() called before RobotInfo was initialized");
-            return new Dimension(600, 600);
-        }
+
+        robot         = new RobotInfo();
         double wWorld = robot.worldMax.x - robot.worldMin.x,
                hWorld = robot.worldMax.y - robot.worldMin.y;
         double wRat   = robot.screenDim.width / wWorld,
                hRat   = robot.screenDim.height / hWorld,
                rat    = Math.min(wRat, hRat);
-        Dimension dim = new Dimension((int)(wWorld * rat), (int)(hWorld * rat));
-        System.out.println("MappingServerVis dimension: " + dim);
-        return dim;
-        */
+        preferredDim  = new Dimension((int)(wWorld * rat), (int)(hWorld * rat));
+        System.out.println("MappingServerVis preferredDim: " + preferredDim);
     }
 
     @Override
