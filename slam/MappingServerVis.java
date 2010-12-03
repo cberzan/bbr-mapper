@@ -11,10 +11,30 @@ import javax.swing.*;
 
 public class MappingServerVis extends ADEGuiPanel
 {
+    private RobotInfo robot           = null;
+    private Dimension preferredDim    = null;
     private MappingServerVisData data = null;
+    private int[][] buffer            = null;
 
     public MappingServerVis(ClientAndCallHelper helper) {
         super(helper);
+        robot        = new RobotInfo();
+        preferredDim = new Dimension(600, 600);
+        /*
+        if(robot == null) {
+            System.err.println("getPreferredSize() called before RobotInfo was initialized");
+            return new Dimension(600, 600);
+        }
+        double wWorld = robot.worldMax.x - robot.worldMin.x,
+               hWorld = robot.worldMax.y - robot.worldMin.y;
+        double wRat   = robot.screenDim.width / wWorld,
+               hRat   = robot.screenDim.height / hWorld,
+               rat    = Math.min(wRat, hRat);
+        Dimension dim = new Dimension((int)(wWorld * rat), (int)(hWorld * rat));
+        System.out.println("MappingServerVis dimension: " + dim);
+        return dim;
+        */
+        buffer        = new int[preferredDim.width][preferredDim.height];
     }
 
     @Override
@@ -33,31 +53,43 @@ public class MappingServerVis extends ADEGuiPanel
         if(data == null)
             return;
 
-        // Update every pixel based on map data.
-        // We assume that more than one map pixel corresponds to a screen pixel.
-        // If this assumption is violated, a choppy map will result.
-        Dimension ssize = getSize();
+        Dimension ssize = preferredDim;
         Dimension msize = new Dimension(data.map[0].length, data.map.length);
-        double mPixPerSPixX = 1.0 * msize.width / ssize.width;
-        double mPixPerSPixY = 1.0 * msize.height / ssize.height;
-        int maxSum = (int)(Math.ceil(mPixPerSPixX) *
-                           Math.ceil(mPixPerSPixY) * 127);
-        //System.out.format("mPixPerSPixX=%f mPixPerSPixY=%f maxSum=%d\n",
-        //        mPixPerSPixX, mPixPerSPixY, maxSum);
-        assert(mPixPerSPixX >= 1 && mPixPerSPixY >= 1);
+        double sPixPerMPixX = 1.0 * ssize.width / msize.width,
+               sPixPerMPixY = 1.0 * ssize.height / msize.height;
+        System.out.format("sPixPerMPixX=%f sPixPerMPixY=%f\n",
+                sPixPerMPixX, sPixPerMPixY);
+
+        // Zero buffer.
+        for(int sx = 0; sx < ssize.width; sx++)
+            for(int sy = 0; sy < ssize.height; sy++)
+                buffer[sx][sy] = 0;
+
+        // Fill buffer based on map.
+        int maxSum = 0;
         for(int sx = 0; sx < ssize.width; sx++) {
             for(int sy = 0; sy < ssize.height; sy++) {
-                int sum = 0;
-                for(int mx = 0; mx < mPixPerSPixX; mx++) {
-                    for(int my = 0; my < mPixPerSPixY; my++) {
-                        int mxx = (int)(sx * mPixPerSPixX + mx),
-                            myy = (int)(sy * mPixPerSPixY + my);
-                        sum += data.map[mxx][myy];
+                int mx = (int)(sx / sPixPerMPixX),
+                    my = (int)(sy / sPixPerMPixY);
+                for(int dx = 0; dx < sPixPerMPixX; dx++) {
+                    for(int dy = 0; dy < sPixPerMPixY; dy++) {
+                        buffer[sx][sy] += data.map[mx + dx][my + dy];
+                        if(buffer[sx][sy] > maxSum)
+                            maxSum = buffer[sx][sy];
                     }
                 }
-                float component = (float)(1.0 - sum / maxSum);
-                g.setColor(new Color(component, component, component));
-                g.fillRect(sx, ssize.height - sy - 1, 1, 1); // FIXME really? no putPixel??
+            }
+        }
+
+        // Transfer buffer to screen.
+        if(maxSum > 0) {
+            for(int sx = 0; sx < ssize.width; sx++) {
+                for(int sy = 0; sy < ssize.height; sy++) {
+                    float component = (float)(1.0 - buffer[sx][sy] / maxSum);
+                    g.setColor(new Color(component, component, component));
+                    g.fillRect(sx, ssize.height - sy - 1, 1, 1);
+                    // TODO is there really no setPixel?!
+                }
             }
         }
 
@@ -94,7 +126,7 @@ public class MappingServerVis extends ADEGuiPanel
 
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(600, 600);
+        return preferredDim;
     }
 }
 

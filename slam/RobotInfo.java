@@ -1,11 +1,20 @@
 package com.slam;
 
+import java.awt.Dimension;
 import java.awt.geom.Point2D;
 
 /**
  * Defines several constants about the robot, and several utility functions.
  */
 public class RobotInfo {
+    /// World boundaries, for mapping.
+    final public Point2D.Double worldMin = new Point2D.Double(-16, -16);
+    final public Point2D.Double worldMax = new Point2D.Double(16, 16);
+
+    /// Screen boundaries, for visualization.
+    // FIXME find a better place for these.
+    final public Dimension screenDim = new Dimension(1000, 600);
+
     /// Laser range for detecting anomalous readings.
     final public double lrfRange = 4; // meters
 
