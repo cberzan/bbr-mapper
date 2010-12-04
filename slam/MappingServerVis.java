@@ -92,11 +92,22 @@ public class MappingServerVis extends ADEGuiPanel
         g.setColor(Color.green);
         myDrawCross(g, new Point2D.Double(0, 0), crossRadius);
 
+        // Draw line landmarks.
+        if(data.landmarks != null) {
+            g.setColor(Color.orange);
+            for(Landmark lm : data.landmarks) {
+                if(lm.line != null) {
+                }
+            }
+        }
+
         // Draw point landmarks.
         if(data.landmarks != null) {
             g.setColor(Color.cyan);
-            for(Landmark lm : data.landmarks)
+            for(Landmark lm : data.landmarks) {
                 myDrawCross(g, lm.position, crossRadius);
+                myDrawSquare(g, lm.position, crossRadius);
+            }
         }
 
         // Draw robot.
@@ -135,6 +146,13 @@ public class MappingServerVis extends ADEGuiPanel
         Point pS = map2screen(data.world2map(pW));
         g.drawLine(pS.x - crosshairRadius, pS.y, pS.x + crosshairRadius, pS.y);
         g.drawLine(pS.x, pS.y - crosshairRadius, pS.x, pS.y + crosshairRadius);
+    }
+
+    /// Draws a square representing a point in the world.
+    void myDrawSquare(Graphics g, Point2D.Double pW, int squareRadius) {
+        Point pS = map2screen(data.world2map(pW));
+        g.drawRect(pS.x - squareRadius, pS.y - squareRadius,
+                   2 * squareRadius, 2 * squareRadius);
     }
 
     @Override
