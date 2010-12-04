@@ -298,13 +298,7 @@ public class TestRansac extends JPanel {
         return sum;
     }
 
-    /**
-     * Draws the given line on the given graphics object.
-     * @param size - something larger than the width and height of the graphics
-     *               (used to determine line segment boundaries)
-     * @param scale - how many pixels is a meter in robot coordinates.
-     * @param xcenter, ycenter - position of robot in canvas coordinates.
-     */
+    /// Draws the given line on the given graphics object.
     private void myDrawLine(Graphics g, Line l) {
         int height = getHeight(), width = getWidth();
         int xcenter = width / 2, ycenter = 10;
