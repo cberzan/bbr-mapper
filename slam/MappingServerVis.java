@@ -87,6 +87,16 @@ public class MappingServerVis extends ADEGuiPanel
             g.fillRect(0, 0, ssize.width, ssize.height);
         }
 
+        // Draw coordinate system origin.
+        final int crosshairRadius = 10;
+        Point2D.Double centerW    = new Point2D.Double(0, 0);
+        Point   centerS           = map2screen(data.world2map(centerW));
+        g.setColor(Color.green);
+        g.drawLine(centerS.x - crosshairRadius, centerS.y,
+                   centerS.x + crosshairRadius, centerS.y);
+        g.drawLine(centerS.x, centerS.y - crosshairRadius,
+                   centerS.x, centerS.y + crosshairRadius);
+
         // Draw robot.
         final int robotRadius   = 10,
                   headingRadius = 15;
