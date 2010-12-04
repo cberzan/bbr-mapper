@@ -94,7 +94,6 @@ public class MappingServerVis extends ADEGuiPanel
 
         // Draw line landmarks.
         if(data.landmarks != null) {
-            g.setColor(Color.orange);
             for(Landmark lm : data.landmarks) {
                 if(lm.ransacLine != null)
                     drawRansacLine(g, lm.ransacLine);
@@ -103,11 +102,8 @@ public class MappingServerVis extends ADEGuiPanel
 
         // Draw point landmarks.
         if(data.landmarks != null) {
-            g.setColor(Color.cyan);
-            for(Landmark lm : data.landmarks) {
-                myDrawCross(g, lm.position, crossRadius);
-                myDrawSquare(g, lm.position, crossRadius);
-            }
+            for(Landmark lm : data.landmarks)
+                drawLandmark(g, lm, crossRadius);
         }
 
         // Draw robot.
@@ -148,15 +144,20 @@ public class MappingServerVis extends ADEGuiPanel
         g.drawLine(pS.x, pS.y - crosshairRadius, pS.x, pS.y + crosshairRadius);
     }
 
-    /// Draws a square representing a point in the world.
-    void myDrawSquare(Graphics g, Point2D.Double pW, int squareRadius) {
-        Point pS = map2screen(data.world2map(pW));
-        g.drawRect(pS.x - squareRadius, pS.y - squareRadius,
-                   2 * squareRadius, 2 * squareRadius);
+    /// Draws a landmark given in world coordinates.
+    void drawLandmark(Graphics g, Landmark lm, int landmarkRadius) {
+        g.setColor(Color.magenta);
+        myDrawCross(g, lm.position, landmarkRadius);
+        Point pS = map2screen(data.world2map(lm.position));
+        g.drawRect(pS.x - landmarkRadius, pS.y - landmarkRadius,
+                   2 * landmarkRadius, 2 * landmarkRadius);
+        g.drawString(String.valueOf(lm.id), pS.x + landmarkRadius,
+                                            pS.y - landmarkRadius);
     }
 
     /// Draws a line given in robot's coordinate system.
     private void drawRansacLine(Graphics g, Line l) {
+        g.setColor(new Color(1.0f, 0.5f, 0.0f, 0.7f));
         // Larger than world boundaries:
         final double large = Math.max(robot.worldMax.x - robot.worldMin.x,
                                       robot.worldMax.y - robot.worldMin.y);
