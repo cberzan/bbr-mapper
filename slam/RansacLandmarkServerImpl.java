@@ -197,10 +197,10 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
         for(int i = 0; i < maxLandmarks; i++) {
             if(landmarkDB[i] != null && landmarkDB[i].seenLastRun &&
                     landmarkDB[i].timesSeen >= seeCount) {
-                Landmark lm = new Landmark();
-                lm.id       = i;
-                lm.line     = landmarkDB[i].line;
-                lm.position = landmarkDB[i].point;
+                Landmark lm   = new Landmark();
+                lm.id         = i;
+                lm.ransacLine = landmarkDB[i].line;
+                lm.position   = landmarkDB[i].point;
                 good.add(lm);
             }
         }

@@ -9,8 +9,8 @@ import java.io.Serializable;
 public class Landmark implements Serializable {
     /// Unique id the landmark is identified as.
     public int id;
-    /// Line landmark (only used by RansacLandmarkServer).
-    public Line line;
+    /// For visualization, save Ransac line (relative to robot).
+    public Line ransacLine;
     /// Point landmark (used by BeaconLandmarkServer and RansacLandmarkServer).
     public Point2D.Double position;
 };
