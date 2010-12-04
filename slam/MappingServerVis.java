@@ -96,8 +96,8 @@ public class MappingServerVis extends ADEGuiPanel
         if(data.landmarks != null) {
             g.setColor(Color.orange);
             for(Landmark lm : data.landmarks) {
-                if(lm.line != null) {
-                }
+                if(lm.ransacLine != null)
+                    drawRansacLine(g, lm.ransacLine);
             }
         }
 
@@ -153,6 +153,43 @@ public class MappingServerVis extends ADEGuiPanel
         Point pS = map2screen(data.world2map(pW));
         g.drawRect(pS.x - squareRadius, pS.y - squareRadius,
                    2 * squareRadius, 2 * squareRadius);
+    }
+
+    /// Draws a line given in robot's coordinate system.
+    private void drawRansacLine(Graphics g, Line l) {
+        // Larger than world boundaries:
+        final double large = Math.max(robot.worldMax.x - robot.worldMin.x,
+                                      robot.worldMax.y - robot.worldMin.y);
+        // Points relative to the robot:
+        Point2D.Double r1 = new Point2D.Double(),
+                       r2 = new Point2D.Double();
+        double slope = -l.a / l.b;
+        if(slope >= -1 && slope <= 1) {
+            // Line is closer to horizontal.
+            double m = -l.a / l.b,
+                   b = -l.c / l.b;
+            r1.x = -large;
+            r1.y = m * r1.x + b;
+            r2.x = large;
+            r2.y = m * r2.x + b;
+        } else {
+            // Line is closer to vertical.
+            double rm = -l.b / l.a,
+                   rb = -l.c / l.a;
+            r1.y = -large;
+            r1.x = rm * r1.y + rb;
+            r2.y = large;
+            r2.x = rm * r2.y + rb;
+        }
+        // Points in the world:
+        Point2D.Double w1 = robot.robot2world(data.robotPose, r1),
+                       w2 = robot.robot2world(data.robotPose, r2);
+        // Points on the screen:
+        Point s1 = map2screen(data.world2map(w1)),
+              s2 = map2screen(data.world2map(w2));
+        System.out.println("Point 1: robot " + r1 + " world " + w1 + " scren " + s1);
+        System.out.println("Point 2: robot " + r2 + " world " + w2 + " scren " + s2);
+        g.drawLine(s1.x, s1.y, s2.x, s2.y);
     }
 
     @Override
