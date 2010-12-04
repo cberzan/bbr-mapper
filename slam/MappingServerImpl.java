@@ -129,7 +129,7 @@ public class MappingServerImpl extends ADEServerImpl implements MappingServer {
         visData.mapMin         = robot.worldMin;
         visData.mapMax         = robot.worldMax;
         visData.mapCenter      = new Point2D.Double(0, 0);
-        visData.mapPixPerMeter = 20;
+        visData.mapPixPerMeter = 30;
         visData.robotPose      = new Pose();
 
         int xPix    = (int)((visData.mapMax.x - visData.mapMin.x) *
