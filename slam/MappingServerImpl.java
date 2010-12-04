@@ -140,7 +140,9 @@ public class MappingServerImpl extends ADEServerImpl implements MappingServer {
         visData.map = new byte[xPix][yPix];
     }
 
-    public void updateMap(Pose pose, double[] laser) throws RemoteException {
+    public void updateMap(Pose pose, double[] laser, Landmark[] landmarks)
+        throws RemoteException
+    {
         System.out.println("updateMap() ------------------------");
 
         // Put obstacles on the map.
@@ -167,6 +169,7 @@ public class MappingServerImpl extends ADEServerImpl implements MappingServer {
             }
         }
         visData.robotPose = pose;
+        visData.landmarks = landmarks;
         updateGUIs();
     }
 

@@ -49,7 +49,7 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
     private ArrayList<Integer> discardedIDs     = null;
     private long msLastUpdate                   = 0;
     private boolean initialized                 = false;
-	private RobotInfo robot                     = null;
+    private RobotInfo robot                     = null;
 
     /// Max number of landmarks in database.
     private int maxLandmarks = 400;
@@ -176,7 +176,7 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
         landmarkDB   = new Seamark[maxLandmarks];
         discardedIDs = new ArrayList<Integer>();
         availableIDs = new PriorityQueue<Integer>();
-		robot        = new RobotInfo();
+        robot        = new RobotInfo();
         for(int i = 0; i < maxLandmarks; i++)
             availableIDs.add(i);
 
@@ -198,7 +198,8 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
             if(landmarkDB[i] != null && landmarkDB[i].seenLastRun &&
                     landmarkDB[i].timesSeen >= seeCount) {
                 Landmark lm = new Landmark();
-                lm.id = i;
+                lm.id       = i;
+                lm.line     = landmarkDB[i].line;
                 lm.position = landmarkDB[i].point;
                 good.add(lm);
             }

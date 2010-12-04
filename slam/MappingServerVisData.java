@@ -13,6 +13,7 @@ public class MappingServerVisData {
     public double mapPixPerMeter;
     public byte[][] map;
     public Pose robotPose;
+    public Landmark[] landmarks;
 
     /// Converts from world coordinates to map coordinates.
     Point world2map(Point2D.Double onWorld) {
