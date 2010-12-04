@@ -22,7 +22,7 @@ public class MappingServerImpl extends ADEServerImpl implements MappingServer {
     private static boolean verbose = false;
 
     /* Server-specific fields */
-    private byte maxDensity              = 50;
+    private byte maxDensity              = 30;
     private RobotInfo robot              = null;
     private MappingServerVisData visData = null;
 
