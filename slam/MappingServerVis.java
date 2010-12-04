@@ -88,14 +88,16 @@ public class MappingServerVis extends ADEGuiPanel
         }
 
         // Draw coordinate system origin.
-        final int crosshairRadius = 10;
-        Point2D.Double centerW    = new Point2D.Double(0, 0);
-        Point   centerS           = map2screen(data.world2map(centerW));
+        final int crossRadius = 10;
         g.setColor(Color.green);
-        g.drawLine(centerS.x - crosshairRadius, centerS.y,
-                   centerS.x + crosshairRadius, centerS.y);
-        g.drawLine(centerS.x, centerS.y - crosshairRadius,
-                   centerS.x, centerS.y + crosshairRadius);
+        myDrawCross(g, new Point2D.Double(0, 0), crossRadius);
+
+        // Draw point landmarks.
+        if(data.landmarks != null) {
+            g.setColor(Color.cyan);
+            for(Landmark lm : data.landmarks)
+                myDrawCross(g, lm.position, crossRadius);
+        }
 
         // Draw robot.
         final int robotRadius   = 10,
@@ -126,6 +128,13 @@ public class MappingServerVis extends ADEGuiPanel
         onScreen.x          = (int)((onMap.x / mPixPerSPixX));
         onScreen.y          = ssize.height - (int)((onMap.y / mPixPerSPixY)) - 1;
         return onScreen;
+    }
+
+    /// Draws a crosshair representing a point in the world.
+    void myDrawCross(Graphics g, Point2D.Double pW, int crosshairRadius) {
+        Point pS = map2screen(data.world2map(pW));
+        g.drawLine(pS.x - crosshairRadius, pS.y, pS.x + crosshairRadius, pS.y);
+        g.drawLine(pS.x, pS.y - crosshairRadius, pS.x, pS.y + crosshairRadius);
     }
 
     @Override
