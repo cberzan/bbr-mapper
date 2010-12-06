@@ -31,7 +31,7 @@ public class RobotInfo {
      * Distance between laser's origin and robot's center of rotation. Depends
      * on robot. Assuming LRF is on x axis in the robot's coordinate system.
      */
-    final public double laserX = 0.2; // empirically determined, see sim-rot-center.ods
+    final public double laserX = 0.1; // empirically determined, see bot-rot-center.ods
 
     /// Converts a point from robot coordinates to world coordinates.
     public Point2D.Double robot2world(Pose robotPose, Point2D.Double point) {
