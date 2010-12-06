@@ -133,7 +133,7 @@ public class ArchImpl extends ActionServerImpl implements Arch {
      */
     public void doMotion(Vector2D sum) {
         // Velocity bounds:
-        final double tv_max = 0.4, // m/s
+        final double tv_max = 0.5, // m/s
                      rv_max = 0.2; // rad/s
 
         // Convert vector into translational and rotational velocity.
@@ -245,6 +245,10 @@ public class ArchImpl extends ActionServerImpl implements Arch {
         System.out.println("------ runArchitecture ------");
         if(!allServersReady())
             return;
+
+        // Don't turn at the beginning.
+        if(lastTurnStarted == 0)
+            lastTurnStarted = System.currentTimeMillis();
 
         // Update senses.
         laser = getLaserReadings();
