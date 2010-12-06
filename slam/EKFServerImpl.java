@@ -226,8 +226,8 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
     private Matrix matH = null; //Measurement Jacobian (Per Landmark)
     private Matrix matR = null; //Measurment Error Matrix (Per Landmark)
     private Matrix matA = null; //Prediction Jacobian (Per Timestep)
-    private Matrix[] matJxr; //Landmark Prediction Jacobian - cartesian (?) 
-    private Matrix[] matJz;  //Landmark Prediction Jacobian - polar (?)
+    private Matrix matJxr; //Landmark Prediction Jacobian - cartesian (?) 
+    private Matrix matJz;  //Landmark Prediction Jacobian - polar (?)
     private Matrix matQ = null; //Process Noise (Per Timestep)
     
     private void updatePose() {
@@ -251,9 +251,9 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
         oldPose = new Pose(initPose.x, initPose.y, initPose.theta);
 
         //Local Contants
-        double initXvar = .01;
-        double initYvar = .01;
-        double initThetaVar = .01;
+        double initXvar = .1;
+        double initYvar = .1;
+        double initThetaVar = .1;
 
         //Initialize X
         matX = new Matrix(3, 1);
@@ -282,11 +282,26 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
         double newTheta = matX.get(2, 0) + delTheta;
         matX.set(2, 0, newTheta);
         
+        System.out.println("---Step 1: Matrix X---");
+        matX.print(7, 4);
+
         //Update A - Prediction Jacobian
         matA = Jama.Matrix.identity(3, 3);
         matA.set(0, 2, (-1 * delY)); //(1,3) = -delY
         matA.set(1, 2, (delX));      //(2,3) = delX
 
+        //Update Jxr
+        matJxr = matA.getMatrix(0, 1, 0, 2);
+
+        //Update Jz
+        matJz = new Matrix(2, 2);
+        matJz.set(0, 0, Math.cos(matX.get(2,0))); // (1,1) = cos(theta)
+        matJz.set(1, 0, Math.sin(matX.get(2,0))); // (1,1) = sin(theta)
+        // (1,1) = -delT*sin(theta)
+        matJz.set(0, 1, (-1 * delT * Math.sin(matX.get(2,0))));
+        // (1,1) = delT*cos(theta)
+        matJz.set(1, 1, (delT *  Math.cos(matX.get(2,0))));
+        
         //Update Q
         matQ = new Matrix(3, 3);
         matQ.set(0, 0, (cq*delX*delX)); //(1,1) = cq * delX^2
@@ -309,14 +324,17 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
 
         //Update P upper rows
         //TODO: Check if we need to include cols 0-2? Already updated?
-        Matrix matPri = matP.getMatrix(0, 2, 0, matP.getColumnDimension()-1); 
+        Matrix matPri = matP.getMatrix(0, 2, 3, matP.getColumnDimension()-1); 
         temp = matA.copy(); // temp = A
         temp = temp.times(matPri); // temp = A * Pri
         //TODO: Check if we need to include cols 0-2? Already updated?
-        matP.setMatrix(0, 2, 0, matP.getColumnDimension()-1, temp); 
+        matP.setMatrix(0, 2, 3, matP.getColumnDimension()-1, temp); 
         //TODO: Set transpose?
-        //temp = matP.getMatrix(0, 2, 3, matP.getColumnDimension()-1);
-        //matP.setMatrix(3, matP.getColumnDimension()-1, 0, 2, temp.transpose());
+        temp = matP.getMatrix(0, 2, 3, matP.getColumnDimension()-1);
+        matP.setMatrix(3, matP.getColumnDimension()-1, 0, 2, temp.transpose());
+
+        System.out.println("---Step 1: Matrix P---");
+        matP.print(7,4);
     }
 
     //Step 2.0 
@@ -377,7 +395,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
 
                 //Create matH for Landmark
                 matH = new Matrix(2, matX.getRowDimension());
-                //Claculate params A to F from measurment jacobian
+                //Calculate params A to F from measurment jacobian
                 double r = rangeEst;
                 double A = (-1 * estDelX) / r;
                 double B = (-1 * estDelY) / r;
@@ -422,7 +440,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                 matK = matP.times(matH.transpose()); //K = P * H'
                 matK = matK.times(matS.inverse()); //K = P * H' * S^(-1)
 
-                //TODO: Update State (X)
+                //Update State (X)
                 Matrix matz = new Matrix(2,1);
                 matz.set(0, 0, (rangeMea - rangeEst));
                 matz.set(1, 0, (bearingMea - bearingEst));
@@ -431,8 +449,12 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                 Matrix temp3 = matK.times(matz);
                 matX = matX.plus(temp3);
 
-                //TODO: Update Covariance (P)
-                                
+                //Update Covariance (P)
+                Matrix matI = Matrix.identity(matX.getRowDimension(),
+                                              matX.getRowDimension());
+                Matrix temp4 = matK.times(matH);
+                temp4 = matI.minus(temp4);
+                matP = temp4.times(matP.transpose());
             }
             else{
                 System.err.println("!!!ERROR: Landmark Key Missing!!!");
@@ -472,7 +494,33 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                 //Update matX
                 newX.set(lmBase    , 0, lm.position.getX());
                 newX.set(lmBase + 1, 0, lm.position.getY());
-                //TODO: Update Covariance (P)
+                //Update Covariance (P)
+                Matrix matPrr = matP.getMatrix(0, 2, 0, 2);
+                Matrix temp1 = matPrr.times(matJxr.transpose());
+                temp1 = matJxr.times(temp1);
+                //Create matR for Landmark (Measurment Error)
+                double robotX = matX.get(0, 0);
+                double robotY = matX.get(1, 0);
+                double newLMX = lm.position.getX();
+                double newLMY = lm.position.getY();
+                double meaDelX = newLMX - robotX;
+                double meaDelY = newLMY - robotY;
+                double rangeMea = Math.sqrt(Math.pow(meaDelX, 2) + 
+                                            Math.pow(meaDelY, 2));
+                matR = new Matrix(2, 2);
+                //TODO: Good error model?
+                matR.set(0, 0, rc * rangeMea);
+                matR.set(1, 1, bd);
+                Matrix temp2 = matR.times(matJz.transpose());
+                temp2 = matJz.times(temp2);
+                //Update Pnn
+                Matrix Pnn = temp1.plus(temp2);
+                newP.setMatrix(lmBase, lmBase + 1, lmBase, lmBase + 1, Pnn);
+                //Update Prn
+                Matrix Prn = matPrr.times(matJxr.transpose());
+                newP.setMatrix(0, 2, lmBase, lmBase + 1, Prn);
+                newP.setMatrix(lmBase, lmBase + 1, 0, 2, Prn.transpose());
+                
                 
             }
             else{
@@ -682,9 +730,9 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
                                                        "getPoseGlobal");
                     if(odom != null) {
                         // HACK: figure out how to handle this better
-                        truePose.x = odom[0];
-                        truePose.y = odom[1];
-                        truePose.theta = odom[2];
+                        truePose.x = trueOdom[0];
+                        truePose.y = trueOdom[1];
+                        truePose.theta = trueOdom[2];
                     }
                     
                 } catch(Exception e) {
