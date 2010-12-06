@@ -25,6 +25,7 @@ public class ArchImpl extends ActionServerImpl implements Arch {
     private Object positionServer = null; // sim testing only
     private Object ekfServer      = null;
     private Object landmarkServer = null;
+    private Object mapServer      = null;
 
     /// Data for wanderSchema (TODO: consider making nested class?)
     private Random rand          = null;
@@ -200,6 +201,7 @@ public class ArchImpl extends ActionServerImpl implements Arch {
             }
         }
 
+        /*
         if(ekfServer == null) {
             ekfServer = getClient("com.slam.EKFServer");
             if(ekfServer == null) {
@@ -207,11 +209,20 @@ public class ArchImpl extends ActionServerImpl implements Arch {
                 return false;
             }
         }
+        */
 
         if(landmarkServer == null) {
             landmarkServer = getClient("com.slam.LandmarkServer");
             if(landmarkServer == null) {
                 System.out.println("allServersReady: waiting for LandmarkServer.");
+                return false;
+            }
+        }
+
+        if(mapServer == null) {
+            mapServer = getClient("com.slam.MappingServer");
+            if(mapServer == null) {
+                System.out.println("allServersReady: waiting for MappingServer.");
                 return false;
             }
         }
@@ -230,25 +241,28 @@ public class ArchImpl extends ActionServerImpl implements Arch {
         //    System.out.format("%f, ", laser[i]);
         //System.out.println();
 
-        // Test RANSAC landmarks.
         try {
-            // We pass in the true global position -- this is impossible in the
-            // real world.
+            // Get true global position -- this is impossible in the real world.
             double[] poseADE = (double[])call(positionServer, "getPoseGlobal");
             Pose pose        = new Pose();
             pose.x           = poseADE[0];
             pose.y           = poseADE[1];
             pose.theta       = poseADE[2];
-            //System.out.format("Pose: x=%f y=%f theta=%f\n", pose.x, pose.y, pose.theta);
+            System.out.format("Pose: x=%f y=%f theta=%f\n", pose.x, pose.y, pose.theta);
 
+            // Test RANSAC landmarks.
             Landmark[] landmarks = (Landmark[])call(landmarkServer, "getLandmarks", pose);
             System.out.format("Got %d landmarks:\n", landmarks.length);
             for(Landmark l : landmarks) {
                 System.out.format("id=%d x=%f y=%f\n",
                         l.id, l.position.x, l.position.y);
             }
+
+            // Test mapping.
+            call(mapServer, "updateMap", pose, laser, landmarks);
+
         } catch(Exception e) {
-            System.out.println("FAILED to get landmarks: " + e);
+            System.out.println("runArchitecture loop FAILED: " + e);
             e.printStackTrace();
         }
 

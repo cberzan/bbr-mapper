@@ -49,6 +49,7 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
     private ArrayList<Integer> discardedIDs     = null;
     private long msLastUpdate                   = 0;
     private boolean initialized                 = false;
+    private RobotInfo robot                     = null;
 
     /// Max number of landmarks in database.
     private int maxLandmarks = 400;
@@ -59,25 +60,9 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
     /// Maximum recommended time between polls.
     private long msBetweenPolls = 100;
 
-    /// Laser range for detecting anomalous readings.
-    private double lrfRange = 4; // m
-    /// Number of laser readings.
-    final private int numLaser = 181;
-
     /** Distance a landmark has to be from its predicted position in order to be
         identified as the same landmark. */
     private double assocDist = 0.1;
-
-    /**
-     * Orientation of laser's 0deg vs. robot's 0deg. Depends on robot, but
-     * usually 90 degrees.
-     */
-    final double laserTheta = -Math.PI / 2;
-    /**
-     * Distance between laser's origin and robot's center of rotation. Depends
-     * on robot. Assuming LRF is on x axis in the robot's coordinate system.
-     */
-    final double laserX = 0.2; // empirically determined, see sim-rot-center.ods
 
     // ***********************************************************************
     // *** Abstract methods in ADEServerImpl that need to be implemented
@@ -191,6 +176,7 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
         landmarkDB   = new Seamark[maxLandmarks];
         discardedIDs = new ArrayList<Integer>();
         availableIDs = new PriorityQueue<Integer>();
+        robot        = new RobotInfo();
         for(int i = 0; i < maxLandmarks; i++)
             availableIDs.add(i);
 
@@ -211,9 +197,10 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
         for(int i = 0; i < maxLandmarks; i++) {
             if(landmarkDB[i] != null && landmarkDB[i].seenLastRun &&
                     landmarkDB[i].timesSeen >= seeCount) {
-                Landmark lm = new Landmark();
-                lm.id = i;
-                lm.position = landmarkDB[i].point;
+                Landmark lm   = new Landmark();
+                lm.id         = i;
+                lm.ransacLine = landmarkDB[i].line;
+                lm.position   = landmarkDB[i].point;
                 good.add(lm);
             }
         }
@@ -385,9 +372,9 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
             laser = (double[])call(lrfServer, "getLaserReadings");
             // Limit laser range.
             // TODO discuss if we want this on the real robot.
-            for(int i = 0; i < numLaser; i++) {
-                if(laser[i] > lrfRange)
-                    laser[i] = lrfRange;
+            for(int i = 0; i < robot.numLaser; i++) {
+                if(laser[i] > robot.lrfRange)
+                    laser[i] = robot.lrfRange;
             }
             return true;
         } catch(Exception e) {
@@ -451,8 +438,8 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
             br.x = rm * br.y + rb;
         }
         // Convert the points to world coordinates.
-        Point2D.Double aw = robot2world(robotPose, ar),
-                       bw = robot2world(robotPose, br);
+        Point2D.Double aw = robot.robot2world(robotPose, ar),
+                       bw = robot.robot2world(robotPose, br);
         // Compute projection of (0, 0) onto line through aw and bw.
         double abx = bw.x - aw.x,
                aby = bw.y - aw.y,
@@ -464,23 +451,6 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
         result.x = aw.x + r * (bw.x - aw.x);
         result.y = aw.y + r * (bw.y - aw.y);
         return result;
-    }
-
-    /// Converts a point from robot coordinates to world coordinates.
-    Point2D.Double robot2world(Pose robotPose, Point2D.Double point) {
-        Vector2D v = new Vector2D();
-        v.setCart(point.x, point.y);
-
-        // Convert from LRF coord sys to robot's coord sys.
-        v.setDir(Util.normalizeRad(v.getDir() + laserTheta));
-        v.setX(v.getX() + laserX);
-
-        // Convert from robot's coord sys to world coord sys.
-        v.setDir(Util.normalizeRad(v.getDir() + robotPose.theta));
-        v.setX(v.getX() + robotPose.x);
-        v.setY(v.getY() + robotPose.y);
-
-        return new Point2D.Double(v.getX(), v.getY());
     }
 
     /**
