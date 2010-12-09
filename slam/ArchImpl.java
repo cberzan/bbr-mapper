@@ -250,6 +250,9 @@ public class ArchImpl extends ActionServerImpl implements Arch {
             pose.theta       = poseADE[2];
             System.out.format("Pose: x=%f y=%f theta=%f\n", pose.x, pose.y, pose.theta);
 
+            // Flush forgotten landmarks.
+            call(landmarkServer, "flushDiscardedLandmarks");
+
             // Test RANSAC landmarks.
             Landmark[] landmarks = (Landmark[])call(landmarkServer, "getLandmarks", pose);
             System.out.format("Got %d landmarks:\n", landmarks.length);
