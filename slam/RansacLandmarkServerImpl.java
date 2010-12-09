@@ -227,7 +227,7 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
             result[i] = discardedIDs.get(i);
             availableIDs.add(result[i]);
         }
-        availableIDs.clear();
+        discardedIDs.clear();
         return result;
     }
 
