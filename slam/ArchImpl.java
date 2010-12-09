@@ -69,7 +69,7 @@ public class ArchImpl extends ActionServerImpl implements Arch {
      * - the rest of the time, move forward
      */
     public Vector2D wanderSchema() {
-        final long turnTimeBound = 5 * 1000;  // ms
+        final long turnTimeBound = 3 * 1000;  // ms
         final long keepTimeBound = 20 * 1000; // ms
         long elapsed = System.currentTimeMillis() - lastTurnStarted;
         Vector2D result = new Vector2D();
@@ -247,8 +247,11 @@ public class ArchImpl extends ActionServerImpl implements Arch {
             return;
 
         // Don't turn at the beginning.
-        if(lastTurnStarted == 0)
-            lastTurnStarted = System.currentTimeMillis();
+        if(lastTurnStarted == 0) {
+            lastTurnTime    = 3 * 1000;
+            lastKeepTime    = 10 * 1000;
+            lastTurnStarted = System.currentTimeMillis() - (long)lastTurnTime;
+        }
 
         // Update senses.
         laser = getLaserReadings();
