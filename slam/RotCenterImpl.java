@@ -14,11 +14,12 @@ public class RotCenterImpl extends ActionServerImpl implements RotCenter {
 
     /// Laser data updated at every tick.
     double[] laser = null;
+    private boolean areVelsSet = false;
 
     /// CSV file to dump landmark positions into.
     final int maxLandmarks = 10;
     final String csvPath   = "landmarks.csv";
-    FileWriter csvFile    = null;
+    FileWriter csvFile     = null;
 
     /// Server references.
     private Object videreServer   = null;
@@ -66,6 +67,13 @@ public class RotCenterImpl extends ActionServerImpl implements RotCenter {
         if(!allServersReady())
             return;
 
+        // Set vels on first run.
+        if(!areVelsSet) {
+            System.out.println("Setting vels *once*");
+            setVels(0, 0.1);
+            areVelsSet = true;
+        }
+
         // Update senses.
         laser = getLaserReadings();
 
@@ -106,7 +114,7 @@ public class RotCenterImpl extends ActionServerImpl implements RotCenter {
             e.printStackTrace();
         }
 
-        setVels(0, 0.1);
+        //setVels(0, 0.2);
     }
 
     /** 
@@ -114,5 +122,6 @@ public class RotCenterImpl extends ActionServerImpl implements RotCenter {
      */
     public RotCenterImpl() throws RemoteException {
         super();
+        System.out.println("RotCenterImpl instantiated ----------------");
     }
 }

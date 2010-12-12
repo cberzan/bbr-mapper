@@ -22,7 +22,8 @@ public class ArchImpl extends ActionServerImpl implements Arch {
     double[] laser = null;
 
     /// Server references.
-    private Object positionServer = null; // sim testing only
+    //private Object positionServer = null; // sim testing only
+    private Object videreServer   = null;
     private Object ekfServer      = null;
     private Object landmarkServer = null;
     private Object mapServer      = null;
@@ -68,7 +69,7 @@ public class ArchImpl extends ActionServerImpl implements Arch {
      * - the rest of the time, move forward
      */
     public Vector2D wanderSchema() {
-        final long turnTimeBound = 5 * 1000;  // ms
+        final long turnTimeBound = 3 * 1000;  // ms
         final long keepTimeBound = 20 * 1000; // ms
         long elapsed = System.currentTimeMillis() - lastTurnStarted;
         Vector2D result = new Vector2D();
@@ -132,8 +133,8 @@ public class ArchImpl extends ActionServerImpl implements Arch {
      */
     public void doMotion(Vector2D sum) {
         // Velocity bounds:
-        final double tv_max = 1.0, // m/s
-                     rv_max = 1.0; // rad/s
+        final double tv_max = 0.5, // m/s
+                     rv_max = 0.2; // rad/s
 
         // Convert vector into translational and rotational velocity.
         // To get tv, we take the resultant vector magnitude, and multiply it by
@@ -193,10 +194,20 @@ public class ArchImpl extends ActionServerImpl implements Arch {
             rand = new Random();
         }
 
+        /*
         if(positionServer == null) {
             positionServer = getClient("com.interfaces.PositionServer");
             if(positionServer == null) {
                 System.out.println("allServersReady: waiting for PositionServer.");
+                return false;
+            }
+        }
+        */
+
+        if(videreServer == null) {
+            videreServer = getClient("com.videre.VidereServer");
+            if(videreServer == null) {
+                System.out.println("allServersReady: waiting for VidereServer.");
                 return false;
             }
         }
@@ -235,6 +246,13 @@ public class ArchImpl extends ActionServerImpl implements Arch {
         if(!allServersReady())
             return;
 
+        // Don't turn at the beginning.
+        if(lastTurnStarted == 0) {
+            lastTurnTime    = 3 * 1000;
+            lastKeepTime    = 10 * 1000;
+            lastTurnStarted = System.currentTimeMillis() - (long)lastTurnTime;
+        }
+
         // Update senses.
         laser = getLaserReadings();
         //for(int i = 0; i <= 180; i++)
@@ -243,13 +261,18 @@ public class ArchImpl extends ActionServerImpl implements Arch {
 
         try {
             // Get true global position -- this is impossible in the real world.
-            double[] poseADE = (double[])call(positionServer, "getPoseGlobal");
+            //double[] poseADE = (double[])call(positionServer, "getPoseGlobal");
+
+            // Get pose from odometry -- our best bet on the robot...
+            double[] poseADE = (double[])call(videreServer, "getPoseEgo");
             Pose pose        = new Pose();
             pose.x           = poseADE[0];
             pose.y           = poseADE[1];
             pose.theta       = poseADE[2];
             System.out.format("Pose: x=%f y=%f theta=%f\n", pose.x, pose.y, pose.theta);
 
+            // Flush forgotten landmarks.
+            call(landmarkServer, "flushDiscardedLandmarks");
             // Test RANSAC landmarks.
             Landmark[] landmarks = (Landmark[])call(landmarkServer, "getLandmarks", pose);
             System.out.format("Got %d landmarks:\n", landmarks.length);
