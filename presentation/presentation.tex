@@ -55,6 +55,10 @@
           estimated robot position
     \item Project origin onto each line, take resulting points as landmarks
     \end{itemize}
+    \vspace{1cm}
+
+    Landmarks are passed to the EKF only after they have been seen several
+    times. Old landmarks that have not been seen in a while are ``forgotten.''
   \end{frame}
 
   \begin{frame}{Line extraction}
@@ -96,6 +100,23 @@
   %----EKF - Andy--------------------------------------------------%
   \begin{frame}{EKF}
     
+  \end{frame}
+
+  \section{Mapping}
+  %----Mapping - Who?--------------------------------------------------%
+  \begin{frame}{Mapping}
+    Idea: occupancy grid
+    \vspace{1cm}
+
+    \begin{itemize}
+    \item The world is represented as a grid of cells, each cell holding a
+          probability that it is occupied
+    \item On every laser scan, the cells where the laser beams end get their
+          values increased
+    \end{itemize}
+    \vspace{1cm}
+
+    This relies on having accurate robot pose at all times.
   \end{frame}
   
   \section{Demo}
