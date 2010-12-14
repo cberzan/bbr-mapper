@@ -33,7 +33,7 @@
   %----Outline Slide----------------------------------------------------------%
   \begin{frame}{\bf Outline}
     %\pause
-    \tableofcontents[pausesections]
+    \tableofcontents[]
   \end{frame}
   
   \section{Overview}
@@ -65,11 +65,11 @@
   
   \section{Landmarks}
   %----Landmarks - Constantin--------------------------------------------------%
-  \begin{frame}{\bf Landmark extraction}
+  \begin{frame}{\bf Landmark Extraction}
 
     Landmarks: easily reobservable features in the environment, used in
     localization
-    %\vspace{1cm}
+    \vspace{1cm}
 
     Our landmark extraction algorithm:
     \begin{itemize}
@@ -84,10 +84,10 @@
     times. Old landmarks that have not been seen in a while are ``forgotten.''
   \end{frame}
 
-  \begin{frame}{\bf Line extraction}
+  \begin{frame}{\bf Line Extraction}
 
     RANSAC: Random Sample Consensus
-    %\vspace{0.5cm}
+    \vspace{0.5cm}
 
     Input: set of points $\mathcal{P}$
 
@@ -110,28 +110,63 @@
 
   {
   \usebackgroundtemplate{\includegraphics[width=\paperwidth]{ransac-mix.png}}
-  \begin{frame}{Line extraction example}
+  \begin{frame}{}
   \end{frame}
   }
 
   {
   \usebackgroundtemplate{\includegraphics[width=\paperwidth]{landmark-mix.png}}
-  \begin{frame}{Landmark extraction example}
+  \begin{frame}{}
   \end{frame}
   }
 
   \section{EKF}
   %----EKF - Andy--------------------------------------------------%
-  \begin{frame}{EKF}
+  \begin{frame}{\bf EKF}
+
+    Extended Kalman Filter: Linearized method for distilling ``true''
+    values from noisy measurements.
+    
+    Two main steps:
+    \begin{itemize}
+    \item {\bf Prediction}: Use system model to predict value of next
+    measurement
+    \item {\bf Update}: Take noisy measurement and use it to refine the
+      estimation of the true value
+    \end{itemize}
     
   \end{frame}
 
+  {
+    \usebackgroundtemplate{\includegraphics[height=\paperheight]{ekf0.png}}
+    \begin{frame}{}
+    \end{frame}
+  }
+  
+  {
+    \usebackgroundtemplate{\includegraphics[height=\paperheight]{ekf1.png}}
+    \begin{frame}{}
+    \end{frame}
+  }
+  
+  {
+    \usebackgroundtemplate{\includegraphics[height=\paperheight]{ekf2.png}}
+    \begin{frame}{}
+    \end{frame}
+  }
+
+  {
+    \usebackgroundtemplate{\includegraphics[height=\paperheight]{ekf3.png}}
+    \begin{frame}{}
+    \end{frame}
+  }
+  
   \section{Mapping}
   %----Mapping - Who?--------------------------------------------------%
   \begin{frame}{\bf Mapping}
 
     Idea: occupancy grid
-    %\vspace{1cm}
+    \vspace{1cm}
 
     \begin{itemize}
     \item The world is represented as a grid of cells, each cell holding a
@@ -146,13 +181,13 @@
   
   \section{Demo}
   %----Demo - Both--------------------------------------------------%
-  \begin{frame}{Demo}
+  \begin{frame}{\bf Demo}
     
   \end{frame}
   
   \section{Bibliography}
   %----Demo - Both--------------------------------------------------%
-  \begin{frame}{Bibliography}
+  \begin{frame}{\bf Bibliography}
     \begin{thebibliography}{3}
 
     \bibitem{SlamForDummies} Riisgaard \& Blas. MIT OpenCourseWare.
