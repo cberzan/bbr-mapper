@@ -9,14 +9,15 @@
 \setbeamertemplate{blocks}[rounded][shadow=false] 
 \setbeamertemplate{navigation symbols}{}
 \usepackage{graphics}
+\usepackage{url}
 
-\title[SLAM]{More SLAM}
+\title[SLAM]{Videre SLAM}
 %\subtitle[]{}
 \author[ C. Berzan \& A. Sayler]{ Constantin Berzan \& Andy Sayler}
 \institute[Tufts University]{
   Tufts University\\
   COMP150 - BBR\\
-  \texttt{constantin.berzan@tufts.edu}\\
+  \texttt{constantin.berzan@tufts.edu}\\*
   \texttt{andrew.sayler@tufts.edu}
 }
 \date[Dec. 14, 2010]{Tuesday, December 14\textsuperscript{th}, 2010}
@@ -30,20 +31,42 @@
   
   \section*{Outline}  
   %----Outline Slide----------------------------------------------------------%
-  \begin{frame}{Outline}
-    \pause
-    \tableofcontents[pausesections]
+  \begin{frame}{\bf Outline}
+    %\pause
+    \tableofcontents[]
   \end{frame}
   
   \section{Overview}
   %----SLAM Overview - Andy--------------------------------------------------%
-  \begin{frame}{SLAM Overview}
-    
+  \begin{frame}{\bf SLAM Overview}
+    \begin{columns}[t]
+      \begin{column}{0.5\textwidth}
+
+        {\bf S}imultaneous \\*
+        {\bf L}ocation \\*
+        {\bf A}nd \\*
+        {\bf M}apping \\*
+
+        \vspace{1cm}
+
+        SLAM is a methodology for implementing location awareness on a mobile platform.
+      \end{column}
+      \begin{column}{0.5\textwidth}
+        \begin{figure}
+          \begin{center}
+            \includegraphics[scale=.3]{slamoverview.png}
+          \end{center}
+          \caption{Slam Overview \cite{SlamForDummies}}
+          \label{fig:slamoverview}
+        \end{figure}
+      \end{column}
+    \end{columns}
   \end{frame}
   
   \section{Landmarks}
   %----Landmarks - Constantin--------------------------------------------------%
-  \begin{frame}{Landmark extraction}
+  \begin{frame}{\bf Landmark Extraction}
+
     Landmarks: easily reobservable features in the environment, used in
     localization
     \vspace{1cm}
@@ -61,7 +84,8 @@
     times. Old landmarks that have not been seen in a while are ``forgotten.''
   \end{frame}
 
-  \begin{frame}{Line extraction}
+  \begin{frame}{\bf Line Extraction}
+
     RANSAC: Random Sample Consensus
     \vspace{0.5cm}
 
@@ -86,25 +110,61 @@
 
   {
   \usebackgroundtemplate{\includegraphics[width=\paperwidth]{ransac-mix.png}}
-  \begin{frame}{Line extraction example}
+  \begin{frame}{}
   \end{frame}
   }
 
   {
   \usebackgroundtemplate{\includegraphics[width=\paperwidth]{landmark-mix.png}}
-  \begin{frame}{Landmark extraction example}
+  \begin{frame}{}
   \end{frame}
   }
 
   \section{EKF}
   %----EKF - Andy--------------------------------------------------%
-  \begin{frame}{EKF}
+  \begin{frame}{\bf EKF}
+
+    Extended Kalman Filter: Linearized method for distilling ``true''
+    values from noisy measurements.
+    
+    Two main steps:
+    \begin{itemize}
+    \item {\bf Prediction}: Use system model to predict value of next
+    measurement
+    \item {\bf Update}: Take noisy measurement and use it to refine the
+      estimation of the true value
+    \end{itemize}
     
   \end{frame}
 
+  {
+    \usebackgroundtemplate{\includegraphics[height=\paperheight]{ekf0.png}}
+    \begin{frame}{}
+    \end{frame}
+  }
+  
+  {
+    \usebackgroundtemplate{\includegraphics[height=\paperheight]{ekf1.png}}
+    \begin{frame}{}
+    \end{frame}
+  }
+  
+  {
+    \usebackgroundtemplate{\includegraphics[height=\paperheight]{ekf2.png}}
+    \begin{frame}{}
+    \end{frame}
+  }
+
+  {
+    \usebackgroundtemplate{\includegraphics[height=\paperheight]{ekf3.png}}
+    \begin{frame}{}
+    \end{frame}
+  }
+  
   \section{Mapping}
   %----Mapping - Who?--------------------------------------------------%
-  \begin{frame}{Mapping}
+  \begin{frame}{\bf Mapping}
+
     Idea: occupancy grid
     \vspace{1cm}
 
@@ -121,8 +181,22 @@
   
   \section{Demo}
   %----Demo - Both--------------------------------------------------%
-  \begin{frame}{Demo}
+  \begin{frame}{\bf Demo}
     
+  \end{frame}
+  
+  \section{Bibliography}
+  %----Demo - Both--------------------------------------------------%
+  \begin{frame}{\bf Bibliography}
+    \begin{thebibliography}{3}
+
+    \bibitem{SlamForDummies} Riisgaard \& Blas. MIT OpenCourseWare.
+      \newblock \emph{``SLAM For Dummies''}.
+      \newblock
+      ``\url{http://ocw.mit.edu/courses/aeronautics-and-astronautics/
+        16-412j-cognitive-robotics-spring-2005/projects/}''. 2004.
+      
+    \end{thebibliography}
   \end{frame}
   
 
