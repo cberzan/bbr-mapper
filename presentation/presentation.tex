@@ -42,6 +42,8 @@
     \begin{columns}[t]
       \begin{column}{0.5\textwidth}
 
+        \vspace{1cm}
+
         {\bf S}imultaneous \\*
         {\bf L}ocation \\*
         {\bf A}nd \\*
@@ -131,10 +133,18 @@
     \begin{itemize}
     \item {\bf Prediction}: Use system model to predict value of next
     measurement
-    \item {\bf Update}: Take noisy measurement and use it to refine the
+    \item {\bf Correct}: Take noisy measurement and use it to refine the
       estimation of the true value
     \end{itemize}
     
+    \begin{figure}
+      \begin{center}
+        \includegraphics[scale=.15]{ekf.png}
+      \end{center}
+      \caption{EKF Equations \cite{introekf}}
+      \label{fig:ekfequations}
+    \end{figure}
+
   \end{frame}
 
   {
@@ -189,7 +199,11 @@
       \newblock
       ``\url{http://ocw.mit.edu/courses/aeronautics-and-astronautics/
         16-412j-cognitive-robotics-spring-2005/projects/}''. 2004.
-      
+
+      \bibitem{introekf} Welch \& Gary Bishop. UNC Chapel Hill. 
+        \newblock \emph{``An Introduction to the Kalman Filter''}.
+        Monday, July 24, 2006.
+
     \end{thebibliography}
   \end{frame}
   
