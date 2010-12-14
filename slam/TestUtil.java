@@ -1,5 +1,8 @@
 package com.slam;
 
+/**
+ * Unit test for Util.java
+ */
 public class TestUtil {
     static public void main(String[] args) throws Exception {
         final double pi = Math.PI;

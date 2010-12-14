@@ -21,6 +21,9 @@ import java.rmi.*;
 import java.util.*;
 import static utilities.Util.*;
 
+/**
+ * @see RansacLandmarkServer
+ */
 public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLandmarkServer {
     /* ADE-related fields (pseudo-refs, etc.) */
     private static String prg = "RansacLandmarkServerImpl";
@@ -186,6 +189,7 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
         initialized = true;
     }
 
+    /// @see LandmarkServer.getLandmarks()
     public Landmark[] getLandmarks(Pose robotPose) throws RemoteException {
         if(!initialized) {
             System.err.println("getLandmarks: not initialized yet!");
@@ -221,6 +225,7 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
         return good.toArray(new Landmark[0]);
     }
 
+    /// @see LandmarkServer.flushDiscardedLandmarks()
     public int[] flushDiscardedLandmarks() throws RemoteException {
         int[] result = new int[discardedIDs.size()];
         for(int i = 0; i < discardedIDs.size(); i++) {
@@ -414,7 +419,6 @@ public class RansacLandmarkServerImpl extends ADEServerImpl implements RansacLan
      * A landmark point is the projection of (0, 0) in the world coordinates
      * onto the given line.
      */
-    // TODO There is probably a more efficient / elegant way of doing this...
     Point2D.Double landmarkPoint(Pose robotPose, Line line) {
         // Take two points on the line, w.r.t. robot origin.
         Point2D.Double ar = new Point2D.Double(),

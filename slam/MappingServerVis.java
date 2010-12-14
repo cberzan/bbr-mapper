@@ -9,6 +9,10 @@ import java.awt.geom.*;
 import java.rmi.*;
 import javax.swing.*;
 
+/**
+ * Visualization for MappingServer, displaying the map and currently detected
+ * landmarks.
+ */
 public class MappingServerVis extends ADEGuiPanel
 {
     private RobotInfo robot           = null;

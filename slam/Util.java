@@ -2,11 +2,16 @@ package com.slam;
 
 import java.lang.Math;
 
+/**
+ * Defines a bunch of static utility functions.
+ */
 public class Util {
+    /// Convert from degrees to radians.
     static double deg2rad(double rad) {
         return rad * Math.PI / 180;
     }
 
+    /// Convert from degrees to radians.
     static double rad2deg(double rad) {
         return rad * 180 / Math.PI;
     }
@@ -21,10 +26,12 @@ public class Util {
             return rad + twopi + excess;
     }
 
+    /// Return true if doubles are roughly equal.
     static boolean feq(double a, double b) {
         return Math.abs(a - b) < 1e-7;
     }
 
+    /// Assert that two doubles are roughly equal, with verbose failure.
     static void assert_feq(double a, double b) throws Exception {
         if(!feq(a, b)) {
             System.err.format("assert_feq failed: a=%f b=%f\n", a, b);

@@ -1,7 +1,8 @@
 package com.slam;
 
 /**
- * This is silly, but ADE requires an interface name for each server.
+ * Simple landmark server using beacons in simulation.
+ * @see LandmarkServer
  */
 public interface BeaconLandmarkServer extends LandmarkServer {
 }

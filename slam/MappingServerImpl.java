@@ -15,6 +15,9 @@ import java.rmi.*;
 import java.util.*;
 import static utilities.Util.*;
 
+/**
+ * @see MappingServer
+ */
 public class MappingServerImpl extends ADEServerImpl implements MappingServer {
     /* ADE-related fields (pseudo-refs, etc.) */
     private static String prg      = "MappingServerImpl";
@@ -140,6 +143,7 @@ public class MappingServerImpl extends ADEServerImpl implements MappingServer {
         visData.map = new byte[xPix][yPix];
     }
 
+    /// @see MappingServer.updateMap()
     public void updateMap(Pose pose, double[] laser, Landmark[] landmarks)
         throws RemoteException
     {
@@ -173,6 +177,7 @@ public class MappingServerImpl extends ADEServerImpl implements MappingServer {
         updateGUIs();
     }
 
+    /// Returns data for visualization.
     public MappingServerVisData getVisData() throws RemoteException {
         return visData;
     }
@@ -240,6 +245,7 @@ public class MappingServerImpl extends ADEServerImpl implements MappingServer {
     protected void updateFromLog(String logEntry) {
     }
 
+    /// Defines visualization classes.
     @Override
     public HashMap<String, Class<?>> getVisualizationClasses() throws RemoteException
     {

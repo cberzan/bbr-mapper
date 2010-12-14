@@ -9,6 +9,11 @@ import java.lang.Math;
 import java.io.*;
 import static utilities.Util.*;
 
+/**
+ * A simple architecture that spins the robot in place and logs the detected
+ * landmarks to a CSV file. Used to determine the position of the LRF w.r.t. the
+ * robot's center of rotation.
+ */
 public class RotCenterImpl extends ActionServerImpl implements RotCenter {
     private static final long serialVersionUID = 1L;
 
@@ -63,6 +68,7 @@ public class RotCenterImpl extends ActionServerImpl implements RotCenter {
         return true;
     }
 
+    /// Spin the robot in place, logging landmarks on every tick.
     public void runArchitecture() {
         if(!allServersReady())
             return;

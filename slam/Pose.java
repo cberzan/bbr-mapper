@@ -2,6 +2,9 @@ package com.slam;
 
 import java.io.Serializable;
 
+/**
+ * Holds the robot's pose: x, y, and theta in radians [0; 2pi].
+ */
 public class Pose implements Serializable
 {
     private static final long serialVersionUID = 1L;

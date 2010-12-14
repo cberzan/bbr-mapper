@@ -15,6 +15,10 @@ import java.lang.Math;
 import java.io.*;
 import static utilities.Util.*;
 
+/**
+ * Main architecture controller: explores randomly, avoids obstacles, detects
+ * landmarks, builds a simple map.
+ */
 public class ArchImpl extends ActionServerImpl implements Arch {
     private static final long serialVersionUID = 1L;
 
@@ -241,6 +245,10 @@ public class ArchImpl extends ActionServerImpl implements Arch {
         return true;
     }
 
+    /**
+     * Run architecture:
+     * Explore randomly, while detecting landmarks and updating the map.
+     */
     public void runArchitecture() {
         System.out.println("------ runArchitecture ------");
         if(!allServersReady())

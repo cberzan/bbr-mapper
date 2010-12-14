@@ -21,6 +21,9 @@ import java.rmi.*;
 import java.util.*;
 import static utilities.Util.*;
 
+/**
+ * @see BeaconLandmarkServer
+ */
 public class BeaconLandmarkServerImpl extends ADEServerImpl implements BeaconLandmarkServer {
     /* ADE-related fields (pseudo-refs, etc.) */
 
@@ -132,6 +135,7 @@ public class BeaconLandmarkServerImpl extends ADEServerImpl implements BeaconLan
         super();
     }
 
+    /// Gets refs to all necessary servers.
     private boolean allServersReady() {
         // Get ref to action server, from which we get the beacon data.
         if(actionServer == null) {
@@ -146,6 +150,7 @@ public class BeaconLandmarkServerImpl extends ADEServerImpl implements BeaconLan
         return true;
     }
 
+    /// @see LandmarkServer.getLandmarks()
     public Landmark[] getLandmarks(Pose robotPose) throws RemoteException {
         if(!allServersReady()) {
             System.err.println("getLandmarks: not initialized yet!");
@@ -183,6 +188,7 @@ public class BeaconLandmarkServerImpl extends ADEServerImpl implements BeaconLan
         return landmarks;
     }
 
+    /// @see LandmarkServer.flushDiscardedLandmarks()
     public int[] flushDiscardedLandmarks() throws RemoteException {
         return new int[0]; // never discards anything
     }

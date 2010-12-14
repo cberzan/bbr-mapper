@@ -4,7 +4,8 @@ import java.awt.Dimension;
 import java.awt.geom.Point2D;
 
 /**
- * Defines several constants about the robot, and several utility functions.
+ * Defines several constants about the *simulated* robot and the world, and
+ * several utility functions.
  */
 public class RobotInfo {
     /// World boundaries, for mapping.

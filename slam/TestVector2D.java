@@ -1,5 +1,8 @@
 package com.slam;
 
+/**
+ * Unit test for Vector2D.java
+ */
 public class TestVector2D {
     static public void main(String[] args) throws Exception {
         double mag1 = 0.076, dir1 = 195.5 * Math.PI / 180;

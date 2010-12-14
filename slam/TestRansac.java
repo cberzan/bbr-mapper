@@ -6,6 +6,14 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import javax.swing.*;
 
+/**
+ * GUI application that runs RANSAC and shows all intermediary results in a nice
+ * visualization. Used for debugging and tweaking RANSAC parameters.
+ *
+ * The laser readings in several scenarios are currently hardcoded here.
+ *
+ * Interface: the 'n' and 'p' keys move one iteration forward / backward.
+ */
 public class TestRansac extends JPanel {
     final int numLaser = 181;
     double[] laser     = null;
