@@ -54,6 +54,11 @@ QUICKSTART: Information on setting up ADE and bbr-mapper.
 screenshot*: A couple of screenshots from the running project.
 WORKFLOW: Information on the organization of the ADE and brr-mapper code.
 
+If you are interested, the final reports associated with this project are also
+available in the following files:
+sayler-report.pdf: Andy Sayler's final report. Focuses on EKF implementation
+                   and errors.
+
 Finally, this project makes use of the Jama Java matrix package. More
 information on this package is available here:
 http://math.nist.gov/javanumerics/jama/. The compile scripts assume that the
