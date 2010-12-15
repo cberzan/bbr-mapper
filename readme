@@ -1,0 +1,54 @@
+Andy Sayler
+andy.sayler@gmail.com
+Constantin Berzan
+Constantin.Berzan@tufts.edu
+Last updated: 12-15-10
+
+git-hub repo: https://github.com/cberzan/bbr-mapper
+
+bbr-mapper is an effort to produce a functioning SLAM system using the ADE
+architecture (http://ade.sourceforge.net/) on a Videre robotic base
+(http://www.videredesign.com/). This project was undertaken as a semester
+project for the COMP150-Behavior Based Robotics course at Tufts University
+led by Prof. Matthias Scheutz in the fall of 2010.
+
+The SLAM system used in this project closely matches that of the system
+described in the "SLAM For Dummies Tutorial" by Soren Riisgarrd and Morten
+Rufus Blas. It attempts to fill in some holes in their tutorial and
+produce a functioning EKF based SLAM system. It should be noted that as of
+the completion of this project, the EKF portion of the SLAM system is
+functional, but buggy, and produces unstable output. At this time,
+there are no plans to continue the development of this code and correct
+these errors.
+
+This readme and the project code assume that the code is organized in two
+parallel directories sharing a common top level directory: an ADE directory
+containing an ADE SVN checkout, and a bbr-mapper directory containing this
+github checkout.
+
+The project is organized into the following directories:
+
+ade-patches: Patches for SVN revision 2746 last updated on 2010-11-17
+             at 15:43:29.
+maps: Some test maps for the ADE simulation environment
+odomtest: Code for performing odometry test on the Videre base
+odomTestSim: Code for performing odometry tests in the ADE sim.
+presentation: The final LaTeX/beamer presentation for this project.
+progress-reports: LaTeX progress reports during the project.
+slam: The bulk of the SLAM code for the project.
+svg2xml: A tool for converting svg images to the xml maps required by the ADE
+         simulation environment.
+util: Some tooling for the project
+
+You may find the following files helpful:
+
+BOOTSTRAP: Information on starting ADE and bbr-mapper.
+description.html: The initial description of the project goals.
+QUICKSTART: Information on setting up ADE and bbr-mapper.
+screenshot*: A couple of screenshots from the running project.
+WORKFLOW: Information on the organization of the ADE and brr-mapper code.
+
+Finally, this project makes use of the Jama Java matrix package. More
+information on this package is available here:
+http://math.nist.gov/javanumerics/jama/. The compile scripts assume that the
+Jama jar file is located in the top level bbr-mapper directory.
