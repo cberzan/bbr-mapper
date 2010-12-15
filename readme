@@ -6,6 +6,12 @@ Last updated: 12-15-10
 
 git-hub repo: https://github.com/cberzan/bbr-mapper
 
+This project and the source code associated with it is licensed under version 3
+of the GPL. A copy of this license is located in this directory in gpl-3.0.txt.
+This project makes use of external code that may conform to separate
+licensing requirements. Please consult the ADE and Jama licenses for
+more information.
+
 bbr-mapper is an effort to produce a functioning SLAM system using the ADE
 architecture (http://ade.sourceforge.net/) on a Videre robotic base
 (http://www.videredesign.com/). This project was undertaken as a semester
