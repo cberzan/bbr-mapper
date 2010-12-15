@@ -1,0 +1,77 @@
+Andy Sayler
+andy.sayler@gmail.com
+Constantin Berzan
+Constantin.Berzan@tufts.edu
+Last updated: 12-15-10
+
+------------------------------------------------------------------------------
+
+This directory contains all SLAM code that was written for this project. Please
+read the README in the root directory of the project *before* reading this file.
+
+All classes and functions defined come with Doxygen comments.
+
+------------------------------------------------------------------------------
+
+SLAM architecture code:
+--------------------------
+Arch.java and ArchImpl.java
+    - Architecture controller
+EKFServer.java and EKFServerImpl.java
+    - Extended Kalman Filter
+LandmarkServer.java
+    - Common interface for landmark servers
+BeaconLandmarkServer.java and BeaconLandmarkServerImpl.java
+    - Landmark server implementation based on simulated beacons
+      (for testing only)
+RansacLandmarkServer.java and RansacLandmarkServerImpl.java
+    - Landmark server implementation based on RANSAC
+MappingServer.java and MappingServerImpl.java
+    - Occupancy grid mapping
+MappingServerVis.java and MappingServerVisData.java
+    - Map visualization
+
+Utility code:
+----------------
+RotCenter.java and RotCenterImpl.java
+    - Spin in place and log detected landmarks
+RobotInfo.java
+    - Several constants for the robot and the world
+Ransac.java
+    - RANSAC algorithm, with modifications
+
+Data types:
+--------------
+Landmark.java
+Line.java
+Pose.java
+Util.java
+Vector2D.java
+
+Tests:
+---------
+MagicSquareExample.java
+    - Jama test
+TestRansac.java
+    - RANSAC test with visualization
+TestUtil.java
+    - Unit test for Util.java
+TestVector2D.java
+    - Unit test for Vector2D.java
+
+Config files:
+----------------
+bot.conf
+    - Run main SLAM architecture on the Videre robot
+      (***switch to branch on-the-bot first***)
+sim.conf
+    - Run main SLAM architecture on the sim
+rotcenter-bot.conf
+    - Run RotCenter architecture on the Videre robot
+rotcenter-sim.conf
+    - Run RotCenter architecture on the sim
+sim-rot-center.ods
+    - Results of RotCenter on the sim
+Makefile
+    - Compiles everything (see ../BOOTSTRAP)
+
