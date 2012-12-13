@@ -301,7 +301,7 @@ public class EKFServerImpl extends ADEServerImpl implements EKFServer {
             while (shouldRead) {
                 //Get Odometry
                 try {
-                    double[] odom = (double[])call(odomServer, "getNoisyPoseEgo");
+                    double[] odom = (double[])call(odomServer, "getPoseEgo");
                     if(odom != null) { // HACK: figure out how to handle this better
                         currentPose.x = odom[0];
                         currentPose.y = odom[1];
