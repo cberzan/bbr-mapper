@@ -3,7 +3,7 @@ PACKAGE_PREFIX = com/slam
 
 ### Targets ################################################################
 
-all: utils interfaces impls tests
+all: utils interfaces impls visuals tests
 
 utils: \
 	$(PACKAGE_PREFIX)/Landmark.class \
@@ -11,7 +11,8 @@ utils: \
 	$(PACKAGE_PREFIX)/Pose.class \
 	$(PACKAGE_PREFIX)/Ransac.class \
 	$(PACKAGE_PREFIX)/Vector2D.class \
-	$(PACKAGE_PREFIX)/Util.class
+	$(PACKAGE_PREFIX)/Util.class \
+	$(PACKAGE_PREFIX)/RobotInfo.class
 
 interfaces: \
 	$(PACKAGE_PREFIX)/Arch.class \
@@ -19,6 +20,7 @@ interfaces: \
 	$(PACKAGE_PREFIX)/LandmarkServer.class \
 	$(PACKAGE_PREFIX)/BeaconLandmarkServer.class \
 	$(PACKAGE_PREFIX)/RansacLandmarkServer.class \
+	$(PACKAGE_PREFIX)/MappingServer.class \
 	$(PACKAGE_PREFIX)/RotCenter.class
 
 impls: \
@@ -26,12 +28,18 @@ impls: \
 	$(PACKAGE_PREFIX)/EKFServerImpl.class \
 	$(PACKAGE_PREFIX)/BeaconLandmarkServerImpl.class \
 	$(PACKAGE_PREFIX)/RansacLandmarkServerImpl.class \
+	$(PACKAGE_PREFIX)/MappingServerImpl.class \
 	$(PACKAGE_PREFIX)/RotCenterImpl.class
+
+visuals: \
+	$(PACKAGE_PREFIX)/MappingServerVisData.class \
+	$(PACKAGE_PREFIX)/MappingServerVis.class
 
 tests: \
 	$(PACKAGE_PREFIX)/TestVector2D.class \
 	$(PACKAGE_PREFIX)/TestRansac.class \
 	$(PACKAGE_PREFIX)/TestUtil.class
+
 
 ### Utils ###################################################################
 
@@ -53,6 +61,9 @@ $(PACKAGE_PREFIX)/Vector2D.class: $(PACKAGE_PREFIX)/Vector2D.java
 $(PACKAGE_PREFIX)/Util.class: $(PACKAGE_PREFIX)/Util.java
 	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/Util.java
 
+$(PACKAGE_PREFIX)/RobotInfo.class: $(PACKAGE_PREFIX)/RobotInfo.java
+	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/RobotInfo.java
+
 
 ### Interfaces ##############################################################
 
@@ -70,6 +81,9 @@ $(PACKAGE_PREFIX)/BeaconLandmarkServer.class: $(PACKAGE_PREFIX)/BeaconLandmarkSe
 
 $(PACKAGE_PREFIX)/RansacLandmarkServer.class: $(PACKAGE_PREFIX)/RansacLandmarkServer.java
 	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/RansacLandmarkServer.java
+
+$(PACKAGE_PREFIX)/MappingServer.class: $(PACKAGE_PREFIX)/MappingServer.java
+	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/MappingServer.java
 
 $(PACKAGE_PREFIX)/RotCenter.class: $(PACKAGE_PREFIX)/RotCenter.java
 	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/RotCenter.java
@@ -89,8 +103,20 @@ $(PACKAGE_PREFIX)/BeaconLandmarkServerImpl.class: $(PACKAGE_PREFIX)/BeaconLandma
 $(PACKAGE_PREFIX)/RansacLandmarkServerImpl.class: $(PACKAGE_PREFIX)/RansacLandmarkServerImpl.java
 	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/RansacLandmarkServerImpl.java
 
+$(PACKAGE_PREFIX)/MappingServerImpl.class: $(PACKAGE_PREFIX)/MappingServerImpl.java
+	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/MappingServerImpl.java
+
 $(PACKAGE_PREFIX)/RotCenterImpl.class: $(PACKAGE_PREFIX)/RotCenterImpl.java
 	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/RotCenterImpl.java
+
+
+### Visuals #################################################################
+
+$(PACKAGE_PREFIX)/MappingServerVisData.class: $(PACKAGE_PREFIX)/MappingServerVisData.java
+	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/MappingServerVisData.java
+
+$(PACKAGE_PREFIX)/MappingServerVis.class: $(PACKAGE_PREFIX)/MappingServerVis.java
+	$(COMPILE_SCRIPT) $(PACKAGE_PREFIX)/MappingServerVis.java
 
 
 ### Tests ###################################################################

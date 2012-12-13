@@ -21,7 +21,7 @@ public class RotCenterImpl extends ActionServerImpl implements RotCenter {
     FileWriter csvFile    = null;
 
     /// Server references.
-    private Object positionServer = null; // sim testing only
+    private Object videreServer   = null;
     private Object landmarkServer = null;
 
     /**
@@ -43,10 +43,10 @@ public class RotCenterImpl extends ActionServerImpl implements RotCenter {
             }
         }
 
-        if(positionServer == null) {
-            positionServer = getClient("com.interfaces.PositionServer");
-            if(positionServer == null) {
-                System.out.println("allServersReady: waiting for PositionServer.");
+        if(videreServer == null) {
+            videreServer = getClient("com.videre.VidereServer");
+            if(videreServer == null) {
+                System.out.println("allServersReady: waiting for VidereServer.");
                 return false;
             }
         }
@@ -71,14 +71,13 @@ public class RotCenterImpl extends ActionServerImpl implements RotCenter {
 
         // Turn in place, recording history of theta and detected landmark positions.
         try {
-            // We pass in the true global position -- this is impossible in the
-            // real world.
-            double[] poseADE = (double[])call(positionServer, "getPoseGlobal");
+            // Get pose from odometry -- our best bet on the robot...
+            double[] poseADE = (double[])call(videreServer, "getPoseEgo");
             Pose pose        = new Pose();
             pose.x           = poseADE[0];
             pose.y           = poseADE[1];
             pose.theta       = poseADE[2];
-            //System.out.format("Pose: x=%f y=%f theta=%f\n", pose.x, pose.y, pose.theta);
+            System.out.format("Pose: x=%f y=%f theta=%f\n", pose.x, pose.y, pose.theta);
 
             Landmark[] landmarks = (Landmark[])call(landmarkServer, "getLandmarks", pose);
             Landmark[] allKnown  = new Landmark[maxLandmarks];

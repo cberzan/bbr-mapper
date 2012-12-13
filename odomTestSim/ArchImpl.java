@@ -56,7 +56,7 @@ public class ArchImpl extends ActionServerImpl implements Arch
                         poseEgoInit[0], poseEgoInit[1], poseEgoInit[2]);
             } catch(Exception e) {
                 System.err.println("Error during init: " + e);
-                System.err.println("Original cause: " + e.getCause());
+                e.printStackTrace();
                 stop();
                 System.exit(1);
             }
@@ -70,10 +70,12 @@ public class ArchImpl extends ActionServerImpl implements Arch
             double[] poseEgo    = (double[])call(robotRef,  "getPoseEgo");
             double[] poseGlobal = (double[])call(posServer, "getPoseGlobal");
             double dist = Math.sqrt(poseEgo[0] * poseEgo[0] + poseEgo[1] * poseEgo[1]);
-            System.out.format("step %d: x %f y %f theta %f (dist %f) gx %f gy %f gtheta %f\n",
-                    step, poseEgo[0], poseEgo[1], poseEgo[2], dist,
+            System.out.format("step % 5d:  x %f  y %f  theta %f (dist %f)\n",
+                    step, poseEgo[0], poseEgo[1], poseEgo[2], dist);
+            System.out.format("            gx %f gy %f gtheta %f\n",
                     poseGlobal[0], poseGlobal[1], poseGlobal[2]);
 
+            /*
             // Move forward, or stop if goal distance reached.
             if(dist >= stopDist) {
                 stop();
@@ -93,6 +95,7 @@ public class ArchImpl extends ActionServerImpl implements Arch
             } else {
                 setVels(tSpeed, rSpeed);
             }
+            */
         } catch(Exception e) {
             System.err.println("Error during run: " + e);
             System.err.println("Original cause: " + e.getCause());

@@ -1,19 +1,13 @@
-/**
- * ADE 1.0
- * Copyright 1997-2010 HRILab (http://hrilab.org/)
- *
- * All rights reserved.  Do not copy and use without permission.
- * For questions contact Matthias Scheutz at mscheutz@indiana.edu
- *
- * @author Constantin Berzan
- * (template by Paul Schermerhorn)
- */
+// author: Constantin Berzan
+// template by: Paul Schermerhorn
+
 package com.slam;
 
 import ade.*;
 import ade.exceptions.ADECallException;
 import com.*;
 import java.awt.geom.Point2D;
+import java.awt.Point;
 import java.io.*;
 import java.math.*;
 import java.net.*;
@@ -21,17 +15,16 @@ import java.rmi.*;
 import java.util.*;
 import static utilities.Util.*;
 
-public class BeaconLandmarkServerImpl extends ADEServerImpl implements BeaconLandmarkServer {
+public class MappingServerImpl extends ADEServerImpl implements MappingServer {
     /* ADE-related fields (pseudo-refs, etc.) */
-
-    private static String prg = "BeaconLandmarkServerImpl";
-    private static String type = "LandmarkServer";
+    private static String prg      = "MappingServerImpl";
+    private static String type     = "MappingServer";
     private static boolean verbose = false;
 
     /* Server-specific fields */
-    private Object actionServer = null;
-    private Double[][] beacons  = null;
-    final int HEADING = 0, DISTANCE = 1;
+    private byte maxDensity              = 30;
+    private RobotInfo robot              = null;
+    private MappingServerVisData visData = null;
 
     // ***********************************************************************
     // *** Abstract methods in ADEServerImpl that need to be implemented
@@ -128,63 +121,60 @@ public class BeaconLandmarkServerImpl extends ADEServerImpl implements BeaconLan
     // ***********************************************************************
     // Methods available to remote objects via RMI
     // ***********************************************************************
-    public BeaconLandmarkServerImpl() throws RemoteException {
+    public MappingServerImpl() throws RemoteException {
         super();
+
+        robot                  = new RobotInfo();
+        visData                = new MappingServerVisData();
+        visData.mapMin         = robot.worldMin;
+        visData.mapMax         = robot.worldMax;
+        visData.mapCenter      = new Point2D.Double(0, 0);
+        visData.mapPixPerMeter = 30;
+        visData.robotPose      = new Pose();
+
+        int xPix    = (int)((visData.mapMax.x - visData.mapMin.x) *
+                               visData.mapPixPerMeter),
+            yPix    = (int)((visData.mapMax.y - visData.mapMin.y) *
+                               visData.mapPixPerMeter);
+        System.out.format("Map dimensions: xPix %d yPix %d\n", xPix, yPix);
+        visData.map = new byte[xPix][yPix];
     }
 
-    private boolean allServersReady() {
-        // Get ref to action server, from which we get the beacon data.
-        if(actionServer == null) {
-            // Try to connect to the simulator.
-            actionServer = getClient("com.action.ActionServer");
-            if(actionServer == null) {
-                System.out.println("BeaconLandmarkServerImpl waiting for actionServer ref.");
-                return false;
+    public void updateMap(Pose pose, double[] laser, Landmark[] landmarks)
+        throws RemoteException
+    {
+        System.out.println("updateMap() ------------------------");
+
+        // Put obstacles on the map.
+        Vector2D tmp = new Vector2D();
+        for(int i = 0; i < 181; i++) {
+            if(laser[i] > robot.lrfRange)
+                continue; // no obstacle, just limit of visual field
+
+            tmp.setPol(laser[i], Util.deg2rad(i));
+            Point2D.Double pointR = new Point2D.Double(tmp.getX(), tmp.getY());
+            Point2D.Double pointW = robot.robot2world(pose, pointR);
+            Point pointM          = visData.world2map(pointW);
+            //System.out.format("angle %d dist %f. point: robot %s world %s map %s\n",
+            //        i, laser[i], pointR, pointW, pointM);
+
+            // Point may be out of bounds due to laser noise.
+            if(pointM.x >= 0 && pointM.x < visData.map.length &&
+               pointM.y >= 0 && pointM.y < visData.map[0].length) {
+                if(visData.map[pointM.x][pointM.y] < maxDensity)
+                    visData.map[pointM.x][pointM.y]++;
+            } else {
+                System.out.format("OUT OF MAP: angle %d dist %f. point: robot %s world %s map %s\n",
+                        i, laser[i], pointR, pointW, pointM);
             }
         }
-
-        return true;
+        visData.robotPose = pose;
+        visData.landmarks = landmarks;
+        updateGUIs();
     }
 
-    public Landmark[] getLandmarks(Pose robotPose) throws RemoteException {
-        if(!allServersReady()) {
-            System.err.println("getLandmarks: not initialized yet!");
-            return new Landmark[0];
-        }
-
-        try {
-            beacons = (Double[][])call(actionServer, "getBeaconData");
-        } catch(Exception e) {
-            System.err.println("ERROR: getLandmarks could not getBeaconData: " + e);
-            e.printStackTrace();
-            return new Landmark[0];
-        }
-
-        Landmark[] landmarks = new Landmark[beacons.length];
-        for(int i = 0; i < beacons.length; i++) {
-            //System.out.format("id = %d, dist=%f heading=%f\n",
-            //        i, beacons[i][DISTANCE], beacons[i][HEADING]);
-
-            // Convert from robot's coord sys to world coord sys.
-            // Apparently, in ADESim2010 the beacon orientation is relative to
-            // the robot position only, i.e. it is independent of pose.theta.
-            Vector2D v = new Vector2D();
-            v.setPol(beacons[i][DISTANCE], Util.deg2rad(beacons[i][HEADING]));
-            v.setX(v.getX() + robotPose.x);
-            v.setY(v.getY() + robotPose.y);
-
-            Landmark lm  = new Landmark();
-            lm.id        = i;
-            lm.position  = new Point2D.Double(v.getX(), v.getY());
-            landmarks[i] = lm;
-        }
-        System.out.format("BeaconLandmarkServer returning %d landmarks.\n",
-                landmarks.length);
-        return landmarks;
-    }
-
-    public int[] flushDiscardedLandmarks() throws RemoteException {
-        return new int[0]; // never discards anything
+    public MappingServerVisData getVisData() throws RemoteException {
+        return visData;
     }
 
     /**
@@ -250,12 +240,11 @@ public class BeaconLandmarkServerImpl extends ADEServerImpl implements BeaconLan
     protected void updateFromLog(String logEntry) {
     }
 
-    /**
-     * <code>main</code> passes the arguments up to the ADEServerImpl
-     * parent.  The parent does some magic and gets the system going.
-     *
-    public static void main(String[] args) throws Exception {
-        ADEServerImpl.main(args);
+    @Override
+    public HashMap<String, Class<?>> getVisualizationClasses() throws RemoteException
+    {
+        HashMap<String, Class<?>> classes = new HashMap<String, Class<?>>();
+        classes.put("Map", MappingServerVis.class);
+        return classes;
     }
-     */
 }
